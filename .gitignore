@@ -1,0 +1,12 @@
+node_modules/
+data/
+.env
+.DS_Store
+server.dbg*.js
+.vf2/
+.vidframes/
+seed.backup.json
+seed-96k.json
+pitch/node_modules/
+.scratch/
+.env

@@ -1,0 +1,31 @@
+{
+  "// note": "Project settings for DevX Nexus. Committed deliberately so every machine behaves the same.",
+
+  "// formatting": "There is no Prettier or ESLint config here and the code is hand-formatted. Format-on-save would rewrite thousands of lines the first time anyone saved a file, so it stays off.",
+  "editor.formatOnSave": false,
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true,
+  "files.eol": "\n",
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true,
+
+  "// search": "node_modules is large and data/ is generated. Excluding them makes search instant and stops you editing a generated file by mistake.",
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/data": true,
+    "**/package-lock.json": true,
+    "seed-96k.json": true,
+    "seed.backup.json": true,
+    "pitch/social": true
+  },
+  "files.watcherExclude": {
+    "**/node_modules/**": true,
+    "**/data/**": true
+  },
+  "files.exclude": { "**/.DS_Store": true },
+
+  "// safety": "data/ holds the live JSON database on a local run. Read-only in the editor so a stray keystroke cannot corrupt real orders.",
+  "files.readonlyInclude": { "data/**": true },
+
+  "javascript.preferences.quoteStyle": "single"
+}

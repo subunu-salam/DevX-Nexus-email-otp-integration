@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: devx-nexus
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: node server.js
+    envVars:
+      # Set the real PIN in the Render dashboard. A value here would be
+      # committed to the repo AND would override anything set in the dashboard,
+      # which is how a default PIN reaches production without anyone noticing.
+      - key: ADMIN_PIN
+        sync: false
+      - key: DATABASE_URL   # free Render Postgres — without it every redeploy wipes all orders
+        sync: false
+      - key: GROQ_API_KEY   # Groq Llama 3.1 — set the real gsk_ value in the Render dashboard
+        sync: false
+      - key: OPENAI_API_KEY # optional fallback — set in the Render dashboard
+        sync: false
+      - key: OTP_SMS_DRIVER # set to textbelt for the free Forgot PIN OTP test path
+        sync: false
+      - key: TEXTBELT_KEY # set to textbelt for 1 free SMS/day, or your Textbelt key
+        sync: false

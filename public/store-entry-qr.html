@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DevX Nexus — Scan &amp; Shop Store Poster</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Montserrat',sans-serif;background:#F2F4F7;display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px}
+.poster{width:560px;max-width:100%;background:#fff;border-radius:28px;overflow:hidden;box-shadow:0 24px 70px rgba(16,24,40,.18)}
+.top{background:#111;padding:34px 36px 30px;text-align:center;position:relative;overflow:hidden}
+.top::before{content:'';position:absolute;inset:-40%;background:radial-gradient(circle at 30% 20%,rgba(61,187,106,.22),transparent 45%),radial-gradient(circle at 75% 80%,rgba(61,187,106,.14),transparent 40%)}
+.logo{display:flex;align-items:center;justify-content:center;gap:10px;position:relative}
+.logo svg{width:34px;height:34px}
+.ln{font-size:20px;font-weight:900;color:#fff;letter-spacing:-.02em}
+.ln span{color:#3DBB6A}
+h1{position:relative;color:#fff;font-size:34px;font-weight:900;letter-spacing:-.04em;margin-top:18px;line-height:1.1}
+h1 em{font-style:normal;color:#3DBB6A}
+.sub{position:relative;color:rgba(255,255,255,.6);font-size:13px;font-weight:600;margin-top:10px;line-height:1.6}
+.qr-zone{padding:34px 36px 8px;text-align:center}
+.qr-card{display:inline-block;background:#fff;border:2.5px solid #111;border-radius:24px;padding:22px;position:relative}
+.qr-card svg{width:220px;height:220px;display:block}
+.scan-tag{position:absolute;top:-14px;left:50%;transform:translateX(-50%);background:#3DBB6A;color:#fff;font-size:10px;font-weight:900;letter-spacing:.14em;padding:6px 16px;border-radius:999px;white-space:nowrap}
+.branch{margin-top:14px;font-size:12px;font-weight:800;color:#111;letter-spacing:.02em}
+.branch small{display:block;font-size:9.5px;color:#8B93A5;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-top:3px}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:26px 36px 30px}
+.step{background:#F2F4F7;border-radius:16px;padding:16px 12px;text-align:center}
+.s-n{width:26px;height:26px;border-radius:50%;background:#111;color:#3DBB6A;font-size:12px;font-weight:900;display:flex;align-items:center;justify-content:center;margin:0 auto 9px}
+.s-t{font-size:11px;font-weight:800;color:#111}
+.s-d{font-size:9.5px;color:#6A7185;font-weight:600;margin-top:3px;line-height:1.5}
+.foot{border-top:1.5px dashed #E5E8ED;padding:16px 36px;display:flex;align-items:center;justify-content:space-between}
+.f-l{font-size:9px;color:#8B93A5;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+.f-r{font-size:10px;color:#27954E;font-weight:800}
+@media print{body{background:#fff;padding:0}.poster{box-shadow:none;width:100%}}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+</head>
+<body>
+<div class="poster">
+  <div class="top">
+    <div class="logo">
+      <img src="logo.png" alt="" style="width:34px;height:34px;object-fit:contain" onerror="this.remove()" onload="this.nextElementSibling.style.display='none'"><svg viewBox="0 0 34 34" fill="none"><path d="M5 10L13 17L5 24" stroke="white" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><path d="M16 11L27 11L21 18L27 25L16 25" stroke="#3DBB6A" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span class="ln">DEV<span>X</span> NEXUS</span>
+    </div>
+    <h1>Scan &amp; Shop<br><em>with your AI Concierge</em></h1>
+    <div class="sub">Find any product's exact aisle, rack &amp; shelf ·<br>build a smart cart on any budget · skip the queue</div>
+  </div>
+  <div class="qr-zone">
+    <div class="qr-card">
+      <span class="scan-tag">SCAN WITH YOUR PHONE CAMERA</span>
+      <div id="qrHere" style="width:220px;height:220px;display:flex;align-items:center;justify-content:center"></div>
+    </div>
+    <div class="branch">Madina Supermarket — Deira (Branch 3)<small>opens the app in In-Store Mode automatically</small></div>
+  </div>
+  <div class="steps">
+    <div class="step"><div class="s-n">1</div><div class="s-t">Scan the code</div><div class="s-d">Your camera opens the DevX Nexus app in Store Mode</div></div>
+    <div class="step"><div class="s-n">2</div><div class="s-t">Ask or browse</div><div class="s-d">"AED 100 for a week" — the AI builds your cart with live prices</div></div>
+    <div class="step"><div class="s-n">3</div><div class="s-t">Walk the route</div><div class="s-d">Tap any product for its exact aisle, rack &amp; shelf on the map</div></div>
+  </div>
+  <div class="foot">
+    <span class="f-l">DevX Nexus · AI Retail Platform</span>
+    <span class="f-r">Free · No app install needed</span>
+  </div>
+</div>
+<script>
+(function(){
+  const el=document.getElementById('qrHere');
+  const isHosted=/^https?:$/.test(location.protocol);
+  const target=isHosted?location.origin+'/?mode=store':'https://YOUR-APP.onrender.com/?mode=store';
+  if(window.QRCode){
+    new QRCode(el,{text:target,width:220,height:220,colorDark:'#111111',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.Q});
+    if(!isHosted){
+      const n=document.createElement('div');
+      n.style.cssText='margin-top:10px;font-size:10px;font-weight:700;color:#B45309;font-family:Montserrat,sans-serif';
+      n.textContent='⚠ Open this page from your deployed URL — the QR then points to your live store automatically.';
+      el.parentNode.parentNode.appendChild(n);
+    }
+  }else{
+    el.textContent='QR needs internet to render';
+  }
+})();
+</script>
+</body>
+</html>
