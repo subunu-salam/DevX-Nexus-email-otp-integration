@@ -82,7 +82,7 @@ body{
 /* ─── HEADER ─── */
 .hdr{
   height:var(--hdr);background:var(--hbg);
-  display:flex;align-items:center;padding:0 14px;gap:10px;
+  display:flex;align-items:center;justify-content:space-between;padding:0 14px;gap:10px;
   position:relative;z-index:100;flex-shrink:0;
   border-bottom:1px solid var(--hbdr);
 }
@@ -133,7 +133,7 @@ body{
   flex-shrink:0;display:flex;flex-direction:column;justify-content:flex-end;
 }
 #heroCanvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0}
-.hero-content{position:relative;z-index:1;padding:16px 16px 14px}
+.hero-content{position:relative;z-index:1;padding:16px 16px 14px;text-align:center}
 .hero-tag{
   display:inline-flex;align-items:center;gap:6px;
   background:var(--GM);border:1px solid rgba(61,187,106,.3);
@@ -145,7 +145,16 @@ body{
 @keyframes pdot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.7)}}
 .hero h1{font-size:24px;font-weight:900;letter-spacing:-.05em;line-height:1.1;color:#fff;margin-bottom:6px}
 .hero h1 em{color:var(--G);font-style:normal}
-.hero-sub{font-size:11.5px;color:rgba(255,255,255,.6);line-height:1.5;margin-bottom:12px;font-weight:400;max-width:330px}
+.hero-sub{font-size:11.5px;color:rgba(255,255,255,.6);line-height:1.5;margin:0 auto 12px;font-weight:400;max-width:330px}
+/* Prominent hero search — replaces the old compact header search bar */
+.hero-search-bar{
+  display:flex;align-items:center;gap:10px;width:100%;
+  background:#fff;border:1px solid rgba(255,255,255,.14);
+  border-radius:var(--pill);padding:0 16px;height:48px;
+  margin-bottom:14px;cursor:pointer;box-shadow:0 6px 24px rgba(0,0,0,.25);
+}
+.hero-search-bar svg{width:18px;height:18px;stroke:#6b7280;fill:none;stroke-width:2;flex-shrink:0}
+.hero-search-bar span{font-size:13.5px;color:#6b7280;font-family:'Montserrat',sans-serif;font-weight:500}
 /* Selling points — compact 3-up row so the hero stays short */
 .usp-row{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:13px}
 .usp{display:flex;flex-direction:column;align-items:flex-start;gap:5px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);border-radius:10px;padding:8px 8px 9px;min-width:0}
@@ -153,7 +162,7 @@ body{
 .usp-ic svg{width:13px;height:13px;stroke:var(--G);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .usp b{display:block;font-size:10.5px;font-weight:800;color:#fff;letter-spacing:-.01em;line-height:1.25}
 .usp span:not(.usp-ic){display:block;font-size:9px;color:rgba(255,255,255,.5);font-weight:500;margin-top:2px;line-height:1.3}
-.hero-cta-row{display:flex;gap:10px;align-items:center}
+.hero-cta-row{display:flex;gap:10px;align-items:center;justify-content:center;margin-top:2px}
 .hero-cta{
   display:inline-flex;align-items:center;gap:7px;
   background:var(--G);color:#fff;border:none;border-radius:var(--pill);
@@ -172,8 +181,58 @@ body{
   transition:.2s;
 }
 .dark-toggle svg{width:13px;height:13px;stroke:rgba(255,255,255,.8);fill:none;stroke-width:2;stroke-linecap:round}
+/* AI CONCIERGE PROMPT CARD */
+.acc-card{
+  margin:14px 16px;padding:16px;border-radius:var(--r16);
+  background:linear-gradient(165deg,rgba(61,187,106,.14),rgba(10,12,15,.6));
+  border:1px solid rgba(61,187,106,.3);
+}
+.acc-head{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.acc-avatar{
+  width:38px;height:38px;border-radius:11px;background:var(--G);flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 0 16px rgba(61,187,106,.55);
+}
+.acc-avatar svg{width:19px;height:19px;fill:#fff}
+.acc-title{font-size:14.5px;font-weight:800;color:var(--tx)}
+.acc-status{font-size:10.5px;color:var(--G);font-weight:600;display:flex;align-items:center;gap:4px;margin-top:1px}
+.acc-status::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--G)}
+.acc-body{font-size:12px;line-height:1.6;color:var(--tx2);margin-bottom:13px}
+.acc-try-label{font-size:10.5px;font-weight:700;color:var(--tx3);margin-bottom:7px}
+.acc-suggest{
+  display:flex;align-items:center;gap:9px;width:100%;text-align:left;
+  background:rgba(255,255,255,.03);border:1px solid var(--bdr);border-radius:11px;
+  padding:10px 12px;margin-bottom:7px;cursor:pointer;font-family:'Montserrat',sans-serif;
+}
+.acc-suggest:last-child{margin-bottom:0}
+.acc-suggest .acc-emoji{font-size:16px;flex-shrink:0}
+.acc-suggest span{font-size:12px;font-weight:600;color:var(--tx)}
+/* POPULAR FOR YOU — compact scroll row of real catalog products */
+.popular-row{display:flex;gap:10px;overflow-x:auto;padding:0 16px 4px;scrollbar-width:none}
+.popular-row::-webkit-scrollbar{display:none}
+.popular-card{
+  flex-shrink:0;width:128px;background:var(--card);border:1px solid var(--bdr);
+  border-radius:14px;overflow:hidden;cursor:pointer;
+}
+.popular-card img{width:100%;height:100px;object-fit:cover;display:block;background:#fff}
+.popular-card .pop-body{padding:8px 9px 10px}
+.popular-card .pop-name{font-size:11px;font-weight:600;color:var(--tx);line-height:1.3;margin-bottom:5px;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;min-height:28px}
+.popular-card .pop-price{font-size:12px;font-weight:800;color:var(--tx);margin-bottom:7px}
+.popular-card .pop-add{
+  width:100%;border:none;border-radius:9px;background:var(--G);color:#fff;
+  font-size:10.5px;font-weight:800;padding:6px 0;cursor:pointer;font-family:'Montserrat',sans-serif;
+  display:flex;align-items:center;justify-content:center;gap:3px;
+}
+.popular-card .pop-add svg{width:11px;height:11px}
+/* TRUST BADGES FOOTER */
+.trust-row{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;padding:16px 16px 4px;margin-top:6px;border-top:1px solid var(--bdr)}
+.trust-item{display:flex;flex-direction:column;align-items:center;text-align:center;gap:5px}
+.trust-item svg{width:19px;height:19px;stroke:var(--G);fill:none;stroke-width:1.8}
+.trust-item .ti-t{font-size:9.5px;font-weight:800;color:var(--tx)}
+.trust-item .ti-s{font-size:8px;color:var(--tx3);line-height:1.3}
+
 .hero-stats{
-  display:flex;gap:0;margin-top:12px;
+  display:flex;gap:0;margin-top:9px;
   background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);
   border-radius:var(--r12);overflow:hidden;
 }
@@ -210,6 +269,57 @@ body{
 .offer-name{font-size:13px;font-weight:700;color:#fff;line-height:1.2;margin-bottom:2px}
 .offer-price-row{font-size:12px;color:rgba(255,255,255,.8)}
 .offer-price-row s{opacity:.6}
+/* EXPLORE SPECIAL OFFERS — big swipeable carousel + sponsored slots.
+   Replaces the earlier plain ad banner with the richer layout from the
+   wireframe: one large deal slide at a time, dot pagination, and a row
+   of smaller sponsored/ad placeholder cards underneath. */
+.explore-wrap{position:relative;padding:0 16px 4px}
+.explore-carousel{
+  display:flex;overflow-x:auto;scroll-snap-type:x mandatory;
+  gap:10px;scrollbar-width:none;border-radius:var(--r16);
+}
+.explore-carousel::-webkit-scrollbar{display:none}
+.explore-slide{
+  flex:0 0 100%;scroll-snap-align:start;position:relative;
+  border-radius:var(--r16);overflow:hidden;cursor:pointer;
+  box-shadow:var(--shadow);
+}
+.explore-slide img{width:100%;height:190px;object-fit:cover;display:block}
+.explore-slide .offer-grad{padding:14px}
+.explore-slide .offer-name{font-size:16px}
+.explore-slide .offer-price-row{font-size:13px}
+.explore-arrow{
+  position:absolute;top:50%;transform:translateY(-50%);z-index:2;
+  width:30px;height:30px;border-radius:50%;border:none;cursor:pointer;
+  background:rgba(10,12,15,.55);color:#fff;display:flex;align-items:center;justify-content:center;
+  backdrop-filter:blur(2px);
+}
+.explore-arrow svg{width:16px;height:16px;stroke:#fff;fill:none;stroke-width:2.4}
+.explore-arrow.prev{left:24px}
+.explore-arrow.next{right:24px}
+.explore-dots{display:flex;justify-content:center;gap:5px;margin:9px 0 2px}
+.explore-dot{width:5px;height:5px;border-radius:50%;background:var(--bdr);transition:background var(--tr),width var(--tr)}
+.explore-dot.on{background:var(--G);width:14px;border-radius:3px}
+.sponsored-row{display:flex;gap:8px;padding:10px 16px 2px}
+.sponsored-card{
+  flex:1;min-width:0;border-radius:12px;padding:11px 10px;cursor:pointer;
+  color:#fff;position:relative;overflow:hidden;min-height:132px;
+  display:flex;flex-direction:column;justify-content:space-between;
+}
+.sponsored-card.sp-green{background:linear-gradient(150deg,#1c8a4a,#0e5c2f)}
+.sponsored-card.sp-navy{background:linear-gradient(150deg,#1e3a5f,#101f36)}
+.sponsored-card.sp-purple{background:linear-gradient(150deg,#6b3fa0,#3f2264)}
+.sponsored-card .sp-tag{font-size:7px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;background:rgba(0,0,0,.28);color:#fff;padding:2px 6px;border-radius:5px;display:inline-block;margin-bottom:6px;align-self:flex-start}
+.sponsored-card .sp-ic{position:absolute;right:6px;bottom:6px;width:38px;height:38px;opacity:.5}
+.sponsored-card .sp-ic svg{width:100%;height:100%;stroke:#fff;fill:none;stroke-width:1.5}
+.sponsored-card .sp-brand{font-size:9.5px;font-weight:700;color:rgba(255,255,255,.85);margin-bottom:2px}
+.sponsored-card .sp-headline{font-size:12px;font-weight:800;line-height:1.2;margin-bottom:2px;position:relative;z-index:1}
+.sponsored-card .sp-code{font-size:8px;color:rgba(255,255,255,.7);margin-top:4px}
+.sponsored-card .sp-join{
+  margin-top:6px;align-self:flex-start;background:#fff;color:#3f2264;border:none;
+  border-radius:var(--pill);padding:5px 11px;font-size:9.5px;font-weight:800;
+  font-family:'Montserrat',sans-serif;cursor:pointer;position:relative;z-index:1;
+}
 .offer-timer-pill{
   position:absolute;top:8px;right:8px;
   background:rgba(0,0,0,.72);border-radius:6px;
@@ -240,6 +350,35 @@ body{
 .prods-title{font-size:14px;font-weight:800;letter-spacing:-.02em;color:var(--tx)}
 .prods-cnt{font-size:11px;color:var(--tx3);font-weight:600}
 .prods-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 16px 100px;background:var(--bg)}
+/* Promo/offer card interleaved into the product grid — surfaces an
+   existing deal-tagged product with more prominence than the plain grid. */
+.promo-grid-card{
+  grid-column:span 2;display:flex;align-items:center;gap:12px;
+  background:linear-gradient(90deg,var(--GD),var(--G));border-radius:14px;
+  padding:12px;cursor:pointer;overflow:hidden;position:relative;
+}
+.promo-grid-card .pg-img{width:64px;height:64px;border-radius:10px;object-fit:cover;flex-shrink:0;background:#fff}
+.promo-grid-card .pg-body{flex:1;min-width:0}
+.promo-grid-card .pg-tag{font-size:8.5px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:rgba(255,255,255,.75);margin-bottom:2px}
+.promo-grid-card .pg-name{font-size:12.5px;font-weight:800;color:#fff;line-height:1.25;margin-bottom:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.promo-grid-card .pg-price{font-size:11.5px;color:rgba(255,255,255,.9);font-weight:600}
+.promo-grid-card .pg-price s{color:rgba(255,255,255,.55);margin-left:5px;font-weight:400}
+.promo-grid-card .pg-cta{
+  flex-shrink:0;background:#fff;color:var(--GD);border:none;border-radius:var(--pill);
+  padding:7px 13px;font-size:11px;font-weight:800;font-family:'Montserrat',sans-serif;cursor:pointer;
+}
+/* Ad/monetization banner — placeholder slot below the hero stats.
+   Swap the image/link/copy for a real ad or house-promo campaign. */
+.promo-banner{
+  margin:0 16px 16px;border-radius:14px;overflow:hidden;cursor:pointer;
+  background:linear-gradient(90deg,#1a1a1a,#2b2b2b);border:1px solid var(--bdr);
+  display:flex;align-items:center;justify-content:space-between;padding:14px 16px;
+}
+.promo-banner .pb-txt-wrap{min-width:0}
+.promo-banner .pb-eyebrow{font-size:8.5px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:3px}
+.promo-banner .pb-title{font-size:13px;font-weight:800;color:#fff;margin-bottom:2px}
+.promo-banner .pb-sub{font-size:10.5px;color:rgba(255,255,255,.6)}
+.promo-banner .pb-cta{flex-shrink:0;margin-left:12px;background:var(--G);color:#fff;border:none;border-radius:var(--pill);padding:9px 16px;font-size:11px;font-weight:800;font-family:'Montserrat',sans-serif;cursor:pointer;white-space:nowrap}
 .p-card{
   background:var(--card);border-radius:var(--r16);
   overflow:hidden;border:1px solid var(--bdr);position:relative;
@@ -713,6 +852,58 @@ body{
 .bot-ai-orb svg{width:22px;height:22px;fill:#fff;position:relative;z-index:1}
 .bot-ai-wrap span{font-size:9px;font-weight:800;color:var(--G);letter-spacing:.02em}
 
+
+
+/* ── ACCOUNT WISHLIST ── */
+.account-wishlist-list{display:none;border-top:1px solid var(--bdr);padding:8px}
+.account-wishlist-list.on{display:flex;flex-direction:column;gap:7px}
+.wl-empty{padding:12px 8px;text-align:center;color:var(--tx3);font-size:10px;font-weight:600}
+.wl-item{display:flex;align-items:center;gap:8px;padding:7px;border:1px solid var(--bdr);border-radius:10px;background:var(--card)}
+.wl-item img{width:42px;height:42px;border-radius:8px;object-fit:cover;background:var(--bg);flex-shrink:0}
+.wl-item-main{flex:1;min-width:0}
+.wl-item-name{font-size:10.5px;font-weight:800;color:var(--tx);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wl-item-price{font-size:9.5px;font-weight:700;color:var(--tx3);margin-top:2px}
+.wl-item-actions{display:flex;gap:4px;flex-shrink:0}
+.wl-item-actions button{border:none;border-radius:7px;padding:5px 7px;font:800 8.5px 'Montserrat',sans-serif;cursor:pointer}
+.wl-add{background:var(--G);color:#fff}
+.wl-remove{background:var(--bg);color:var(--tx2);border:1px solid var(--bdr)!important}
+
+/* ─── ACCOUNT MENU + PRIMARY MOBILE NAV ─── */
+.account-overlay{position:fixed;inset:0;background:rgba(0,0,0,.52);z-index:880;display:none;align-items:flex-end;justify-content:center}
+.account-overlay.on{display:flex}
+.account-sheet{width:100%;max-width:480px;max-height:88vh;overflow-y:auto;background:var(--card);color:var(--tx);border-radius:22px 22px 0 0;padding:8px 16px calc(14px + env(safe-area-inset-bottom,0px));box-shadow:0 -8px 36px rgba(0,0,0,.22);animation:accountUp .22s ease}
+@keyframes accountUp{from{transform:translateY(22px);opacity:.65}to{transform:translateY(0);opacity:1}}
+.account-pill{width:38px;height:4px;border-radius:9px;background:var(--bdr2);margin:2px auto 10px}
+.account-head{display:flex;align-items:center;gap:11px;padding:7px 0 14px;border-bottom:1px solid var(--bdr)}
+.account-avatar{width:48px;height:48px;border-radius:15px;background:linear-gradient(135deg,var(--GD),var(--G));color:#fff;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:900;flex-shrink:0;box-shadow:0 4px 14px rgba(61,187,106,.32)}
+.account-head-info{min-width:0;flex:1}
+.account-head-name{font-size:15px;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.account-head-phone{font-size:10.5px;color:var(--tx3);margin-top:2px}
+.account-close{width:34px;height:34px;border:1px solid var(--bdr);border-radius:50%;background:var(--bg);color:var(--tx2);cursor:pointer;font-size:17px}
+.account-section-title{font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--tx3);padding:15px 0 7px}
+.account-card{border:1px solid var(--bdr);border-radius:14px;background:var(--bg);overflow:hidden}
+.account-row{min-height:48px;display:flex;align-items:center;gap:11px;padding:9px 12px;border-bottom:1px solid var(--bdr)}
+.account-row:last-child{border-bottom:none}
+.account-row-ic{width:30px;height:30px;border-radius:9px;background:var(--GL);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.account-row-ic svg{width:15px;height:15px;stroke:var(--GD);fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.account-row-main{flex:1;min-width:0}
+.account-row-title{font-size:11.5px;font-weight:800;color:var(--tx)}
+.account-row-sub{font-size:9.5px;color:var(--tx3);margin-top:1px;line-height:1.35}
+.account-row-action{border:none;background:none;color:var(--G);font-size:10.5px;font-weight:800;font-family:'Montserrat',sans-serif;cursor:pointer;white-space:nowrap}
+.account-address{width:100%;min-height:68px;resize:none;outline:none;border:1px solid var(--bdr);border-radius:11px;background:var(--card);color:var(--tx);padding:10px;font:500 11px/1.4 'Montserrat',sans-serif}
+.account-address:focus{border-color:var(--G)}
+.account-save{width:100%;margin-top:8px;padding:9px;border:none;border-radius:10px;background:var(--G);color:#fff;font:800 11px 'Montserrat',sans-serif;cursor:pointer}
+.account-lang-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+.account-lang{border:1.5px solid var(--bdr);border-radius:11px;background:var(--bg);padding:9px 5px;color:var(--tx2);font:700 10.5px 'Montserrat',sans-serif;cursor:pointer}
+.account-lang.on{border-color:var(--G);background:var(--GL);color:var(--GD)}
+.account-signout{width:100%;margin-top:14px;padding:11px;border-radius:11px;border:1px solid rgba(229,57,53,.24);background:rgba(229,57,53,.07);color:var(--red);font:800 12px 'Montserrat',sans-serif;cursor:pointer}
+.account-signin{width:100%;margin-top:14px;padding:11px;border:none;border-radius:11px;background:var(--G);color:#fff;font:800 12px 'Montserrat',sans-serif;cursor:pointer}
+.bot-nav{height:var(--bot);padding-left:4px;padding-right:4px}
+.bot-tab{min-width:0}
+.bot-tab span{font-size:8.5px}
+.bot-ai-wrap{width:62px}
+@media(max-width:360px){.bot-nav{padding-left:1px;padding-right:1px}.bot-tab span{font-size:8px}.bot-tab svg{width:19px;height:19px}.bot-ai-wrap{width:58px}}
+
 /* TOAST */
 .toast-msg{position:fixed;bottom:calc(var(--bot)+12px);left:50%;transform:translateX(-50%) translateY(20px);background:var(--BK);color:#fff;padding:10px 20px;border-radius:var(--pill);font-size:12px;font-weight:700;z-index:600;opacity:0;transition:.3s;pointer-events:none;white-space:nowrap;max-width:90%;font-family:'Montserrat',sans-serif;letter-spacing:-.01em}
 .toast-msg.on{opacity:1;transform:translateX(-50%) translateY(0)}
@@ -1038,7 +1229,7 @@ body.rtl .msg-row.user{flex-direction:row}
    are preserved. This only changes the mobile layout.
    ========================================================= */
 @media (max-width:430px){
-  :root{--hdr:82px}
+  :root{--hdr:52px}
 
   .hdr{
     height:var(--hdr);
@@ -1445,35 +1636,36 @@ body.rtl .msg-row.user{flex-direction:row}
 }
 
 /* =========================================================
-   DEVX HEADER — FINAL MOBILE / COMPACT ACTION LAYOUT
+   DEVX HEADER — logo sits next to its text (not stacked),
+   normal compact single-row height, actions evenly spaced.
    UI/CSS ONLY. Existing HTML, JavaScript and features untouched.
    ========================================================= */
 
-/* Compact layout for the 480px app viewport */
 .hdr{
-  height:96px !important;
-  min-height:96px !important;
+  height:60px !important;
+  min-height:60px !important;
   width:100% !important;
   box-sizing:border-box !important;
   display:flex !important;
   align-items:center !important;
-  padding:6px 8px !important;
+  justify-content:space-between !important;
+  padding:0 10px !important;
   gap:8px !important;
   overflow:hidden !important;
 }
 
-/* Left stacked brand */
+/* Logo — icon and "DEVX / AI Concierge" text sit side by side */
 .hdr > .logo{
-  width:86px !important;
-  min-width:86px !important;
-  max-width:86px !important;
-  height:84px !important;
-  flex:0 0 86px !important;
+  width:auto !important;
+  min-width:0 !important;
+  max-width:none !important;
+  height:auto !important;
+  flex:0 1 auto !important;
   display:flex !important;
-  flex-direction:column !important;
-  align-items:flex-start !important;
-  justify-content:center !important;
-  gap:0 !important;
+  flex-direction:row !important;
+  align-items:center !important;
+  justify-content:flex-start !important;
+  gap:8px !important;
   margin:0 !important;
   padding:0 !important;
   overflow:visible !important;
@@ -1481,89 +1673,93 @@ body.rtl .msg-row.user{flex-direction:row}
 
 .hdr > .logo > img,
 .hdr > .logo > .logo-mark{
-  width:36px !important;
-  height:36px !important;
-  flex:0 0 36px !important;
+  width:26px !important;
+  height:26px !important;
+  flex:0 0 26px !important;
   object-fit:contain !important;
-  margin:0 0 3px 5px !important;
+  margin:0 !important;
 }
 
 .hdr > .logo > .logo-text{
-  width:86px !important;
+  width:auto !important;
+  min-width:0 !important;
   display:flex !important;
   flex-direction:column !important;
   align-items:flex-start !important;
+  justify-content:center !important;
   line-height:1 !important;
   margin:0 !important;
   padding:0 !important;
 }
 
 .hdr > .logo .logo-name{
-  font-size:19px !important;
-  line-height:19px !important;
+  font-size:14.5px !important;
+  line-height:14.5px !important;
   font-weight:900 !important;
-  letter-spacing:-.05em !important;
+  letter-spacing:-.03em !important;
   white-space:nowrap !important;
 }
 
 .hdr > .logo .logo-sub{
-  font-size:7px !important;
+  font-size:7.5px !important;
   line-height:9px !important;
-  font-weight:400 !important;
+  font-weight:600 !important;
   letter-spacing:.07em !important;
   margin-top:2px !important;
   white-space:nowrap !important;
 }
 
-/* Search */
+/* Search bar — sits between the logo and the action icons, takes up
+   whatever space is left. Opens the same search overlay as before. */
 .hdr > .hdr-search-btn{
-  flex:1 1 120px !important;
-  width:auto !important;
-  min-width:110px !important;
-  max-width:none !important;
-  height:42px !important;
-  margin:0 !important;
-  padding:0 11px !important;
-  gap:6px !important;
-  box-sizing:border-box !important;
-  align-self:center !important;
-  border-radius:999px !important;
-}
-
-.hdr > .hdr-search-btn svg{
-  width:16px !important;
-  height:16px !important;
-  flex:0 0 16px !important;
-}
-
-.hdr > .hdr-search-btn span{
+  flex:1 1 auto !important;
   min-width:0 !important;
-  font-size:10px !important;
-  line-height:1.1 !important;
+  height:38px !important;
+  display:flex !important;
+  align-items:center !important;
+  gap:6px !important;
+  background:rgba(255,255,255,.04) !important;
+  border:1px solid var(--G) !important;
+  box-shadow:0 0 0 1px rgba(61,187,106,.25),0 0 10px rgba(61,187,106,.35) !important;
+  border-radius:var(--pill) !important;
+  padding:0 5px 0 11px !important;
+  margin:0 !important;
+  cursor:pointer !important;
   overflow:hidden !important;
-  white-space:nowrap !important;
-  text-overflow:ellipsis !important;
 }
+.hdr > .hdr-search-btn svg{width:15px !important;height:15px !important;stroke:var(--hst) !important;fill:none !important;stroke-width:2 !important;flex:0 0 15px !important}
+.hdr > .hdr-search-btn span{
+  flex:1 1 auto !important;min-width:0 !important;
+  font-size:11px !important;color:var(--hst) !important;
+  font-family:'Montserrat',sans-serif !important;font-weight:400 !important;
+  white-space:nowrap !important;overflow:hidden !important;text-overflow:ellipsis !important;
+}
+.hdr-mic-btn{
+  flex:0 0 26px !important;width:26px !important;height:26px !important;
+  border-radius:50% !important;border:none !important;background:var(--G) !important;
+  display:flex !important;align-items:center !important;justify-content:center !important;
+  cursor:pointer !important;padding:0 !important;
+}
+.hdr-mic-btn svg{width:12px !important;height:12px !important;stroke:#fff !important;fill:none !important;stroke-width:2 !important}
 
-/* Five existing actions — smaller, evenly spaced and always visible */
+/* Actions — evenly spaced, always visible */
 .hdr > .hdr-actions{
   flex:0 0 auto !important;
   display:flex !important;
   align-items:center !important;
   justify-content:flex-end !important;
-  gap:5px !important;
+  gap:4px !important;
   margin:0 !important;
   padding:0 !important;
-  align-self:center !important;
 }
 
 .hdr > .hdr-actions .hdr-icon-btn,
 .hdr > .hdr-actions #langBtn{
-  width:34px !important;
-  height:34px !important;
-  min-width:34px !important;
-  min-height:34px !important;
-  flex:0 0 34px !important;
+  width:30px !important;
+  height:30px !important;
+  min-width:30px !important;
+  min-height:30px !important;
+  flex:0 0 30px !important;
   padding:0 !important;
   border-radius:50% !important;
   display:flex !important;
@@ -1572,23 +1768,13 @@ body.rtl .msg-row.user{flex-direction:row}
 }
 
 .hdr > .hdr-actions .hdr-icon-btn svg{
-  width:16px !important;
-  height:16px !important;
+  width:15px !important;
+  height:15px !important;
 }
 
 .hdr > .hdr-actions #langBtn{
-  font-size:10px !important;
+  font-size:9.5px !important;
   font-weight:800 !important;
-}
-
-.cart-badge{
-  min-width:17px !important;
-  height:17px !important;
-  top:-4px !important;
-  right:-4px !important;
-  padding:0 3px !important;
-  font-size:8px !important;
-  border-width:2px !important;
 }
 
 .notif-badge{
@@ -1609,64 +1795,34 @@ body.rtl .msg-row.user{flex-direction:row}
   border-width:1.5px !important;
 }
 
-/* Actual phone widths */
+/* Narrower phones — same side-by-side logo, just smaller */
 @media screen and (max-width:430px){
   .hdr{
-    height:92px !important;
-    min-height:92px !important;
-    padding:5px 6px !important;
-    gap:6px !important;
-  }
-
-  .hdr > .logo{
-    width:78px !important;
-    min-width:78px !important;
-    max-width:78px !important;
-    flex-basis:78px !important;
-    height:82px !important;
+    height:52px !important;
+    min-height:52px !important;
+    padding:0 10px !important;
+    gap:8px !important;
   }
 
   .hdr > .logo > img,
   .hdr > .logo > .logo-mark{
-    width:32px !important;
-    height:32px !important;
-    flex-basis:32px !important;
-    margin-left:3px !important;
-  }
-
-  .hdr > .logo > .logo-text{
-    width:78px !important;
+    width:27px !important;
+    height:27px !important;
+    flex-basis:27px !important;
   }
 
   .hdr > .logo .logo-name{
-    font-size:17px !important;
-    line-height:17px !important;
+    font-size:14.5px !important;
+    line-height:14.5px !important;
   }
 
   .hdr > .logo .logo-sub{
-    font-size:6.5px !important;
+    font-size:6.8px !important;
     line-height:8px !important;
   }
 
-  .hdr > .hdr-search-btn{
-    min-width:82px !important;
-    height:38px !important;
-    padding:0 9px !important;
-    gap:5px !important;
-  }
-
-  .hdr > .hdr-search-btn svg{
-    width:15px !important;
-    height:15px !important;
-    flex-basis:15px !important;
-  }
-
-  .hdr > .hdr-search-btn span{
-    font-size:8.5px !important;
-  }
-
   .hdr > .hdr-actions{
-    gap:3px !important;
+    gap:4px !important;
   }
 
   .hdr > .hdr-actions .hdr-icon-btn,
@@ -1686,54 +1842,45 @@ body.rtl .msg-row.user{flex-direction:row}
   .hdr > .hdr-actions #langBtn{
     font-size:9px !important;
   }
+
+  .hdr > .hdr-search-btn{
+    height:34px !important;
+    padding:0 4px 0 9px !important;
+    gap:5px !important;
+  }
+  .hdr > .hdr-search-btn svg{width:14px !important;height:14px !important;flex-basis:14px !important}
+  .hdr > .hdr-search-btn span{font-size:10px !important}
+  .hdr-mic-btn{width:23px !important;height:23px !important;flex-basis:23px !important}
+  .hdr-mic-btn svg{width:11px !important;height:11px !important}
 }
 
 @media screen and (max-width:360px){
   .hdr{
-    padding:4px !important;
-    gap:4px !important;
-  }
-
-  .hdr > .logo{
-    width:70px !important;
-    min-width:70px !important;
-    max-width:70px !important;
-    flex-basis:70px !important;
+    height:50px !important;
+    min-height:50px !important;
+    padding:0 8px !important;
+    gap:6px !important;
   }
 
   .hdr > .logo > img,
   .hdr > .logo > .logo-mark{
-    width:29px !important;
-    height:29px !important;
-    flex-basis:29px !important;
-  }
-
-  .hdr > .logo > .logo-text{
-    width:70px !important;
+    width:25px !important;
+    height:25px !important;
+    flex-basis:25px !important;
   }
 
   .hdr > .logo .logo-name{
-    font-size:15px !important;
-    line-height:15px !important;
+    font-size:13px !important;
+    line-height:13px !important;
   }
 
   .hdr > .logo .logo-sub{
-    font-size:5.8px !important;
+    font-size:6.2px !important;
     line-height:7px !important;
   }
 
-  .hdr > .hdr-search-btn{
-    min-width:62px !important;
-    height:35px !important;
-    padding:0 7px !important;
-  }
-
-  .hdr > .hdr-search-btn span{
-    font-size:7.5px !important;
-  }
-
   .hdr > .hdr-actions{
-    gap:2px !important;
+    gap:3px !important;
   }
 
   .hdr > .hdr-actions .hdr-icon-btn,
@@ -1749,6 +1896,16 @@ body.rtl .msg-row.user{flex-direction:row}
     width:13px !important;
     height:13px !important;
   }
+
+  .hdr > .hdr-search-btn{
+    height:32px !important;
+    padding:0 3px 0 8px !important;
+    gap:4px !important;
+  }
+  .hdr > .hdr-search-btn svg{width:13px !important;height:13px !important;flex-basis:13px !important}
+  .hdr > .hdr-search-btn span{font-size:9.5px !important}
+  .hdr-mic-btn{width:21px !important;height:21px !important;flex-basis:21px !important}
+  .hdr-mic-btn svg{width:10px !important;height:10px !important}
 }
 
 </style>
@@ -1770,13 +1927,19 @@ body.rtl .msg-row.user{flex-direction:row}
       <div class="logo-sub">AI Concierge</div>
     </div>
   </a>
+  <!-- Search bar — back in the header per updated request. Same
+       openSearch() overlay as before; the mic opens the AI concierge
+       chat, where voice input already lives. -->
   <div class="hdr-search-btn" onclick="openSearch()">
     <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-    <span id="hdrSearchTxt">Search products…</span>
+    <span id="hdrSearchTxt">Search products or ask anything…</span>
+    <button class="hdr-mic-btn" onclick="event.stopPropagation();goChat()" title="Ask with voice">
+      <svg viewBox="0 0 24 24"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2M12 19v4"/></svg>
+    </button>
   </div>
   <div class="hdr-actions">
     <button class="hdr-icon-btn" id="langBtn" onclick="cycleLang()" title="Language / भाषा / زبان" style="font-size:10.5px;font-weight:800;letter-spacing:.02em">EN</button>
-    <button class="hdr-icon-btn" onclick="toggleDark()" title="Toggle dark mode">
+    <button class="hdr-icon-btn" id="themeBtn" onclick="toggleDark()" title="Toggle dark / light mode">
       <svg id="themeIcon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
     </button>
     <div class="bell-wrap">
@@ -1785,12 +1948,10 @@ body.rtl .msg-row.user{flex-direction:row}
       </button>
       <span class="notif-badge" id="notifBadge"></span>
     </div>
-    <div class="cart-wrap">
-      <button class="hdr-icon-btn" onclick="openCart()">
-        <svg viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/></svg>
-      </button>
-      <span class="cart-badge" id="cartBadge"></span>
-    </div>
+    <!-- Cart icon removed from header per request — cart is still reachable
+         via the bottom nav "Cart" tab and the post-add-to-cart "View Cart"
+         prompts. cartBadge kept off-DOM but referenced defensively in
+         syncCartBadge() below so nothing else breaks. -->
     <!-- Account. Sign-in was previously reachable only from a small card
          further down the home screen, so shoppers never found it. -->
     <div class="acct-wrap">
@@ -1853,28 +2014,10 @@ body.rtl .msg-row.user{flex-direction:row}
       <div class="hero-tag"><span class="pulse-dot"></span><span id="heroTagTxt">Live AI-Powered Shopping</span></div>
       <h1 id="heroH1">Lower Prices.<br><em>Free Fast Delivery.</em></h1>
       <p class="hero-sub" id="heroSubTxt">Your retail AI concierge — shop by chat or voice in any language, pay less than delivery apps.</p>
-      <div class="usp-row">
-        <div class="usp">
-          <span class="usp-ic"><svg viewBox="0 0 24 24"><path d="M12 1v22"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></span>
-          <div><b id="usp1t">Lower prices</b><span id="usp1s">Less than the delivery apps</span></div>
-        </div>
-        <div class="usp">
-          <span class="usp-ic"><svg viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg></span>
-          <div><b id="usp2t">Free fast delivery</b><span id="usp2s">No minimum order</span></div>
-        </div>
-        <div class="usp">
-          <span class="usp-ic"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.4 8.4 0 01-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.4 8.4 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg></span>
-          <div><b id="usp3t">Chat or speak, any language</b><span id="usp3s">Malayalam, Arabic, Hindi &amp; more</span></div>
-        </div>
-      </div>
       <div class="hero-cta-row">
         <button class="hero-cta" onclick="goChat()">
           <svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
           <span id="heroCtaTxt">Ask AI Concierge</span>
-        </button>
-        <button class="dark-toggle" onclick="toggleDark()">
-          <svg id="dmIcon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
-          <span id="dmLabel">Dark</span>
         </button>
       </div>
       <div class="hero-stats">
@@ -1909,6 +2052,56 @@ body.rtl .msg-row.user{flex-direction:row}
     </div>
   </div>
 
+  <!-- EXPLORE SPECIAL / SPONSORED OFFERS — big carousel + sponsored slots -->
+  <div class="sec-hdr"><div class="sec-title">Explore Special Offers</div><div class="sec-link" id="exploreViewAll" onclick="document.getElementById('offersRow').scrollIntoView({behavior:'smooth',block:'center'})">View all</div></div>
+  <div class="explore-wrap" id="exploreWrap">
+    <div class="explore-carousel" id="exploreCarousel"></div>
+    <button class="explore-arrow prev" onclick="exploreScroll(-1)" aria-label="Previous">
+      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <button class="explore-arrow next" onclick="exploreScroll(1)" aria-label="Next">
+      <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+    </button>
+  </div>
+  <div class="explore-dots" id="exploreDots"></div>
+  <!-- Sponsored slots — example promo content with fictional partner
+       names (not real brands), so this shows what a live sponsored
+       placement would look like. Swap copy/links/codes for a real
+       campaign when that's ready. -->
+  <div class="sponsored-row">
+    <div class="sponsored-card sp-green" onclick="showToast('Example promo — not a live offer','green')">
+      <span class="sp-tag">Sponsored</span>
+      <div>
+        <div class="sp-brand">RideGo Users</div>
+        <div class="sp-headline">Get 20% off your first ride</div>
+        <div class="sp-code">Use code RIDE20</div>
+      </div>
+      <span class="sp-ic"><svg viewBox="0 0 24 24"><path d="M5 17h14M5 17a2 2 0 01-2-2v-3l2-5h10l3 5v3a2 2 0 01-2 2M5 17a2 2 0 002 2h0a2 2 0 002-2M15 17a2 2 0 002 2h0a2 2 0 002-2"/></svg></span>
+    </div>
+    <div class="sponsored-card sp-navy" onclick="showToast('Example promo — not a live offer','green')">
+      <span class="sp-tag">Sponsored</span>
+      <div>
+        <div class="sp-brand">DevX Rewards Card</div>
+        <div class="sp-headline">Up to 15% off all orders</div>
+        <div class="sp-code">Use code SAVE15</div>
+      </div>
+      <span class="sp-ic"><svg viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="13" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg></span>
+    </div>
+    <div class="sponsored-card sp-purple" onclick="showToast('Example promo — not a live offer','green')">
+      <span class="sp-tag">Sponsored</span>
+      <div>
+        <div class="sp-brand">DevX Plus</div>
+        <div class="sp-headline">Free delivery, unlimited orders</div>
+        <button class="sp-join">Join Now</button>
+      </div>
+      <span class="sp-ic"><svg viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="13" rx="1"/><path d="M3 8l9-5 9 5"/><path d="M12 3v18"/></svg></span>
+    </div>
+  </div>
+
+  <!-- POPULAR FOR YOU -->
+  <div class="sec-hdr" style="padding-top:14px"><div class="sec-title">Popular for You</div><div class="sec-link" onclick="document.getElementById('prodsGrid').scrollIntoView({behavior:'smooth',block:'start'})">View all</div></div>
+  <div class="popular-row" id="popularRow"></div>
+
   <!-- OFFERS -->
   <div class="sec-hdr"><div class="sec-title"><svg viewBox="0 0 24 24"><path d="M8.5 14.5A2.5 2.5 0 0011 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 11-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 002.5 2.5z"/></svg>Today's Deals</div><div class="sec-link" id="dealTimer">Loading…</div></div>
   <div class="offers-row" id="offersRow"></div>
@@ -1920,6 +2113,14 @@ body.rtl .msg-row.user{flex-direction:row}
   <!-- PRODUCTS -->
   <div class="prods-hdr"><div class="prods-title" id="prodsTitle">All Products</div><div class="prods-cnt" id="prodsCnt"></div></div>
   <div class="prods-grid" id="prodsGrid"></div>
+
+  <!-- TRUST BADGES -->
+  <div class="trust-row">
+    <div class="trust-item"><svg viewBox="0 0 24 24"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6l8-4z"/></svg><div class="ti-t">Best Prices</div><div class="ti-s">Everyday low prices</div></div>
+    <div class="trust-item"><svg viewBox="0 0 24 24"><rect x="1" y="7" width="14" height="10" rx="1"/><path d="M15 10h4l3 3v4h-7z"/><circle cx="6" cy="19" r="2"/><circle cx="18" cy="19" r="2"/></svg><div class="ti-t">Fast Delivery</div><div class="ti-s">At your doorstep</div></div>
+    <div class="trust-item"><svg viewBox="0 0 24 24"><rect x="3" y="10" width="18" height="11" rx="2"/><path d="M7 10V7a5 5 0 0110 0v3"/></svg><div class="ti-t">Secure Payments</div><div class="ti-s">100% secure</div></div>
+    <div class="trust-item"><svg viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg><div class="ti-t">Easy Returns</div><div class="ti-s">Hassle-free returns</div></div>
+  </div>
 
 </div>
 </div>
@@ -1983,25 +2184,104 @@ body.rtl .msg-row.user{flex-direction:row}
     <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
     <span>Home</span>
   </button>
-  <button class="bot-tab" onclick="openSearch()">
-    <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-    <span>Search</span>
+
+  <button class="bot-tab" id="tab-account" onclick="openAccountMenu()">
+    <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    <span>Account</span>
   </button>
+
   <div class="bot-ai-wrap">
     <button class="bot-ai-orb" onclick="goChat()">
       <svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
     </button>
     <span>AI</span>
   </div>
-  <button class="bot-tab" onclick="openCart()">
+
+  <button class="bot-tab" id="tab-cart" onclick="openCart()">
     <svg viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/></svg>
     <span>Cart</span>
+    <b class="bot-badge" id="bottomCartBadge"></b>
   </button>
-  <button class="bot-tab" onclick="openOrders()">
-    <svg viewBox="0 0 24 24"><path d="M21 8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
-    <span class="orders-badge" id="ordersBadge" aria-label="order count"></span><span class="orders-label">Orders</span>
+
+  <button class="bot-tab" id="tab-orders" onclick="openOrders()">
+    <svg viewBox="0 0 24 24"><path d="M6 3h12v18H6z"/><path d="M9 7h6M9 11h6M9 15h4"/></svg>
+    <span>Orders</span>
+    <b class="bot-badge" id="bottomOrdersBadge"></b>
   </button>
 </nav>
+
+<!-- ACCOUNT MENU -->
+<div class="account-overlay" id="accountOverlay" onclick="if(event.target===this)closeAccount()">
+  <div class="account-sheet" role="dialog" aria-modal="true" aria-label="Account">
+    <div class="account-pill"></div>
+    <div class="account-head">
+      <div class="account-avatar" id="accountAvatar">D</div>
+      <div class="account-head-info">
+        <div class="account-head-name" id="accountHeadName">Guest</div>
+        <div class="account-head-phone" id="accountHeadPhone">Sign in to manage your account</div>
+      </div>
+      <button class="account-close" type="button" onclick="closeAccount()">×</button>
+    </div>
+
+    <div class="account-section-title">Profile details</div>
+    <div class="account-card">
+      <div class="account-row">
+        <div class="account-row-ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="7" r="4"/><path d="M4 21c.7-4 3.3-6 8-6s7.3 2 8 6"/></svg></div>
+        <div class="account-row-main"><div class="account-row-title" id="accountProfileName">Guest</div><div class="account-row-sub">Profile name</div></div>
+        <button class="account-row-action" type="button" onclick="closeAccount();openLoyalty()">Edit / Sign in</button>
+      </div>
+      <div class="account-row">
+        <div class="account-row-ic"><svg viewBox="0 0 24 24"><path d="M5 4h4l2 5-2.5 1.7a15 15 0 006.8 6.8L17 15l5 2v4c-10 .8-19.7-8.6-17-17z"/></svg></div>
+        <div class="account-row-main"><div class="account-row-title" id="accountProfilePhone">Not signed in</div><div class="account-row-sub">Registered mobile number</div></div>
+      </div>
+    </div>
+
+    <div class="account-section-title">Address</div>
+    <div class="account-card" style="padding:11px">
+      <textarea class="account-address" id="accountAddress" placeholder="Add your delivery address…"></textarea>
+      <button class="account-save" type="button" onclick="saveAccountAddress()">Save address</button>
+    </div>
+
+    <div class="account-section-title">Carts & orders</div>
+    <div class="account-card">
+      <div class="account-row">
+        <div class="account-row-ic"><svg viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/></svg></div>
+        <div class="account-row-main"><div class="account-row-title">My Cart</div><div class="account-row-sub" id="accountCartSub">Your current shopping cart</div></div>
+        <button class="account-row-action" type="button" onclick="closeAccount();openCart()">Open</button>
+      </div>
+      <div class="account-row">
+        <div class="account-row-ic"><svg viewBox="0 0 24 24"><path d="M4 5h16v15H4z"/><path d="M8 3v4M16 3v4M4 10h16"/></svg></div>
+        <div class="account-row-main"><div class="account-row-title">My Orders</div><div class="account-row-sub">Track and view previous orders</div></div>
+        <button class="account-row-action" type="button" onclick="closeAccount();openOrders()">View</button>
+      </div>
+    </div>
+
+    <div class="account-section-title">Language</div>
+    <div class="account-lang-grid">
+      <button class="account-lang" id="accountLangEn" type="button" onclick="selectAccountLang('en')">English</button>
+      <button class="account-lang" id="accountLangHi" type="button" onclick="selectAccountLang('hi')">हिंदी</button>
+      <button class="account-lang" id="accountLangUr" type="button" onclick="selectAccountLang('ur')">اردو</button>
+    </div>
+
+    <div class="account-section-title">Wishlist</div>
+    <div class="account-card" id="accountWishlistCard">
+      <div class="account-row">
+        <div class="account-row-ic">
+          <svg viewBox="0 0 24 24"><path d="M20.8 8.7c0 5.6-8.8 11-8.8 11S3.2 14.3 3.2 8.7A4.7 4.7 0 0112 6.1a4.7 4.7 0 018.8 2.6z"/></svg>
+        </div>
+        <div class="account-row-main">
+          <div class="account-row-title">Wishlist</div>
+          <div class="account-row-sub" id="accountWishlistSub">Saved products for later</div>
+        </div>
+        <button class="account-row-action" type="button" onclick="toggleWishlistPanel()">View</button>
+      </div>
+      <div class="account-wishlist-list" id="accountWishlistList"></div>
+    </div>
+
+    <button class="account-signout" id="accountSignOutBtn" type="button" onclick="custSignOut();closeAccount()">Sign out</button>
+    <button class="account-signin" id="accountSignInBtn" type="button" onclick="closeAccount();openLoyalty()">Sign in</button>
+  </div>
+</div>
 
 <!-- CART SHEET -->
 <div class="drk-overlay" id="drkOverlay" onclick="closeSheets()"></div>
@@ -2265,7 +2545,7 @@ async function nxBoot(){
 }
 function nxOnRemote(){
   reloadCatalog();
-  renderOffers();renderCats();renderProds();syncNotifBadge();loadMyOffers();applyDirection();
+  renderOffers();renderExplore();renderPopular();renderCats();renderProds();syncNotifBadge();loadMyOffers();applyDirection();
   if(document.getElementById('notifPanel').classList.contains('on'))renderNotifs();
   if(document.getElementById('moSheet').classList.contains('on'))renderOrdersSheet();
   maybeToastNewNotif();
@@ -2328,15 +2608,14 @@ let curCat='all';
 let aiBusy=false;
 let lastOrder=null;
 let orderCount=parseInt(localStorage.getItem('devx-order-count')||'0');
+loadWishlist();
 
 /* ─── DARK MODE ─── */
 function applyTheme(dark){
   document.documentElement.setAttribute('data-theme',dark?'dark':'light');
   const sunIcon='<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>';
   const moonIcon='<path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>';
-  document.getElementById('themeIcon').innerHTML=dark?sunIcon:moonIcon;
-  document.getElementById('dmIcon').innerHTML=dark?sunIcon:moonIcon;
-  document.getElementById('dmLabel').textContent=dark?'Light':'Dark';
+  const ti=document.getElementById('themeIcon');if(ti)ti.innerHTML=dark?sunIcon:moonIcon;
   // Re-init canvas on theme change
   initCanvas();
 }
@@ -2684,7 +2963,7 @@ async function verifyOtp(){
 async function custSignOut(){
   try{await fetch('/api/customer/logout',{method:'POST',headers:custHeaders()})}catch(e){}
   localStorage.removeItem('devx-ctoken');localStorage.removeItem('devx-phone');
-  CTOKEN='';MY_PHONE='';closeOtp();loadMyOffers();showToast('Signed out','');
+  CTOKEN='';MY_PHONE='';closeOtp();loadMyOffers();updateAccountMenu();showToast('Signed out','');
 }
 async function loadMyOffers(){
   const wrap=document.getElementById('myOffersWrap'),link=document.getElementById('loyalLinkWrap');
@@ -2734,6 +3013,55 @@ function renderOffers(){
       </div>
     </div>`;
   }).join('');
+}
+
+/* ─── EXPLORE SPECIAL OFFERS — big carousel ─────────────────────────
+   Reuses the same real deal-tagged products as Today's Deals, just
+   shown one-at-a-time in a large swipeable card with dot pagination. */
+function renderExplore(){
+  const deals=DB.filter(p=>p.deal);
+  const wrap=document.getElementById('exploreWrap');
+  const dots=document.getElementById('exploreDots');
+  if(!deals.length){wrap.style.display='none';dots.style.display='none';return}
+  const car=document.getElementById('exploreCarousel');
+  car.innerHTML=deals.map(p=>{
+    const pct=p.offerPct!=null?p.offerPct:(p.was?Math.round((p.was-p.price)/p.was*100):0);
+    return `<div class="explore-slide" onclick="addOne(${p.id});showToast(${JSON.stringify(p.name+' added!')},'green')">
+      <img src="${esc(p.img||'')}" alt="${esc(p.name)}" onerror="this.src='https://images.unsplash.com/photo-1542838132-92c53300491e?w=600&h=300&fit=crop'">
+      <div class="offer-grad">
+        <span class="offer-badge ${pct>=20?'gold':pct>=10?'red':'green'}">${pct}% OFF</span>
+        <div class="offer-name">${esc(p.name)}</div>
+        <div class="offer-price-row">AED ${p.price} <s>AED ${p.was}</s></div>
+      </div>
+    </div>`;
+  }).join('');
+  dots.innerHTML=deals.map((_,i)=>`<span class="explore-dot ${i===0?'on':''}"></span>`).join('');
+  car.onscroll=()=>{
+    const i=Math.round(car.scrollLeft/car.clientWidth);
+    [...dots.children].forEach((d,di)=>d.classList.toggle('on',di===i));
+  };
+}
+function exploreScroll(dir){
+  const car=document.getElementById('exploreCarousel');
+  car.scrollBy({left:dir*car.clientWidth,behavior:'smooth'});
+}
+/* ─── POPULAR FOR YOU ────────────────────────────────────────────────
+   No real popularity/sales metric exists yet, so this surfaces a set
+   of real catalog products as a placeholder — swap for actual
+   best-seller data whenever that's tracked. */
+function renderPopular(){
+  const picks=DB.slice(0,10);
+  document.getElementById('popularRow').innerHTML=picks.map(p=>`
+    <div class="popular-card" onclick="addOne(${p.id});showToast(${JSON.stringify(p.name+' added!')},'green')">
+      <img src="${esc(p.img||'')}" alt="${esc(p.name)}" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1542838132-92c53300491e?w=200&h=200&fit=crop'">
+      <div class="pop-body">
+        <div class="pop-name">${esc(p.name)}</div>
+        <div class="pop-price">AED ${p.price}</div>
+        <button class="pop-add" onclick="event.stopPropagation();addOne(${p.id});showToast(${JSON.stringify(p.name+' added!')},'green')">
+          <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add
+        </button>
+      </div>
+    </div>`).join('');
 }
 
 /* ─── CATEGORIES ─── */
@@ -2792,6 +3120,35 @@ function pCardHTML(p){
     </div>
   </div>`;
 }
+/* ─── PROMO CARD INTERLEAVING ───────────────────────────────────────
+   Surfaces an existing deal-tagged product as a wide promo card every
+   PROMO_EVERY items in the product grid, so active offers stay visible
+   while scrolling instead of only living in the offers strip up top. */
+const PROMO_EVERY=6;
+function promoCardHTML(seed){
+  const deals=DB.filter(p=>p.deal);
+  if(!deals.length)return '';
+  const p=deals[seed%deals.length];
+  const pct=p.offerPct!=null?p.offerPct:(p.was?Math.round((p.was-p.price)/p.was*100):0);
+  return `<div class="promo-grid-card" onclick="addOne(${p.id});showToast(${JSON.stringify(p.name+' added!')},'green')">
+    <img class="pg-img" src="${esc(p.img||'')}" alt="${esc(p.name)}" onerror="this.src='https://images.unsplash.com/photo-1542838132-92c53300491e?w=128&h=128&fit=crop'">
+    <div class="pg-body">
+      <div class="pg-tag">${pct>0?pct+'% off · ':''}Today's offer</div>
+      <div class="pg-name">${esc(p.name)}</div>
+      <div class="pg-price">AED ${p.price}${p.was?`<s>AED ${p.was}</s>`:''}</div>
+    </div>
+    <button class="pg-cta" onclick="event.stopPropagation();addOne(${p.id});showToast(${JSON.stringify(p.name+' added!')},'green')">Add</button>
+  </div>`;
+}
+function withPromos(items,startIndex){
+  let html='';
+  items.forEach((p,i)=>{
+    const idx=startIndex+i;
+    html+=pCardHTML(p);
+    if((idx+1)%PROMO_EVERY===0)html+=promoCardHTML(idx);
+  });
+  return html;
+}
 /* ══ PAGED CATALOGUE ══════════════════════════════════════════════
    With a hypermarket catalogue (96k SKUs) the browser must never hold or
    render the whole list. We fetch 30 at a time from /api/products and
@@ -2814,7 +3171,7 @@ async function fetchPage(append){
     PAGE.total=d.total; PAGE.offset+=d.items.length;
     if(d.items.length<PAGE.limit||PAGE.offset>=d.total)PAGE.done=true;
     const grid=document.getElementById('prodsGrid');
-    const html=d.items.map(pCardHTML).join('');
+    const html=withPromos(d.items,PAGE.offset-d.items.length);
     if(append)grid.insertAdjacentHTML('beforeend',html); else grid.innerHTML=html||emptyGrid();
     document.getElementById('prodsCnt').textContent=d.total+' items';
     renderMoreBtn();
@@ -2846,9 +3203,16 @@ function renderProds(list){
   }
   const data=list||(curCat==='all'?DB:DB.filter(p=>p.cat===curCat));
   document.getElementById('prodsCnt').textContent=data.length+' items';
-  document.getElementById('prodsGrid').innerHTML=data.length?data.map(pCardHTML).join(''):emptyGrid();
+  document.getElementById('prodsGrid').innerHTML=data.length?withPromos(data,0):emptyGrid();
 }
-function togFav(id){favs[id]=!favs[id];renderProds()}
+function togFav(id){
+  const key=String(id);
+  favs[key]=!favs[key];
+  if(!favs[key])delete favs[key];
+  saveWishlist();
+  renderProds();
+  renderAccountWishlist();
+}
 
 /* ─── SEARCH ─── */
 function openSearch(){document.getElementById('searchOverlay').classList.add('on');setTimeout(()=>document.getElementById('srchInput').focus(),300)}
@@ -2934,11 +3298,17 @@ function lmConfirm(){
 }
 function syncCartBadge(){
   const n=cartCnt(),b=document.getElementById('cartBadge');
-  b.textContent=n||'';
-  n>0?b.classList.add('visible'):b.classList.remove('visible');
+  if(b){
+    b.textContent=n||'';
+    n>0?b.classList.add('visible'):b.classList.remove('visible');
+  }
+  if(document.getElementById('accountOverlay')?.classList.contains('on'))updateAccountMenu();
 }
 
-function openCart(){closeSheets(true);renderCartSheet();document.getElementById('drkOverlay').classList.add('on');document.getElementById('cartSheet').classList.add('on')}
+function openCart(){
+  closeSheets(true);renderCartSheet();document.getElementById('drkOverlay').classList.add('on');document.getElementById('cartSheet').classList.add('on');
+  document.querySelectorAll('.bot-tab').forEach(e=>e.classList.remove('on'));document.getElementById('tab-cart')?.classList.add('on');
+}
 function closeCart(){closeSheets()}
 function closeSheets(keepOverlay){
   if(!keepOverlay)document.getElementById('drkOverlay').classList.remove('on');
@@ -3271,7 +3641,7 @@ function nxRefresh(){
   if(v===nxVer)return;
   nxVer=v;
   reloadCatalog();
-  renderOffers();renderCats();renderProds();syncNotifBadge();loadMyOffers();applyDirection();
+  renderOffers();renderExplore();renderPopular();renderCats();renderProds();syncNotifBadge();loadMyOffers();applyDirection();
   if(document.getElementById('notifPanel').classList.contains('on'))renderNotifs();
   if(document.getElementById('moSheet').classList.contains('on'))renderOrdersSheet();
   maybeToastNewNotif();
@@ -3769,15 +4139,114 @@ function renderPassQR(elId,text){
 /* ─── VIEW SWITCHING ─── */
 function switchView(v){
   document.querySelectorAll('.view').forEach(e=>e.classList.remove('active'));
-  document.getElementById('view-'+v).classList.add('active');
+  const view=document.getElementById('view-'+v);
+  if(view)view.classList.add('active');
   document.querySelectorAll('.bot-tab').forEach(e=>e.classList.remove('on'));
-  const t=document.getElementById('tab-'+v);if(t)t.classList.add('on');
-  if(v==='chat')setTimeout(()=>document.getElementById('chatInput')?.focus(),300);
+  if(v==='home')document.getElementById('tab-home')?.classList.add('on');
+  if(v==='chat'){document.getElementById('tab-ai')?.classList.add('on');setTimeout(()=>document.getElementById('chatInput')?.focus(),300)}
+  if(v==='account')document.getElementById('tab-account')?.classList.add('on');
+  if(v==='cart')document.getElementById('tab-cart')?.classList.add('on');
+  if(v==='orders')document.getElementById('tab-orders')?.classList.add('on');
 }
 function goChat(){
   switchView('chat');
   document.getElementById('chatChips').style.display='flex';
 }
+/* ─── PRIMARY ACCOUNT NAV ─── */
+function accountAddressKey(){return 'devx-account-address'}
+function openCategoryNav(){
+  /* Keep legacy category entry available without exposing it as a primary nav tab. */
+  switchView('home');
+  setTimeout(()=>document.getElementById('catsBar')?.scrollIntoView({behavior:'smooth',block:'nearest'}),80);
+}
+function openAccountMenu(){
+  updateAccountMenu();
+  document.querySelectorAll('.bot-tab').forEach(e=>e.classList.remove('on'));
+  document.getElementById('tab-account')?.classList.add('on');
+  document.getElementById('accountOverlay')?.classList.add('on');
+}
+function closeAccount(){
+  document.getElementById('accountOverlay')?.classList.remove('on');
+  document.getElementById('tab-account')?.classList.remove('on');
+}
+function updateAccountMenu(){
+  const signed=!!CTOKEN,name=MY_NAME||'Guest',phone=MY_PHONE||'Not signed in';
+  const el=id=>document.getElementById(id);
+  if(el('accountAvatar'))el('accountAvatar').textContent=(name.trim()[0]||'D').toUpperCase();
+  if(el('accountHeadName'))el('accountHeadName').textContent=name;
+  if(el('accountHeadPhone'))el('accountHeadPhone').textContent=signed?phone:'Sign in to manage your account';
+  if(el('accountProfileName'))el('accountProfileName').textContent=name;
+  if(el('accountProfilePhone'))el('accountProfilePhone').textContent=signed?phone:'Not signed in';
+  if(el('accountAddress'))el('accountAddress').value=localStorage.getItem(accountAddressKey())||'';
+  const n=typeof cartCnt==='function'?cartCnt():0;
+  if(el('accountCartSub'))el('accountCartSub').textContent=n?`${n} item${n===1?'':'s'} in your current cart`:'Your current shopping cart is empty';
+  if(el('accountSignOutBtn'))el('accountSignOutBtn').style.display=signed?'block':'none';
+  if(el('accountSignInBtn'))el('accountSignInBtn').style.display=signed?'none':'block';
+  ['en','hi','ur'].forEach(k=>el('accountLang'+k.charAt(0).toUpperCase()+k.slice(1))?.classList.toggle('on',LANG===k));
+  renderAccountWishlist();
+}
+function saveAccountAddress(){
+  const el=document.getElementById('accountAddress');
+  const value=(el?.value||'').trim();
+  localStorage.setItem(accountAddressKey(),value);
+  showToast(value?'Address saved ✓':'Address cleared','green');
+}
+function selectAccountLang(code){
+  if(!['en','hi','ur'].includes(code))return;
+  LANG=code;localStorage.setItem('devx-lang',LANG);applyLang();updateAccountMenu();
+  showToast({en:'Language: English',hi:'भाषा: हिंदी',ur:'زبان: اردو'}[LANG],'green');
+}
+function wishlistKey(){return 'devx-wishlist'}
+function loadWishlist(){
+  try{
+    const raw=JSON.parse(localStorage.getItem(wishlistKey())||'[]');
+    favs={};
+    raw.forEach(id=>{favs[String(id)]=true;});
+  }catch(e){favs={}}
+}
+function saveWishlist(){
+  localStorage.setItem(wishlistKey(),JSON.stringify(Object.keys(favs).filter(id=>favs[id])));
+}
+function renderAccountWishlist(){
+  const list=document.getElementById('accountWishlistList');
+  const sub=document.getElementById('accountWishlistSub');
+  if(!list)return;
+  const ids=Object.keys(favs).filter(id=>favs[id]);
+  if(sub)sub.textContent=ids.length?`${ids.length} saved product${ids.length===1?'':'s'}`:'Saved products for later';
+  if(!ids.length){
+    list.innerHTML='<div class="wl-empty">Your wishlist is empty. Tap the ♡ on any product to save it here.</div>';
+    return;
+  }
+  list.innerHTML=ids.map(id=>{
+    const p=findProduct(id);
+    if(!p)return '';
+    return `<div class="wl-item">
+      <img src="${esc(p.img||'')}" alt="" onerror="this.style.display='none'">
+      <div class="wl-item-main">
+        <div class="wl-item-name">${esc(p.name)}</div>
+        <div class="wl-item-price">AED ${esc(p.price)}</div>
+      </div>
+      <div class="wl-item-actions">
+        <button class="wl-add" type="button" onclick="addOne(${Number(p.id)});showToast(${JSON.stringify(p.name+' added!')},'green')">Add</button>
+        <button class="wl-remove" type="button" onclick="removeFromWishlist(${Number(p.id)})">Remove</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+function toggleWishlistPanel(){
+  const list=document.getElementById('accountWishlistList');
+  if(!list)return;
+  list.classList.toggle('on');
+  if(list.classList.contains('on'))renderAccountWishlist();
+}
+function removeFromWishlist(id){
+  delete favs[String(id)];
+  saveWishlist();
+  renderProds();
+  renderAccountWishlist();
+}
+
+
 
 /* ─── AI ENGINE — NLU HELPERS ─── */
 const WORDNUM={one:1,two:2,three:3,four:4,five:5,six:6,seven:7,eight:8,nine:9,ten:10,fifteen:15,twenty:20,thirty:30,forty:40,fifty:50,sixty:60,seventy:70,eighty:80,ninety:90,hundred:100,couple:2};
@@ -4327,7 +4796,7 @@ function applyLang(){
   document.documentElement.lang=LANG;
   document.getElementById('langBtn').textContent=LANG_LBL[LANG];
   const navs=document.querySelectorAll('.bot-nav span');
-  ['home','search','ai','cart','orders'].forEach((k,i)=>{if(navs[i])navs[i].textContent=t[k]});
+  [t.home,'Account',t.ai,t.cart,'Orders'].forEach((label,i)=>{if(navs[i])navs[i].textContent=label});
   const st=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v};
   st('heroTagTxt',t.heroTag);
   const h1=document.getElementById('heroH1');if(h1)h1.innerHTML=t.hero;
@@ -4385,6 +4854,8 @@ window.poSubmit=async function(){const o=poOrder(postOrderAddition.orderId);if(!
   await nxBoot();
   initData();
   renderOffers();
+  renderExplore();
+  renderPopular();
   renderCats();
   renderProds();
   startTimer();

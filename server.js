@@ -52,9 +52,15 @@ const OPENAI_KEY = process.env.OPENAI_API_KEY;
 const groq = !isPlaceholder(GROQ_KEY) ? new Groq({ apiKey: GROQ_KEY, maxRetries: 0, timeout: 12000 }) : null;
 const openai = !isPlaceholder(OPENAI_KEY) ? new OpenAI({ apiKey: OPENAI_KEY, maxRetries: 0, timeout: 12000 }) : null;
 
-// Choose the active provider: Groq Llama 3.1 first, OpenAI as fallback.
+// Choose the active provider: Groq first, OpenAI as fallback.
+// openai/gpt-oss-20b is in .env — it works but emits <think> reasoning tokens.
+// We strip those in parseLLMJson. llama-3.1-8b-instant is the reliable free fallback.
+/* AI model fix: use a current Groq production model.
+   The deployed configuration was attempting llama-3.1-8b-instant
+   and returning model_not_found. */
+const GROQ_MODEL = 'openai/gpt-oss-20b';
 const LLM = groq
-  ? { client: groq, model: 'llama-3.1-8b-instant', name: 'Groq Llama 3.1' }
+  ? { client: groq, model: GROQ_MODEL, name: 'Groq ' + GROQ_MODEL }
   : openai
   ? { client: openai, model: 'gpt-4o-mini', name: 'OpenAI gpt-4o-mini' }
   : null;
@@ -255,27 +261,6 @@ async function message(phone, text) {
     else if (!r.delivered) console.log('[nexus] (not sent, no provider):', r.preview);
     return r;
   } catch (e) { console.error('[nexus] message error:', e.message); return { ok: false }; }
-}
-
-/* OTP-only SMS path. This keeps the existing order/notification messaging
-   driver untouched. Set OTP_SMS_DRIVER=textbelt for the free Textbelt
-   testing path; otherwise OTPs use the existing messaging driver. */
-async function otpMessage(phone, text) {
-  if (!phone) return { ok: false, delivered: false };
-  const driverName = String(process.env.OTP_SMS_DRIVER || 'mock').toLowerCase();
-  if (driverName === 'textbelt') {
-    try {
-      const driver = INTEG.msgDrivers && INTEG.msgDrivers.textbelt;
-      if (!driver) return { ok: false, delivered: false, error: 'Textbelt driver unavailable' };
-      const r = await driver.send({ to: phone, text });
-      if (!r.ok) console.warn('[nexus] OTP SMS failed:', r.error);
-      return r;
-    } catch (e) {
-      console.error('[nexus] OTP SMS error:', e.message);
-      return { ok: false, delivered: false, error: e.message };
-    }
-  }
-  return message(phone, text);
 }
 
 function notify(type, title, msg, cid, phone) {
@@ -501,75 +486,19 @@ setInterval(() => {
   }
 }, 1000 * 60 * 10).unref();
 
-
-/* ── AI query understanding helpers ─────────────────────────
-   AI-processing only. No other feature/API logic is changed.
-   ---------------------------------------------------------- */
-const QUERY_ALIASES = {
-  'soft drink':'soda','soft drinks':'soda','cold drink':'drink','cold drinks':'drink',
-  'fizzy drink':'soda','fizzy drinks':'soda','sweets':'dessert','sweet':'dessert',
-  'veggies':'vegetables','vegetable':'vegetables','fruits':'fruit',
-  'prawns':'shrimp','yoghurt':'yogurt','toilet paper':'tissue',
-  'washing powder':'detergent','washing liquid':'detergent'
-};
-function expandShoppingQuery(text) {
-  let q=String(text||'').toLowerCase();
-  for (const [from,to] of Object.entries(QUERY_ALIASES)) {
-    const escaped=from.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
-    q=q.replace(new RegExp('\\b'+escaped+'\\b','gi'),to);
-  }
-  return q.replace(/\b(please|pls|kindly|can you|could you|would you|i want|i need|i'd like|i would like|show me|give me|help me find|looking for)\b/gi,' ')
-          .replace(/\s+/g,' ').trim();
-}
-function extractShoppingContext(text) {
-  const q=String(text||'').toLowerCase();
-  const out={people:null,quantity:null,budget:parseBudget(q),maxPrice:null,meal:null,dietary:[]};
-  let m=q.match(/\b(?:for|serves?|family of)\s+(\d{1,2})\s*(?:people|persons|pax)?\b/);
-  if(m) out.people=parseInt(m[1],10);
-  if(!out.people){m=q.match(/\b(\d{1,2})\s*(?:people|persons|pax)\b/);if(m) out.people=parseInt(m[1],10);}
-  m=q.match(/\b(\d{1,3})\s*(?:items?|packs?|pieces?|bottles?|cans?|boxes?|loaves?)\b/);
-  if(m) out.quantity=parseInt(m[1],10);
-  m=q.match(/\b(?:under|below|less than|up to|max(?:imum)?|within)\s*(?:aed|dhs?|dirhams?)?\s*(\d+(?:\.\d+)?)\b/);
-  if(m) out.maxPrice=parseFloat(m[1]);
-  const meal=q.match(/\b(breakfast|brunch|lunch|dinner|snacks?|dessert|iftar|suhoor)\b/);
-  if(meal) out.meal=meal[1];
-  for(const d of ['healthy','high protein','low calorie','low fat','low sugar','sugar free','keto','vegan','vegetarian','gluten free'])
-    if(q.includes(d)) out.dietary.push(d);
-  return out;
-}
-function mergeCandidates(a,b,limit=80){
-  const seen=new Set(),out=[];
-  for(const list of [a||[],b||[]]) for(const p of list){
-    const id=String(p.id); if(seen.has(id)) continue;
-    seen.add(id); out.push(p); if(out.length>=limit) return out;
-  }
-  return out;
-}
-function relevantGroupMenu(candidates,groups,intent,prompt){
-  const keys=[],seen=new Set();
-  for(const p of (candidates||[])){
-    const g=p.group||('solo-'+p.id); if(!groups.has(g)||seen.has(g)) continue;
-    seen.add(g); keys.push(g); if(keys.length>=80) break;
-  }
-  if(intent==='recipe_assistance'||/\b(cart|meal|dinner|lunch|breakfast|ingredients?)\b/i.test(prompt)){
-    const pantry=['basmati-rice','whole-chicken','chicken-breast','onions','tomatoes','potatoes','carrots',
-      'garlic','ginger','lentils-red','toor-dal','plain-yogurt','eggs','milk','sunflower-oil',
-      'flour-wheat','black-pepper','turmeric','chili-powder','ground-coriander','salt','cinnamon','cardamom'];
-    for(const g of pantry){if(keys.length>=110) break;if(groups.has(g)&&!seen.has(g)){seen.add(g);keys.push(g);}}
-  }
-  return keys.map(g=>{const best=bestValue(groups.get(g)||[]);return best?`${g}=AED${best.price}`:g;}).join(', ');
-}
-
 /* ── 2. Intent Classification ── */
 function classifyIntent(q) {
   const t = ' ' + q.toLowerCase() + ' ';
+  /* Questions about HOW THE SERVICE WORKS — weighing, pricing, payment,
+     delivery, order history. These are not product searches; answering them
+     with "we don't stock that" was a real complaint from testing. */
   if (/(how (do|does|will|can|is)|where (do|can|will)|what happens|will i|can i (see|check|pay|change|cancel|track)|weighing|weighed|actual weight|final price|price change|reflect|previous order|order history|track (my )?order|payment option|pay (later|online|cash|by card)|refund|cancel my order|delivery time|when will)/.test(t))
     return 'app_help';
-  if (/(nutrition|nutrient|nutritional|nutrition facts|calorie|kcal|carb(?:ohydrate)?|fat content|how much (?:protein|fat|carb)|protein (?:content|per)|macros|energy value)/.test(t))
+  if (/(protein|nutrition|nutrient|nutritional|calorie|kcal|carb|carbohydrate|fat content|how much fat|energy value|macros)/.test(t))
     return 'nutrition';
   if (/(recipe|cook|dish|ingredient|make .*(for|dinner|lunch)|biryani|briyani|mandi|kabsa|machboos|curry|pasta|salad|bake|grill|bbq|barbecue|iftar|suhoor)/.test(t))
     return 'recipe_assistance';
-  if (/(healthy|diet|low[\s-]?cal|low[\s-]?fat|high[\s-]?protein|protein[- ]rich|fitness|gym|nutriti|weight|keto|vegan|vegetarian|clean eating|sugar[\s-]?free|gluten[- ]?free)/.test(t))
+  if (/(healthy|diet|low[\s-]?cal|low[\s-]?fat|protein|fitness|gym|nutriti|weight|keto|vegan|clean eating|sugar[\s-]?free)/.test(t))
     return 'healthy_recommendation';
   if (/(where|which aisle|which shelf|find the|locate|location of|navigat|how do i get to)/.test(t))
     return 'navigation';
@@ -824,12 +753,20 @@ function storeMenu(groups, withPrice) {
 /* Tolerant JSON extraction from an LLM response. */
 function parseLLMJson(text) {
   if (!text) return null;
-  let s = text.trim().replace(/^```(?:json)?/i, '').replace(/```$/, '').trim();
+  // Strip <think>...</think> reasoning tokens emitted by gpt-oss and deepseek models
+  let s = text.replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
+  // Strip markdown fences
+  s = s.replace(/^```(?:json)?\s*/i, '').replace(/\s*```\s*$/, '').trim();
+  // Direct parse
   try { return JSON.parse(s); } catch (_) {}
+  // Extract first { ... } block (handles preamble text)
   const a = s.indexOf('{'), b = s.lastIndexOf('}');
   if (a !== -1 && b !== -1 && b > a) {
     try { return JSON.parse(s.slice(a, b + 1)); } catch (_) {}
   }
+  // Last resort: find any block containing "reply" key
+  const m = s.match(/\{[\s\S]*?"reply"[\s\S]*?\}/);
+  if (m) { try { return JSON.parse(m[0]); } catch (_) {} }
   return null;
 }
 
@@ -927,20 +864,53 @@ app.post('/api/concierge', GUARD.limit('concierge'), GUARD.sanePrompt, async (re
   const pendingQuestion = PENDING_CLARIFY.get(sessionId) || '';
   const answeringClarify = !!pendingQuestion;
 
+  // Multilingual dish/ingredient synonyms → translate to English for keyword search
+  // This ensures Hindi/Arabic requests work even when LLM fails
+  // Common dish → core ingredients map for when LLM fails
+  // Keys must match store product names/groups
+  const DISH_INGREDIENTS_MAP = {
+    sandwich: ['bread', 'cheese', 'tomatoes', 'butter', 'lettuce'],
+    biryani:  ['basmati-rice', 'whole-chicken', 'onions', 'tomatoes', 'yogurt'],
+    pizza:    ['cheese', 'tomatoes', 'flour', 'butter'],
+    pasta:    ['pasta', 'tomatoes', 'cheese', 'onions'],
+    salad:    ['tomatoes', 'lettuce', 'onions', 'cucumber'],
+    omelette: ['eggs', 'onions', 'tomatoes', 'butter'],
+    curry:    ['whole-chicken', 'onions', 'tomatoes', 'yogurt'],
+  };
+
+  const MULTILINGUAL_MAP = [
+    // Hindi
+    [/बिरयानी|biryani/i, 'biryani rice chicken'],
+    [/सैंडविच|sandwich/i, 'bread cheese tomato'],
+    [/पिज़्ज़ा|pizza/i, 'pizza cheese tomato'],
+    [/चाय|chai/i, 'tea milk'],
+    [/दूध/i, 'milk'],
+    [/चावल/i, 'rice'],
+    [/आटा/i, 'flour'],
+    [/दही/i, 'yogurt'],
+    [/प्याज/i, 'onions'],
+    [/टमाटर/i, 'tomatoes'],
+    // Arabic
+    [/برياني/i, 'biryani rice chicken'],
+    [/ساندويش/i, 'bread cheese tomato'],
+    [/بيتزا/i, 'pizza cheese'],
+    [/خبز/i, 'bread'],
+    [/أرز/i, 'rice'],
+    [/حليب/i, 'milk'],
+  ];
+  let searchPrompt = prompt;
+  for (const [re, en] of MULTILINGUAL_MAP) {
+    if (re.test(searchPrompt)) { searchPrompt = en; break; }
+  }
+
   // Keyword candidates — used to prioritise and as a no-LLM fallback plan.
   /* RAG retrieval: pull only the relevant products from the index instead of
      scanning the whole catalogue. Keeps AI latency flat from 1k to 100k SKUs.
      Falls back to the original linear search for tiny catalogues. */
   const ix = indexOf(branchOf(req));
-  const expandedQuery = expandShoppingQuery(prompt);
-  const primaryCandidates = ix.size > 2000
-    ? ix.candidatesFor(expandedQuery || prompt, 80)
-    : searchProducts(expandedQuery || prompt, catalog);
-  const secondaryCandidates = (expandedQuery && expandedQuery !== prompt.toLowerCase())
-    ? searchProducts(expandedQuery, catalog)
-    : [];
-  const candidates = mergeCandidates(primaryCandidates, secondaryCandidates, 80);
-  const shoppingContext = extractShoppingContext(prompt);
+  const candidates = ix.size > 2000
+    ? ix.candidatesFor(searchPrompt, 60)
+    : searchProducts(searchPrompt, catalog);
   /* Budget: use the amount in this message, otherwise keep the one the shopper
      already gave this session so follow-ups ("i asked for 154", "add more",
      "anything cheaper") still build to the same budget. Cleared on a brand-new
@@ -1008,7 +978,8 @@ app.post('/api/concierge', GUARD.limit('concierge'), GUARD.sanePrompt, async (re
 
   // Deterministic clarify for a bare ambiguous dish (English only) — guarantees
   // "biryani -> which type?" and avoids a wasted LLM call.
-  const amb = (!answeringClarify && !addOn && replyLang === 'English') ? ambiguousDish(prompt) : null;
+  // Don't run ambiguousDish on single-word answers (they're answering the clarify) or non-English
+  const amb = (!answeringClarify && !addOn && replyLang === 'English' && prompt.trim().split(/\s+/).length > 1) ? ambiguousDish(prompt) : null;
   if (amb) {
     reply = `Sure — let's make ${amb.dish}!`;
     clarify = `Which ${amb.dish} would you like to make?`;
@@ -1024,17 +995,26 @@ app.post('/api/concierge', GUARD.limit('concierge'), GUARD.sanePrompt, async (re
   }
 
   if (LLM && catalog.length) {
-    const relevantMenu = relevantGroupMenu(candidates, groups, intent, prompt);
-    const menuForLLM = relevantMenu || storeMenu(groups, !!budget);
     const systemPrompt =
-`You are "DevX AI Concierge", a friendly grocery assistant for a UAE supermarket.
+`You are "DevX AI Concierge" — a smart, friendly grocery assistant for a UAE supermarket. You think like a knowledgeable friend at the store: you give real, useful answers with context, tips, and guidance — not just a product list. Always make the shopper feel helped, informed, and confident in what they're buying.
 
 REPLY LANGUAGE: Write reply, clarify, options, follow_up, suggestions and any recipe text ONLY in ${replyLang}. Ignore the language of earlier messages — match THIS message.
 You are FULLY MULTILINGUAL — you speak EVERY language (Malayalam, Arabic, Hindi, Urdu, Tamil, Bengali, Japanese, Chinese, French, Spanish, and any other). NEVER say you can only speak English, never refuse a language, and NEVER mention "rules" — always answer in ${replyLang}.
 EVERY field must be in ${replyLang}, including "suggestions" and "options" (translate the chip text too — never leave them in English when ${replyLang} is not English).${langSwitch ? ` The shopper just asked you to switch to ${replyLang}: confirm warmly IN ${replyLang} and continue helping in ${replyLang}. Set items:[] and suggestions:[] unless they also asked for a product.` : ''}
 
-Return STRICT JSON only (no markdown), exact shape:
-{"reply":"1-2 sentences","in_scope":true,"clarify":"","options":[],"recipe":null,"items":[{"group":"basmati-rice","qty":1}],"follow_up":"","suggestions":["Add cold drinks"]}
+CRITICAL: Your ENTIRE response must be a single valid JSON object. No markdown, no backticks, no explanation before or after. Start your response with { and end with }. Exact shape:
+{"reply":"2-4 sentences","in_scope":true,"clarify":"","options":[],"recipe":null,"items":[{"group":"basmati-rice","qty":1}],"follow_up":"","suggestions":["Add cold drinks"]}
+
+HOW TO WRITE THE "reply" FIELD — read this carefully, it defines the quality of your response:
+• NEVER start with "Here are the matches" or "I found X products" — that is a search engine, not an assistant.
+• For INGREDIENT / DISH requests: Name what you've added and WHY those items. E.g. "I've added everything you need for chicken biryani — basmati rice, whole chicken, onions, tomatoes, and key spices like cardamom and bay leaves. These are the essentials; feel free to swap brands from the options shown."
+• For HEALTHY FOOD requests: Explain WHY these are healthy. E.g. "Great choice! I've picked high-protein, low-fat options — Greek yogurt, oats, eggs, and fresh vegetables. These give you sustained energy without the sugar spikes."
+• For BUDGET requests: Tell the shopper how the cart was built. E.g. "I've built a balanced cart within your AED 150 budget — prioritising staples like rice, lentils and vegetables to maximise value, with AED 14 left for extras."
+• For PRODUCT QUESTIONS ("do you have X", "is X available"): Directly confirm yes/no and describe what's available. E.g. "Yes, we carry Dishwashing Liquid in several brands — Fairy, Pril, and our Nexus Value option which is the best price per ml."
+• For VAGUE requests ("something healthy", "snacks"): Ask ONE smart clarifying follow-up in follow_up, e.g. "Are you looking for snacks to munch during the day, or something to serve guests?" — and still show some relevant products.
+• For GENERAL QUESTIONS (about the store, app, delivery): Answer warmly and helpfully in 2-3 sentences.
+• Always end reply with a brief, relevant tip or observation when you can — e.g. freshness tip, storage tip, serving idea, or a heads-up about a deal.
+• Tone: warm, concise, confident — like a smart friend, not a chatbot.
 
 RULES:
 - "group" MUST be one of the exact comma-separated keys in STORE MENU below (e.g. basmati-rice, whole-chicken, onions). Never invent a key. Pick ONE key per need — the app shows the brands/sizes.
@@ -1044,14 +1024,12 @@ RULES:
 - CLARIFY is ONLY for a missing DISH variant (e.g. bare "biryani" -> Chicken/Mutton/Prawn/Vegetable; bare "cake" -> flavor). NEVER clarify about brand, size, quantity, or which type of an ingredient (e.g. "which rice?") — the app auto-picks the best value and shows the other options. If the dish/product is already specified ("chicken biryani", "basmati rice"), DO NOT clarify — return items. Ask AT MOST ONCE.${answeringClarify ? ' The current message ANSWERS your previous question — return items now, clarify:"".' : ''}
 - items = the shopper's CART: the product groups with sensible quantities. When the shopper NAMES or ASKS FOR a product ("AA batteries", "do you have naan", "I need milk"), you MUST put that product's group in items right away — never just describe it or ask "would you like to add it" while leaving items empty. For a DISH (in ANY language, e.g. biryani, sambar, curry, pasta), include EVERY core ingredient we DO stock and pick ONE protein — even if a few traditional ingredients aren't in the menu, still add all the ones we have (e.g. sambar -> toor-dal, onions, tomatoes, carrots, tamarind if present, turmeric, chili-powder, ground-coriander, mustard/curry-leaf if present). NEVER reply "we have the ingredients" with an empty items list. Do NOT add several cuts of the same meat.
 - "suggestions" and "options" must be short HUMAN-READABLE phrases (e.g. "AAA batteries", "Add cold drinks"), NEVER raw group-keys like "aaa-battery".
-- Make every reply feel like a helpful shopping assistant: acknowledge the request, state the useful result, and keep it to 1-3 short sentences.
-- Avoid robotic phrases such as "matches from our inventory", "as per your request", "I have identified", or "the following products".
-- Briefly explain why the recommendation fits when useful. If the request is actionable, offer the next useful action instead of a generic question.
-- Ask a clarifying question only when a missing detail is genuinely necessary; never ask for information already present in SHOPPING CONTEXT.
 - ONLY return items the shopper actually asked for. If they ask a QUESTION (about languages, the store, your abilities, "what can you do"), or make small talk, return items:[]. Never pad the list with staples like rice/chicken the shopper never mentioned.
 - recipe: fill title + 4-8 steps ONLY if the shopper explicitly asks for a recipe / how to cook / steps. For "cart", "ingredients", "what do I need", "build a cart", "suggest a cart" -> recipe MUST be null (just items).
 - ADD-ON ("add", "also", "more"): return ONLY the new groups, never repeat earlier items.${addOn ? ' This IS an add-on — only new items, clarify:"".' : ''}
-- Never mention prices (the app shows them). Keep follow_up short and proactive.
+- Never mention prices (the app shows them).
+- follow_up: For cart/ingredient results — write ONE short proactive question to deepen engagement, e.g. "Want me to add a sauce or side dish to go with this?" or "Shall I suggest a dessert to round off the meal?" or "Need cooking oil or spices to go with this?". For questions or out-of-scope — leave follow_up as "". Never repeat what you said in reply.
+- suggestions: make these genuinely useful next steps the shopper would actually want — not generic. E.g. after a biryani request: ["Add raita ingredients", "Add cold drinks", "View recipe steps"]. After a healthy request: ["High-protein snacks", "Low-carb options", "Fresh fruits"].
 
 ${budget ? `\nBUDGET MODE — the shopper has AED ${budget} to spend:
 - Build a FULL cart that uses most of the budget: aim for AED ${Math.round(budget*0.85)}-${budget}, and NEVER exceed AED ${budget}.
@@ -1068,15 +1046,19 @@ HOW THIS APP WORKS — answer from these facts, do not invent:
 • Past orders, live status and the weighed prices are all in "My Orders" (the Orders tab at the bottom).
 • You can shop by typing or by voice, in any language.
 ` : ''}
-SHOPPING CONTEXT:
-${JSON.stringify(shoppingContext)}
-RELEVANT STORE OPTIONS${budget ? ' (key=AEDprice)' : ''}:
-${menuForLLM}${nutriFacts}`;
+STORE MENU${budget ? ' (key=AEDprice)' : ''}:
+${storeMenu(groups, !!budget)}${nutriFacts}`;
+
+    // If answering a clarify question, give the model full context so a short
+    // reply like "Margherita" is understood as the answer, not a new query.
+    const userContent = answeringClarify
+      ? 'My answer to your question "' + pendingQuestion + '" is: ' + prompt + '. Now return the cart items. JSON only.'
+      : prompt + '\n\nRespond with a single JSON object only, starting with {';
 
     const messages = [
       { role: 'system', content: systemPrompt },
-      ...historyForLLM.slice(-4),   // last 2 exchanges only → smaller/faster request
-      { role: 'user', content: prompt }
+      ...historyForLLM.slice(-4),
+      { role: 'user', content: userContent }
     ];
 
     try {
@@ -1084,16 +1066,19 @@ ${menuForLLM}${nutriFacts}`;
       // 429 becomes a slightly-slower success instead of the "I'm busy" message.
       // Also fall back to a second Groq model if the primary stays limited.
       let completion, attempt = 0;
-      const MODELS = [LLM.model, 'llama-3.1-8b-instant', 'llama-3.3-70b-versatile'];
+      const MODELS = ['openai/gpt-oss-20b', 'openai/gpt-oss-120b'];
       while (true) {
         try {
-          completion = await LLM.client.chat.completions.create({
-            model: MODELS[Math.min(attempt, MODELS.length - 1)],
+          const callModel = MODELS[Math.min(attempt, MODELS.length - 1)];
+          const callParams = {
+            model: callModel,
             messages,
             temperature: 0.3,
-            max_tokens: 650,
-            response_format: { type: 'json_object' }
-          });
+            max_tokens: 800
+          };
+          // gpt-oss models support include_reasoning to suppress <think> tokens
+          if (callModel.includes('gpt-oss')) callParams.include_reasoning = false;
+          completion = await LLM.client.chat.completions.create(callParams);
           break;
         } catch (err) {
           const limited = err.status === 429 || /rate.?limit/i.test(err.message || '');
@@ -1194,6 +1179,12 @@ ${menuForLLM}${nutriFacts}`;
       }
     };
     const L = s => (T[s][replyLang] || T[s].English);
+    // Pre-compute dish intent for all fallback branches
+    const promptLower = (searchPrompt + ' ' + prompt).toLowerCase();
+    let dishKey = null;
+    for (const dk of Object.keys(DISH_INGREDIENTS_MAP)) {
+      if (promptLower.includes(dk)) { dishKey = dk; break; }
+    }
     if (llmError === 'rate') {
       reply = L('busy');
     } else if (intent === 'general_conversation') {
@@ -1212,17 +1203,38 @@ ${menuForLLM}${nutriFacts}`;
         plan.push(row);
         if (plan.length >= 6) break;
       }
+      if (dishKey && plan.length < 3) {
+        // Supplement with dish-specific ingredients from catalog
+        const dishTerms = DISH_INGREDIENTS_MAP[dishKey].join(' ');
+        const dishCandidates = ix.size > 2000 ? ix.candidatesFor(dishTerms, 30) : searchProducts(dishTerms, catalog);
+        const seenDish = new Set(plan.map(r => r.p.group || r.p.id));
+        for (const p of dishCandidates) {
+          if (plan.length >= 7) break;
+          const gk = p.group || ('solo-' + p.id);
+          if (seenDish.has(gk)) continue;
+          seenDish.add(gk);
+          plan.push(resolveRow(p, 1, groups));
+        }
+      }
+
+      // Build a context-aware reply based on what the shopper asked for.
+      const productNames = plan.slice(0, 3).map(r => r.p.name || '').filter(Boolean).join(', ');
+      const dishReply = dishKey
+        ? `Here are the key ingredients for a ${dishKey} — I've added the essentials to get you started. Tap any item to swap brands or sizes.`
+        : null;
       const MATCH = {
-        English:'Here are the matches from our live store inventory:',
-        Malayalam:'ഞങ്ങളുടെ സ്റ്റോറിൽ ലഭ്യമായ ഉൽപ്പന്നങ്ങൾ ഇതാ:',
-        Arabic:'إليك المنتجات المتوفرة في متجرنا:',
-        Hindi:'हमारे स्टोर में उपलब्ध सामान:',
-        Urdu:'ہمارے اسٹور میں دستیاب اشیاء:',
-        Tamil:'எங்கள் கடையில் கிடைக்கும் பொருட்கள்:',
-        Bengali:'আমাদের দোকানে উপলব্ধ পণ্য:'
+        English: dishReply || (plan.length
+          ? `I found ${plan.length} item${plan.length > 1 ? 's' : ''} for you — including ${productNames}. Tap any item to see more brands and sizes.`
+          : `I couldn't find an exact match. Try describing what you need differently, e.g. "bread, cheese and tomatoes for a sandwich".`),
+        Malayalam: `നിങ്ങളുടെ അഭ്യർത്ഥനയ്ക്ക് അനുയോജ്യമായ ഉൽപ്പന്നങ്ങൾ ലഭ്യമാണ്. ബ്രാൻഡ്, സൈസ് കാണാൻ ഓരോ ഉൽപ്പന്നവും ടാപ്പ് ചെയ്യൂ.`,
+        Arabic: `وجدت منتجات تناسب طلبك — اضغط على أي منتج لرؤية جميع الماركات والأحجام المتاحة.`,
+        Hindi: `आपकी ज़रूरत के हिसाब से सामान मिल गया। किसी भी प्रोडक्ट पर टैप करें सभी ब्रांड और साइज़ देखने के लिए।`,
+        Urdu: `آپ کی درخواست کے مطابق اشیاء دستیاب ہیں۔ برانڈ اور سائز دیکھنے کے لیے کسی بھی آئٹم پر ٹیپ کریں۔`,
+        Tamil: `உங்கள் கோரிக்கைக்கு பொருந்தும் பொருட்கள் கிடைத்துள்ளன. பிராண்ட் மற்றும் அளவுகளை காண தட்டவும்.`,
+        Bengali: `আপনার অনুরোধ অনুযায়ী পণ্য পাওয়া গেছে। ব্র্যান্ড ও সাইজ দেখতে যেকোনো পণ্যে ট্যাপ করুন।`
       };
       reply = MATCH[replyLang] || MATCH.English;
-      followUp = '';
+      followUp = replyLang === 'English' ? "Need help narrowing it down by brand, size, or price range?" : '';
     } else {
       // No match and not chit-chat: DON'T guess. Ask, don't dump.
       const HUH = {
@@ -1234,7 +1246,17 @@ ${menuForLLM}${nutriFacts}`;
         Tamil:'எனக்கு அது சரியாக புரியவில்லை. பொருட்களைக் கண்டுபிடிக்க உதவ முடியும் — உங்களுக்கு என்ன வேண்டும்?',
         Bengali:'আমি ঠিক বুঝতে পারিনি। আমি পণ্য খুঁজতে সাহায্য করতে পারি — আপনার কী প্রয়োজন?'
       };
-      reply = HUH[replyLang] || HUH.English;
+      // If we detected a dish in the prompt, give a more helpful reply
+      if (dishKey) {
+        const DISH_REPLY = {
+          English: `I've added the essential ingredients for ${dishKey} to your cart. Tap any item to see more brands and sizes.`,
+          Hindi: `मैंने ${dishKey} के लिए ज़रूरी सामान कार्ट में जोड़ दिया है। किसी भी आइटम पर टैप करें ब्रांड बदलने के लिए।`,
+          Arabic: `أضفت المكونات الأساسية لـ${dishKey} إلى سلتك. اضغط على أي عنصر لتغيير الماركة.`,
+        };
+        reply = DISH_REPLY[replyLang] || DISH_REPLY.English;
+      } else {
+        reply = HUH[replyLang] || HUH.English;
+      }
       suggestions = replyLang === 'English' ? ['Ingredients for a dish', 'Something healthy', 'Household items'] : [];
     }
   }
@@ -2409,10 +2431,9 @@ function issuePasswordSession(phone,name){
   return token;
 }
 function passwordProfile(phone,name){
-  const p=LOY.normalisePhone(phone);
-  const row=(db['devx-customer-passwords']||[]).find(x=>LOY.normalisePhone(x.phone)===p)||{};
-  const orders=(db['devx-orders']||[]).filter(o=>LOY.normalisePhone(o.customer&&o.customer.phone)===p);
-  return {phone:p,name:name||row.name||'',email:row.email||'',orders:orders.length};
+  const orders=(db['devx-orders']||[]).filter(o=>LOY.normalisePhone(o.customer&&o.customer.phone)===LOY.normalisePhone(phone));
+  const row=(db['devx-customer-passwords']||[]).find(x=>LOY.normalisePhone(x.phone)===LOY.normalisePhone(phone));
+  return {phone,name:name||'',email:row&&row.email?row.email:'',orders:orders.length};
 }
 
 function shopper(req) {
@@ -2444,63 +2465,143 @@ function ownsOrder(req, o, staffPerm) {
   return false;
 }
 
-/* ── EMAIL ACCOUNT / RECOVERY (additive; existing phone/SMS flow remains) ── */
-const CUSTOMER_EMAIL_RESETS = new Map();
-function normaliseCustomerEmail(raw){const e=String(raw||'').trim().toLowerCase();return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(e)?e:''}
-function emailAccountRow(email){const e=normaliseCustomerEmail(email);return (db['devx-customer-passwords']||[]).find(x=>normaliseCustomerEmail(x.email)===e)||null}
-function issueCustomerEmailReset(email){const code=String(Math.floor(100000+Math.random()*900000));CUSTOMER_EMAIL_RESETS.set(normaliseCustomerEmail(email),{code,expiresAt:Date.now()+5*60*1000,attempts:0});return {code,expiresAt:Date.now()+5*60*1000}}
-async function sendCustomerEmail(to, subject, text){
-  const email = normaliseCustomerEmail(to);
-  if(!email) return {ok:false, delivered:false, error:'Invalid email'};
 
-  // Resend configuration is read from .env / hosting environment.
-  // No existing OTP, login, registration, SMS, or reset logic is changed.
-  const key = String(process.env.RESEND_API_KEY || '').trim();
+/* ── Forgot PIN email OTP — additive only; existing SMS flow unchanged ── */
+const CUSTOMER_EMAIL_RESETS = new Map();
+
+function normaliseCustomerEmail(raw) {
+  const email = String(raw || '').trim().toLowerCase();
+  return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email) ? email : '';
+}
+
+function emailAccountRow(email) {
+  const e = normaliseCustomerEmail(email);
+  return (db['devx-customer-passwords'] || []).find(
+    x => normaliseCustomerEmail(x.email) === e
+  ) || null;
+}
+
+function issueCustomerEmailReset(email) {
+  const code = String(crypto.randomInt(100000, 1000000));
+  const expiresAt = Date.now() + 5 * 60 * 1000;
+  CUSTOMER_EMAIL_RESETS.set(normaliseCustomerEmail(email), {
+    code, expiresAt, attempts: 0
+  });
+  return { code, expiresAt };
+}
+
+async function sendCustomerEmail(to, subject, text) {
+  const email = normaliseCustomerEmail(to);
+  if (!email) return { ok:false, delivered:false, error:'Invalid email address' };
+
+  const apiKey = String(process.env.RESEND_API_KEY || '').trim();
   const from = String(process.env.MAIL_FROM || process.env.EMAIL_FROM || '').trim();
 
-  // Keep the existing local-test fallback when Resend is not configured.
-  if(!key || !from){
-    console.log(`[nexus] EMAIL OTP (local test) to ${email}: ${text}`);
-    return {ok:true, delivered:false, localTest:true};
+  if (!apiKey || !from) {
+    return {
+      ok:false,
+      delivered:false,
+      error:'Email service is not configured. Set RESEND_API_KEY and MAIL_FROM.'
+    };
   }
 
-  try{
-    const response = await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${key}`,
-        'Content-Type': 'application/json'
+  try {
+    const r = await fetch('https://api.resend.com/emails', {
+      method:'POST',
+      headers:{
+        Authorization:`Bearer ${apiKey}`,
+        'Content-Type':'application/json'
       },
-      body: JSON.stringify({
+      body:JSON.stringify({
         from,
-        to: [email],
+        to:[email],
         subject,
         text
       })
     });
 
-    const data = await response.json().catch(() => ({}));
+    const raw = await r.text();
+    let data = {};
+    try { data = raw ? JSON.parse(raw) : {}; } catch (_) {}
 
-    if(!response.ok){
+    if (!r.ok) {
       console.error('[nexus] Resend email error:', data);
       return {
         ok:false,
         delivered:false,
-        error:data.message || 'Email provider rejected the request'
+        error:data.message || data.error || `Resend returned HTTP ${r.status}`
       };
     }
 
     console.log('[nexus] Email OTP sent successfully:', data.id || 'no-id');
-    return {ok:true, delivered:true, id:data.id || null};
-  }catch(error){
-    console.error('[nexus] Email provider error:', error);
-    return {
-      ok:false,
-      delivered:false,
-      error:error.message || 'Email provider unavailable'
-    };
+    return { ok:true, delivered:true, id:data.id || null };
+  } catch (e) {
+    console.error('[nexus] Email provider error:', e.message);
+    return { ok:false, delivered:false, error:e.message || 'Email provider unavailable' };
   }
 }
+
+app.post('/api/customer/forgot-pin/email-request', GUARD.limit('write'), async (req,res)=>{
+  try {
+    const email = normaliseCustomerEmail((req.body || {}).email);
+    if (!email) return res.status(400).json({error:'Enter a valid email address'});
+
+    const row = emailAccountRow(email);
+    if (!row) return res.json({sent:true,to:email,expiresInMs:5*60*1000});
+
+    const r = issueCustomerEmailReset(email);
+    const sent = await sendCustomerEmail(
+      email,
+      'DevX Nexus — PIN reset OTP',
+      `Your DevX Nexus PIN reset OTP is ${r.code}. It expires in 5 minutes. If you did not request this, you can ignore this email.`
+    );
+
+    if (!sent.delivered) {
+      console.error('[nexus] Forgot PIN email delivery failed:', sent.error || 'unknown error');
+      return res.status(502).json({error:sent.error || 'Could not send email OTP'});
+    }
+
+    res.json({sent:true,to:email,expiresInMs:5*60*1000,hint:null});
+  } catch (e) {
+    console.error('[nexus] Forgot PIN email request error:', e.message);
+    res.status(500).json({error:'Could not process email OTP request'});
+  }
+});
+
+app.post('/api/customer/forgot-pin/email-reset', GUARD.limit('write'), (req,res)=>{
+  const b=req.body||{};
+  const email=normaliseCustomerEmail(b.email);
+  const code=String(b.code||'').replace(/\D/g,'');
+  const pin=String(b.pin||'').trim();
+
+  if(!email||!/^[0-9]{6}$/.test(code)||!/^[0-9]{4}$/.test(pin))
+    return res.status(400).json({error:'Enter a valid OTP and 4-digit PIN'});
+
+  const row=emailAccountRow(email);
+  const reset=CUSTOMER_EMAIL_RESETS.get(email);
+  if(!row||!reset) return res.status(401).json({error:'Invalid or expired OTP'});
+
+  if(reset.expiresAt<Date.now()){
+    CUSTOMER_EMAIL_RESETS.delete(email);
+    return res.status(401).json({error:'OTP expired. Please request a new one.'});
+  }
+
+  reset.attempts=(reset.attempts||0)+1;
+  if(reset.attempts>5){
+    CUSTOMER_EMAIL_RESETS.delete(email);
+    return res.status(429).json({error:'Too many incorrect OTP attempts. Request a new OTP.'});
+  }
+
+  if(reset.code!==code) return res.status(401).json({error:'Incorrect OTP'});
+
+  row.pin=pin;
+  row.pinUpdatedAt=new Date().toISOString();
+  save('devx-customer-passwords');
+  CUSTOMER_EMAIL_RESETS.delete(email);
+
+  res.json({ok:true});
+});
+
 app.post('/api/customer/phone-check', GUARD.limit('write'), (req,res)=>{
   const phone=passwordPhone((req.body||{}).phone);
   if(!phone)return res.status(400).json({error:'Enter a valid phone number'});
@@ -2511,17 +2612,14 @@ app.post('/api/customer/register-password', GUARD.limit('write'), (req,res)=>{
   const b=req.body||{},phone=passwordPhone(b.phone),name=String(b.name||'').trim().slice(0,80),email=normaliseCustomerEmail(b.email),pin=String(b.pin||b.password||'').trim();
   if(!phone)return res.status(400).json({error:'Enter a valid phone number'});
   if(!name)return res.status(400).json({error:'Enter your full name'});
-  if(!email)return res.status(400).json({error:'Email ID is required for account registration'});
   if(!/^\d{4}$/.test(pin))return res.status(400).json({error:'PIN must be exactly 4 digits'});
   db['devx-customer-passwords']=db['devx-customer-passwords']||[];
   if(db['devx-customer-passwords'].some(x=>LOY.normalisePhone(x.phone)===LOY.normalisePhone(phone)))
     return res.status(409).json({error:'User already exists. Enter your PIN to sign in.'});
-  if(db['devx-customer-passwords'].some(x=>normaliseCustomerEmail(x.email)===email))
-    return res.status(409).json({error:'An account already exists for this email. Please use a different email.'});
   const nk=customerNameKey(name);
   if(db['devx-customer-passwords'].some(x=>customerNameKey(x.name)===nk && String(x.pin)===pin))
     return res.status(409).json({error:'That name + 4-digit PIN combination is already in use. Please choose a different PIN.'});
-  db['devx-customer-passwords'].push({phone,name,email,pin,createdAt:new Date().toISOString()});
+  db['devx-customer-passwords'].push({phone,name,email:email||'',pin,createdAt:new Date().toISOString()});
   save('devx-customer-passwords');
   const token=issuePasswordSession(phone,name);
   res.status(201).json({token,profile:passwordProfile(phone,name)});
@@ -2534,39 +2632,15 @@ app.post('/api/customer/login-password', GUARD.limit('write'), (req,res)=>{
   res.json({token,profile:passwordProfile(phone,row.name)});
 });
 
-app.post('/api/customer/forgot-pin/email-request', GUARD.limit('write'), async (req,res)=>{
-  const email=normaliseCustomerEmail((req.body||{}).email);
-  if(!email)return res.status(400).json({error:'Enter a valid email address'});
-  const row=emailAccountRow(email);
-  if(!row)return res.json({sent:true,to:email});
-  const r=issueCustomerEmailReset(email);
-  const sent=await sendCustomerEmail(email,'DevX Nexus — PIN reset OTP',`Your DevX Nexus PIN reset OTP is ${r.code}. It expires in 5 minutes. If you did not request this, you can ignore this email.`);
-  if(!sent.delivered){activity('order',`PIN reset email OTP for ${email} — local test code available in server activity/log`);console.log(`[nexus] Email PIN reset OTP for ${email}: ${r.code}`);save('devx-activity');broadcast({'devx-activity':db['devx-activity']});}
-  const out={sent:true,to:email,expiresInMs:5*60*1000,hint:sent.delivered?null:'Email provider not configured. Localhost testing is enabled; use the OTP shown in the response/log.'};
-  if(process.env.NODE_ENV!=='production' || String(process.env.EMAIL_OTP_LOCAL_TEST||'').toLowerCase()==='true')out.devOtp=r.code;
-  res.json(out);
-});
-app.post('/api/customer/forgot-pin/email-reset', GUARD.limit('write'), (req,res)=>{
-  const b=req.body||{},email=normaliseCustomerEmail(b.email),code=String(b.code||'').replace(/\D/g,''),pin=String(b.pin||'').trim();
-  if(!email||!/^[0-9]{6}$/.test(code)||!/^[0-9]{4}$/.test(pin))return res.status(400).json({error:'Enter a valid OTP and 4-digit PIN'});
-  const row=emailAccountRow(email),reset=CUSTOMER_EMAIL_RESETS.get(email);
-  if(!row||!reset)return res.status(401).json({error:'Invalid or expired OTP'});
-  if(reset.expiresAt<Date.now()){CUSTOMER_EMAIL_RESETS.delete(email);return res.status(401).json({error:'OTP expired. Please request a new one.'});}
-  reset.attempts=(reset.attempts||0)+1;if(reset.attempts>5){CUSTOMER_EMAIL_RESETS.delete(email);return res.status(429).json({error:'Too many incorrect OTP attempts. Request a new OTP.'});}
-  if(reset.code!==code)return res.status(401).json({error:'Incorrect OTP'});
-  const nk=customerNameKey(row.name);if((db['devx-customer-passwords']||[]).some(x=>x!==row&&customerNameKey(x.name)===nk&&String(x.pin)===pin))return res.status(409).json({error:'That name + 4-digit PIN combination is already in use. Choose a different PIN.'});
-  row.pin=pin;row.pinUpdatedAt=new Date().toISOString();save('devx-customer-passwords');CUSTOMER_EMAIL_RESETS.delete(email);res.json({ok:true});
-});
 app.post('/api/customer/forgot-pin/request', GUARD.limit('write'), async (req,res)=>{
   const phone=passwordPhone((req.body||{}).phone);
   if(!phone)return res.status(400).json({error:'Enter a valid registered mobile number'});
   const row=(db['devx-customer-passwords']||[]).find(x=>LOY.normalisePhone(x.phone)===phone);
   if(!row)return res.json({sent:true,to:CUST.mask?CUST.mask(phone):phone});
   const r=issueCustomerPinReset(phone);
-  const sent=await otpMessage(phone,`Your DevX Nexus PIN reset OTP is ${r.code}. It expires in 5 minutes.`);
+  const sent=await message(phone,`Your DevX Nexus PIN reset OTP is ${r.code}. It expires in 5 minutes.`);
   if(!sent.delivered){activity('order',`PIN reset OTP for ${CUST.pretty?CUST.pretty(phone):phone} — read it to the customer if they ask`);console.log(`[nexus] PIN reset OTP for ${CUST.pretty?CUST.pretty(phone):phone}: ${r.code}`);save('devx-activity');broadcast({'devx-activity':db['devx-activity']});}
-  res.json({sent:true,to:CUST.mask?CUST.mask(phone):phone,expiresInMs:5*60*1000,
-    hint:sent.delivered?null:(sent.error||'No messaging provider is connected yet — store staff can read your code out.')});
+  res.json({sent:true,to:CUST.mask?CUST.mask(phone):phone,expiresInMs:5*60*1000,hint:sent.delivered?null:'No messaging provider is connected yet — store staff can read your code out.'});
 });
 app.post('/api/customer/forgot-pin/reset', GUARD.limit('write'), (req,res)=>{
   const b=req.body||{},phone=passwordPhone(b.phone),code=String(b.code||'').replace(/\D/g,''),pin=String(b.pin||'').trim();
@@ -2580,7 +2654,7 @@ app.post('/api/customer/forgot-pin/reset', GUARD.limit('write'), (req,res)=>{
   row.pin=pin;row.pinUpdatedAt=new Date().toISOString();save('devx-customer-passwords');CUSTOMER_PIN_RESETS.delete(phone);res.json({ok:true});
 });
 app.get('/api/customer/accounts', need('loyalty.view'), (req,res)=>{
-  const rows=(db['devx-customer-passwords']||[]).map(x=>{const phone=LOY.normalisePhone(x.phone);const orders=(db['devx-orders']||[]).filter(o=>LOY.normalisePhone(o.customer&&o.customer.phone)===phone&&!['cancelled'].includes(o.status));return {phone,name:x.name||'',email:x.email||'',createdAt:x.createdAt||null,orders:orders.length,spent:orders.reduce((n,o)=>n+Number(o.total||0),0),last:orders.reduce((v,o)=>!v||o.date>v?o.date:v,'')};});
+  const rows=(db['devx-customer-passwords']||[]).map(x=>{const phone=LOY.normalisePhone(x.phone);const orders=(db['devx-orders']||[]).filter(o=>LOY.normalisePhone(o.customer&&o.customer.phone)===phone&&!['cancelled'].includes(o.status));return {phone,name:x.name||'',createdAt:x.createdAt||null,orders:orders.length,spent:orders.reduce((n,o)=>n+Number(o.total||0),0),last:orders.reduce((v,o)=>!v||o.date>v?o.date:v,'')};});
   res.json({data:rows});
 });
 app.post('/api/customer/otp', GUARD.limit('write'), async (req, res) => {
