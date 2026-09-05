@@ -267,6 +267,9 @@ tbody tr.click:hover{background:var(--GL)}
     <button class="nav-btn" id="nav-offers" onclick="go('offers')">
       <svg viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>Offers &amp; Promotions
     </button>
+    <button class="nav-btn" id="nav-sponsored" onclick="go('sponsored')">
+      <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 8h10M7 12h7M7 16h4"/></svg>Sponsored Content
+    </button>
     <div class="nav-sec" data-sec="intelligence">Intelligence</div>
     <button class="nav-btn" id="nav-insights" onclick="go('insights')">
       <svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 00-4 12.7V17a2 2 0 002 2h4a2 2 0 002-2v-2.3A7 7 0 0012 2z"/><line x1="9" y1="22" x2="15" y2="22"/></svg>AI Insights
@@ -409,6 +412,18 @@ tbody tr.click:hover{background:var(--GL)}
         </button>
       </div>
       <div class="card"><div id="invTable"></div></div>
+    </div>
+
+    <!-- OFFERS -->
+    <div class="view" id="view-sponsored">
+      <div class="card">
+        <div class="card-hd"><span class="card-t">Sponsored / Monetization Content</span><span style="font-size:10px;color:var(--tx3);font-weight:700">Controls the Explore Special Offers carousel</span></div>
+        <div class="card-bd">
+          <div id="sponsoredList" style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px"></div>
+          <div style="display:flex;justify-content:flex-end;margin-top:14px"><button class="btn grn" onclick="saveSponsored()">Save sponsored content</button></div>
+          <p style="font-size:10px;color:var(--tx3);font-weight:600;margin-top:9px;line-height:1.6">These are placeholder placements only. Changes are pushed to the customer app without changing catalogue products or other store functionality.</p>
+        </div>
+      </div>
     </div>
 
     <!-- OFFERS -->
@@ -882,14 +897,14 @@ function signInScreen(msg){
    Branches sat behind inventory.edit, so a buyer saw the shop list. */
 const NAV_PERM={insights:'insights.view',reorder:'insights.view',health:'insights.view',
   loyal:'loyalty.view',calc:'forecast.view',demand:'forecast.view',optim:'forecast.view',
-  fin:'forecast.view',wh:'forecast.view',inv:'inventory.edit',offers:'offers.manage',
+  fin:'forecast.view',wh:'forecast.view',inv:'inventory.edit',offers:'offers.manage',sponsored:'offers.manage',
   cust:'loyalty.view',staff:'staff.manage',audit:'audit.view',branch:'branch.view',
   roles:'staff.manage',group:'insights.view',
   dash:'orders.view',orders:'orders.view',pkc:'orders.view',scan:'orders.view',act:'orders.view'};
 /* Which section each screen lives under, so a heading with nothing beneath it
    does not sit there implying a missing feature. */
 const NAV_SEC={group:'overview',dash:'overview',orders:'fulfilment',pkc:'fulfilment',scan:'fulfilment',
-  inv:'merchandising',offers:'merchandising',insights:'intelligence',reorder:'intelligence',
+  inv:'merchandising',offers:'merchandising',sponsored:'merchandising',insights:'intelligence',reorder:'intelligence',
   health:'intelligence',calc:'forecastai',demand:'forecastai',optim:'forecastai',fin:'forecastai',
   wh:'forecastai',loyal:'relationships',cust:'relationships',act:'relationships',
   staff:'administration',audit:'administration',roles:'administration',branch:'administration'};
@@ -1032,7 +1047,7 @@ function timeAgo(iso){const s=Math.floor((Date.now()-new Date(iso))/1000);if(s<6
 function esc(s){return String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
 
 /* ─── NAV ─── */
-const TITLES={dash:['Dashboard','Live overview of your store'],pkc:['Pickup Counter','Dedicated queue for in-store collection'],orders:['Orders','Every order from the customer app, in real time'],scan:['Pickup Scanner','Verify customer pickup passes'],inv:['Inventory','Shared catalog — edits go live in the customer app'],offers:['Offers & Promotions','Publish deals straight to customers'],cust:['Customers','CRM — built automatically from orders'],act:['Activity Feed','Everything that happened, in order'],insights:['AI Insights','Lost sales and demand your POS cannot see'],reorder:['Auto Reorder','Forecast-driven purchase suggestions'],health:['Stock Health','Where your capital is sitting'],staff:['Staff &amp; Roles','Named accounts — who can do what'],audit:['Audit Log','Every consequential action, and who took it'],loyal:['Loyalty &amp; Personal Offers','Loyalty card joined to app account — catch customers before they drift'],calc:['AI Forecast Calculator','DevX ForecastAI — demand, purchase order and profit in one calculation'],demand:['Sales Forecasting','AI demand engine tuned to the UAE retail calendar'],optim:['Inventory Optimization','ABC-XYZ classification with a prioritised AI action plan'],fin:['Financial Forecast','Projected revenue, margin and cash flow'],wh:['Warehouse Planner','Zone utilisation and space planning'],branch:['Branches','Every shop in the group — and how to open the next one'],group:['Group Overview','Every shop in one place — ranked, with what it is costing you'],roles:['Roles &amp; Access','Exactly what each role can see and do, before you hand out a PIN']};
+const TITLES={dash:['Dashboard','Live overview of your store'],pkc:['Pickup Counter','Dedicated queue for in-store collection'],orders:['Orders','Every order from the customer app, in real time'],scan:['Pickup Scanner','Verify customer pickup passes'],inv:['Inventory','Shared catalog — edits go live in the customer app'],offers:['Offers & Promotions','Publish deals straight to customers'],sponsored:['Sponsored Content','Manage monetization placements shown in Explore Special Offers'],cust:['Customers','CRM — built automatically from orders'],act:['Activity Feed','Everything that happened, in order'],insights:['AI Insights','Lost sales and demand your POS cannot see'],reorder:['Auto Reorder','Forecast-driven purchase suggestions'],health:['Stock Health','Where your capital is sitting'],staff:['Staff &amp; Roles','Named accounts — who can do what'],audit:['Audit Log','Every consequential action, and who took it'],loyal:['Loyalty &amp; Personal Offers','Loyalty card joined to app account — catch customers before they drift'],calc:['AI Forecast Calculator','DevX ForecastAI — demand, purchase order and profit in one calculation'],demand:['Sales Forecasting','AI demand engine tuned to the UAE retail calendar'],optim:['Inventory Optimization','ABC-XYZ classification with a prioritised AI action plan'],fin:['Financial Forecast','Projected revenue, margin and cash flow'],wh:['Warehouse Planner','Zone utilisation and space planning'],branch:['Branches','Every shop in the group — and how to open the next one'],group:['Group Overview','Every shop in one place — ranked, with what it is costing you'],roles:['Roles &amp; Access','Exactly what each role can see and do, before you hand out a PIN']};
 function go(v){
   curView=v;
   document.querySelectorAll('.view').forEach(e=>e.classList.remove('on'));
@@ -1115,6 +1130,7 @@ function renderView(){
   else if(curView==='orders')renderOrders();
   else if(curView==='inv')renderInv();
   else if(curView==='offers')renderOffersView();
+  else if(curView==='sponsored')renderSponsored();
   else if(curView==='cust')renderCust();
   else if(curView==='act')renderActFull();
   else if(curView==='insights')loadInsights();
@@ -1265,7 +1281,7 @@ const toggleStaff=(id,on)=>staffPost('/api/staff/'+id,{active:on},on?'Enabled':'
    opens and every one it does not.
    ═══════════════════════════════════════════════════════════════ */
 const SCREEN_LABEL={group:'Group Overview',dash:'Dashboard',orders:'Orders',pkc:'Pickup Counter',
-  scan:'Pickup Scanner',inv:'Inventory',offers:'Offers & Promotions',insights:'AI Insights',
+  scan:'Pickup Scanner',inv:'Inventory',offers:'Offers & Promotions',sponsored:'Sponsored Content',insights:'AI Insights',
   reorder:'Auto Reorder',health:'Stock Health',calc:'Forecast Calculator',demand:'Sales Forecasting',
   optim:'Optimization',fin:'Financial Forecast',wh:'Warehouse Planner',loyal:'Loyalty & Offers',
   cust:'Customers',act:'Activity Feed',staff:'Staff & Roles',audit:'Audit Log',
@@ -2963,6 +2979,94 @@ function addProduct(){
   ['npName','npUnit','npPrice','npImg','npLoc'].forEach(i=>document.getElementById(i).value='');
   toast(p.name+' added · customers notified');
   renderInv();
+}
+
+/* ─── SPONSORED CONTENT ─── */
+const SPONSORED_DEFAULT=[
+  {id:'SP1',brand:'RideGo',headline:'20% off your first ride',sub:'A featured partner message',code:'USE RIDE20',tone:'sponsor-green',mark:'PARTNER',active:true},
+  {id:'SP2',brand:'DevX Rewards',headline:'Save up to 15% on your next order',sub:'Exclusive partner benefit',code:'USE SAVE15',tone:'sponsor-navy',mark:'CARD',active:true},
+  {id:'SP3',brand:'DevX Plus',headline:'Free delivery for everyday shopping',sub:'Featured membership placement',code:'LEARN MORE',tone:'sponsor-purple',mark:'MEMBERSHIP',active:true}
+];
+function sponsoredState(){
+  const v=nxRead('devx-sponsored',SPONSORED_DEFAULT);
+  return Array.isArray(v)&&v.length?v:SPONSORED_DEFAULT.map(x=>Object.assign({},x));
+}
+function renderSponsored(){
+  const el=document.getElementById('sponsoredList');if(!el)return;
+  const rows=sponsoredState().slice(0,3);
+  while(rows.length<3)rows.push(Object.assign({},SPONSORED_DEFAULT[rows.length]));
+  el.innerHTML=rows.map((a,i)=>`<div class="card" style="box-shadow:none;border:1px solid var(--line)">
+    <div class="card-bd">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px"><b style="font-size:11px">Placement ${i+1}</b><label style="font-size:10px;font-weight:800;color:var(--tx2)"><input type="checkbox" id="spActive${i}" ${a.active!==false?'checked':''}> Active</label></div>
+      <div class="fld"><label class="lbl">Partner / Brand</label><input class="inp" id="spBrand${i}" value="${esc(a.brand)}"></div>
+      <div class="fld"><label class="lbl">Headline</label><input class="inp" id="spHeadline${i}" value="${esc(a.headline)}"></div>
+      <div class="fld"><label class="lbl">Supporting text</label><input class="inp" id="spSub${i}" value="${esc(a.sub)}"></div>
+      <div class="fld"><label class="lbl">Sponsored image</label>
+        <input class="inp" id="spImage${i}" type="file" accept="image/*" onchange="previewSponsoredImage(this,${i})" style="padding:8px 9px">
+        <div id="spImagePreview${i}" style="margin-top:7px;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--bg);height:76px;display:${a.image?'block':'none'}">${a.image?`<img src="${esc(a.image)}" alt="" style="width:100%;height:100%;object-fit:cover;display:block">`:''}</div>
+      </div>
+      <div class="fld"><label class="lbl">CTA / Code</label><input class="inp" id="spCode${i}" value="${esc(a.code)}"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><div class="fld"><label class="lbl">Style</label><select class="sel" id="spTone${i}"><option value="sponsor-green" ${a.tone==='sponsor-green'?'selected':''}>Green</option><option value="sponsor-navy" ${a.tone==='sponsor-navy'?'selected':''}>Navy</option><option value="sponsor-purple" ${a.tone==='sponsor-purple'?'selected':''}>Purple</option></select></div><div class="fld"><label class="lbl">Label</label><input class="inp" id="spMark${i}" value="${esc(a.mark||'PARTNER')}"></div></div>
+    </div></div>`).join('');
+}
+function previewSponsoredImage(input,i){
+  const file=input&&input.files&&input.files[0];
+  const box=document.getElementById('spImagePreview'+i);
+  if(!file||!box)return;
+  const reader=new FileReader();
+  reader.onload=()=>{
+    box.style.display='block';
+    box.innerHTML=`<img src="${esc(reader.result)}" alt="" style="width:100%;height:100%;object-fit:cover;display:block">`;
+  };
+  reader.readAsDataURL(file);
+}
+function readSponsoredImage(file){
+  return new Promise((resolve,reject)=>{
+    if(!file){resolve('');return;}
+    if(!file.type.startsWith('image/')){reject(new Error('Please select an image file'));return;}
+    const reader=new FileReader();
+    reader.onerror=()=>reject(new Error('Could not read the image'));
+    reader.onload=()=>{
+      const img=new Image();
+      img.onload=()=>{
+        const maxW=1200,maxH=600,scale=Math.min(1,maxW/img.width,maxH/img.height);
+        const w=Math.max(1,Math.round(img.width*scale)),h=Math.max(1,Math.round(img.height*scale));
+        const canvas=document.createElement('canvas');canvas.width=w;canvas.height=h;
+        const ctx=canvas.getContext('2d');ctx.drawImage(img,0,0,w,h);
+        resolve(canvas.toDataURL('image/jpeg',0.82));
+      };
+      img.onerror=()=>reject(new Error('Could not process the image'));
+      img.src=reader.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+async function saveSponsored(){
+  const current=sponsoredState().slice(0,3);
+  while(current.length<3)current.push(Object.assign({},SPONSORED_DEFAULT[current.length]));
+  const rows=[];
+  try{
+    for(let i=0;i<3;i++){
+      const d=SPONSORED_DEFAULT[i],a=current[i]||d,inp=document.getElementById('spImage'+i);
+      const uploaded=inp&&inp.files&&inp.files[0]?await readSponsoredImage(inp.files[0]):'';
+      rows.push({
+        id:d.id,
+        brand:document.getElementById('spBrand'+i).value.trim()||d.brand,
+        headline:document.getElementById('spHeadline'+i).value.trim()||d.headline,
+        sub:document.getElementById('spSub'+i).value.trim()||d.sub,
+        code:document.getElementById('spCode'+i).value.trim()||d.code,
+        tone:document.getElementById('spTone'+i).value,
+        mark:document.getElementById('spMark'+i).value.trim()||d.mark,
+        image:uploaded||a.image||'',
+        active:document.getElementById('spActive'+i).checked
+      });
+    }
+    nxSet('devx-sponsored',rows);
+    logAct('offer','Sponsored content placements updated');
+    nxBump();
+    toast('Sponsored content updated · customer app synced');
+    renderSponsored();
+  }catch(e){toast(e.message||'Could not save sponsored content','red')}
 }
 
 /* ─── OFFERS ─── */
