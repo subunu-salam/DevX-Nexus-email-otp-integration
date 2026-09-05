@@ -3196,6 +3196,48 @@ button,input,textarea,select{font-family:inherit}
 }
 
 
+/* ─── GROCERY LIST SCANNER — additive customer utility ─── */
+.gls-open-btn{width:34px;height:34px;border-radius:50%;border:1px solid var(--bdr);background:var(--card);display:flex;align-items:center;justify-content:center;flex:0 0 34px;cursor:pointer}
+.gls-open-btn svg{width:17px;height:17px;stroke:var(--G);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.gls-modal{position:fixed;inset:0;z-index:10020;background:rgba(7,10,8,.58);display:none;align-items:flex-end;justify-content:center;padding:0}
+.gls-modal.on{display:flex}
+.gls-sheet{width:min(480px,100%);max-height:92vh;overflow:auto;background:var(--card);color:var(--tx);border-radius:22px 22px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom,0px));box-shadow:0 -12px 40px rgba(0,0,0,.24)}
+.gls-hd{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:5px}
+.gls-title{font-size:18px;font-weight:850;letter-spacing:-.03em}
+.gls-close{width:34px;height:34px;border:1px solid var(--bdr);background:var(--bg);border-radius:50%;font-size:20px;line-height:1;cursor:pointer;color:var(--tx)}
+.gls-sub{font-size:11px;line-height:1.45;color:var(--tx2);margin-bottom:14px}
+.gls-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.gls-action{min-height:78px;border:1px solid var(--bdr);border-radius:15px;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;cursor:pointer;color:var(--tx);font-family:inherit;font-weight:800;font-size:11px}
+.gls-action svg{width:22px;height:22px;stroke:var(--G);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.gls-lang{margin-top:12px;display:flex;align-items:center;gap:8px;font-size:10px;font-weight:800;color:var(--tx2)}
+.gls-lang select{flex:1;border:1px solid var(--bdr);background:var(--card);color:var(--tx);border-radius:10px;padding:9px;font:inherit}
+.gls-status{margin-top:12px;padding:10px 12px;border-radius:12px;background:var(--GL);color:var(--GD);font-size:10px;font-weight:700;display:none}
+.gls-status.on{display:block}
+.gls-preview{margin-top:12px;border:1px solid var(--bdr);border-radius:14px;overflow:hidden;background:var(--bg);display:none}
+.gls-preview.on{display:block}
+.gls-preview img{display:block;width:100%;max-height:220px;object-fit:contain;background:#fff}
+.gls-results{margin-top:14px;display:none}
+.gls-results.on{display:block}
+.gls-results-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.gls-results-title{font-size:13px;font-weight:850}
+.gls-results-count{font-size:9px;color:var(--tx3);font-weight:700}
+.gls-item{display:flex;align-items:center;gap:9px;padding:9px 0;border-bottom:1px solid var(--bdr)}
+.gls-check{width:18px;height:18px;accent-color:var(--G);flex:0 0 18px}
+.gls-item-img{width:42px;height:42px;border-radius:10px;background:var(--bg);overflow:hidden;flex:0 0 42px}
+.gls-item-img img{width:100%;height:100%;object-fit:contain}
+.gls-item-main{min-width:0;flex:1}
+.gls-item-name{font-size:11px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gls-item-ocr{font-size:9px;color:var(--tx3);margin-top:2px}
+.gls-item-qty{font-size:9px;color:var(--GD);font-weight:800;margin-top:2px}
+.gls-unmatched{margin-top:10px;padding:10px;border-radius:11px;background:rgba(232,160,32,.1);color:#8a5a05;font-size:9.5px;line-height:1.5}
+.gls-raw{margin-top:10px;font-size:9px;color:var(--tx3);line-height:1.45;display:none}
+.gls-raw.on{display:block}
+.gls-footer{display:flex;gap:8px;margin-top:12px}
+.gls-primary,.gls-secondary{flex:1;border-radius:12px;padding:11px 12px;font:800 11px Montserrat,sans-serif;cursor:pointer}
+.gls-primary{border:0;background:var(--G);color:#fff}.gls-secondary{border:1px solid var(--bdr);background:var(--card);color:var(--tx)}
+[data-theme="dark"] .gls-preview img{background:#101510}
+@media(max-width:360px){.gls-sheet{padding-left:13px;padding-right:13px}.gls-title{font-size:16px}.gls-action{min-height:72px}}
+
 /* FINAL REQUESTED UI FIXES ONLY — do not alter application behavior. */
 /* Product catalogue: keep the complete product image inside the image area. */
 .p-img-w{
@@ -3219,6 +3261,11 @@ button,input,textarea,select{font-family:inherit}
   display:block!important;
 }
 [data-theme="dark"] .p-img-w{background:#101510!important;}
+/* Sponsored carousel: image-led, mobile-safe cards with automatic rotation. */
+.sponsor-image{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;opacity:.28;z-index:0;}
+.sponsor-image::after{content:'';position:absolute;inset:0;}
+.sponsored-explore-slide > .sponsor-image-overlay{position:absolute;inset:0;z-index:1;background:linear-gradient(90deg,rgba(7,18,12,.94) 0%,rgba(7,18,12,.68) 54%,rgba(7,18,12,.18) 100%);pointer-events:none;}
+.sponsored-explore-slide > *:not(.sponsor-image):not(.sponsor-image-overlay){position:relative;z-index:2;}
 /* Restore the Explore Special Offers carousel while using sponsored-only content. */
 .sponsored-explore-slide{
   min-height:184px!important;
@@ -3245,7 +3292,56 @@ button,input,textarea,select{font-family:inherit}
 .sponsor-art{position:absolute;right:-12px;bottom:-26px;width:112px;height:112px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.10);font-size:52px;font-weight:300;color:rgba(255,255,255,.72);}
 /* Remove the straight decorative hero line; no layout/logic impact. */
 .hero::after{display:none!important;content:none!important;}
-@media(max-width:430px){.p-img-w{height:150px!important}.sponsored-explore-slide{min-height:184px!important}}
+@media(max-width:430px){
+  .p-img-w{height:150px!important}
+  .explore-wrap{padding:0 12px 3px!important}
+  .explore-carousel{width:100%;gap:0!important;overflow:hidden!important}
+  .sponsored-explore-slide{width:100%!important;min-width:100%!important;max-width:100%!important;min-height:184px!important;padding:15px!important;box-sizing:border-box!important}
+  .sponsor-content{max-width:82%!important}
+  .sponsor-headline{font-size:16px!important}
+  .explore-arrow{display:none!important}
+}
+@media(max-width:360px){
+  .sponsored-explore-slide{min-height:176px!important;padding:13px!important}
+  .sponsor-headline{font-size:15px!important}
+}
+/* The top account/sign-in control is intentionally removed; Account remains in bottom navigation. */
+.hdr .acct-wrap{display:none!important}
+
+/* Header-only mobile refinement: replace voice shortcut with grocery scanner camera. */
+.hdr-scan-btn{
+  flex:0 0 28px!important;width:28px!important;height:28px!important;
+  border-radius:50%!important;border:0!important;background:rgba(53,185,104,.18)!important;
+  display:flex!important;align-items:center!important;justify-content:center!important;
+  cursor:pointer!important;padding:0!important;margin:0!important;
+}
+.hdr-scan-btn svg{width:14px!important;height:14px!important;stroke:var(--G)!important;fill:none!important;stroke-width:1.9!important;stroke-linecap:round!important;stroke-linejoin:round!important}
+@media(max-width:430px){
+  .hdr{padding:0 9px!important;gap:6px!important}
+  .hdr>.logo{width:70px!important;min-width:70px!important;max-width:70px!important;flex-basis:70px!important;gap:5px!important}
+  .hdr>.logo>.logo-mark,.hdr>.logo>img{width:26px!important;height:26px!important;flex-basis:26px!important}
+  .hdr>.logo .logo-name{font-size:12.5px!important;line-height:12.5px!important}
+  .hdr>.logo .logo-sub{font-size:6px!important;line-height:7px!important}
+  .hdr>.hdr-search-btn{height:35px!important;min-width:0!important;padding:0 4px 0 8px!important;gap:5px!important}
+  .hdr>.hdr-search-btn span{font-size:9px!important}
+  .hdr-scan-btn{width:24px!important;height:24px!important;flex-basis:24px!important}
+  .hdr-scan-btn svg{width:13px!important;height:13px!important}
+  .hdr>.hdr-actions{gap:3px!important}
+  .hdr>.hdr-actions .hdr-icon-btn,.hdr>.hdr-actions #langBtn{width:29px!important;height:29px!important;min-width:29px!important;min-height:29px!important;flex-basis:29px!important}
+}
+@media(max-width:360px){
+  .hdr{height:50px!important;min-height:50px!important;padding:0 7px!important;gap:5px!important}
+  .hdr>.logo{width:62px!important;min-width:62px!important;max-width:62px!important;flex-basis:62px!important}
+  .hdr>.logo>.logo-mark,.hdr>.logo>img{width:24px!important;height:24px!important;flex-basis:24px!important}
+  .hdr>.logo .logo-name{font-size:11.5px!important;line-height:11.5px!important}
+  .hdr>.logo .logo-sub{display:none!important}
+  .hdr>.hdr-search-btn{height:33px!important;padding-left:7px!important;gap:4px!important}
+  .hdr>.hdr-search-btn span{font-size:8px!important}
+  .hdr-scan-btn{width:22px!important;height:22px!important;flex-basis:22px!important}
+  .hdr-scan-btn svg{width:12px!important;height:12px!important}
+  .hdr>.hdr-actions{gap:2px!important}
+  .hdr>.hdr-actions .hdr-icon-btn,.hdr>.hdr-actions #langBtn{width:27px!important;height:27px!important;min-width:27px!important;min-height:27px!important;flex-basis:27px!important}
+}
 
 </style>
 </head>
@@ -3272,8 +3368,8 @@ button,input,textarea,select{font-family:inherit}
   <div class="hdr-search-btn" onclick="openSearch()">
     <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
     <span id="hdrSearchTxt">Search products or ask anything…</span>
-    <button class="hdr-mic-btn" onclick="event.stopPropagation();goChat()" title="Ask with voice">
-      <svg viewBox="0 0 24 24"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2M12 19v4"/></svg>
+    <button class="hdr-scan-btn" onclick="event.stopPropagation();openGroceryScanner()" title="Scan grocery list" aria-label="Scan grocery list">
+      <svg viewBox="0 0 24 24"><path d="M4 7V5a1 1 0 011-1h2M17 4h2a1 1 0 011 1v2M20 17v2a1 1 0 01-1 1h-2M7 20H5a1 1 0 01-1-1v-2"/><path d="M8 9h8v6H8z"/><path d="M10 12h4"/></svg>
     </button>
   </div>
   <div class="hdr-actions">
@@ -3293,12 +3389,8 @@ button,input,textarea,select{font-family:inherit}
          syncCartBadge() below so nothing else breaks. -->
     <!-- Account. Sign-in was previously reachable only from a small card
          further down the home screen, so shoppers never found it. -->
-    <div class="acct-wrap">
-      <button class="hdr-icon-btn" id="acctBtn" onclick="openLoyalty()" title="Your account">
-        <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-      </button>
-      <span class="acct-dot" id="acctDot"></span>
-    </div>
+    <!-- Account/sign-in is intentionally kept out of the top header for mobile fit;
+         the existing Account bottom navigation remains unchanged. -->
   </div>
 </header>
 
@@ -3326,6 +3418,9 @@ button,input,textarea,select{font-family:inherit}
   <div class="srch-hdr">
     <button class="srch-back" onclick="closeSearch()"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
     <input class="srch-input" id="srchInput" placeholder="Search products, categories…" oninput="doSearch(this.value)">
+    <button class="gls-open-btn" type="button" onclick="openGroceryScanner();event.stopPropagation()" title="Scan grocery list" aria-label="Scan grocery list">
+      <svg viewBox="0 0 24 24"><path d="M4 7V5a1 1 0 011-1h2M17 4h2a1 1 0 011 1v2M20 17v2a1 1 0 01-1 1h-2M7 20H5a1 1 0 01-1-1v-2"/><path d="M8 9h8v6H8z"/><path d="M10 12h4"/></svg>
+    </button>
   </div>
   <div class="srch-body" id="srchBody">
     <div class="srch-tag">Popular Searches</div>
@@ -3336,9 +3431,37 @@ button,input,textarea,select{font-family:inherit}
       <div class="srch-chip" onclick="fillSearch('Tomatoes')">Tomatoes</div>
       <div class="srch-chip" onclick="fillSearch('Biryani Masala')">Biryani Masala</div>
       <div class="srch-chip" onclick="fillSearch('Olive Oil')">Olive Oil</div>
+      <div class="srch-chip" onclick="openGroceryScanner()">📷 Scan grocery list</div>
     </div>
     <div class="srch-tag">Results</div>
     <div class="srch-grid" id="srchGrid"></div>
+  </div>
+</div>
+
+<!-- GROCERY LIST SCANNER -->
+<div class="gls-modal" id="groceryScanner" onclick="if(event.target===this)closeGroceryScanner()">
+  <div class="gls-sheet" role="dialog" aria-modal="true" aria-label="Scan grocery list">
+    <div class="gls-hd">
+      <div class="gls-title">Scan grocery list</div>
+      <button class="gls-close" type="button" onclick="closeGroceryScanner()" aria-label="Close">×</button>
+    </div>
+    <div class="gls-sub">Capture a handwritten or printed grocery list with your camera, or choose a photo from your gallery. We’ll read the list and match recognised items to your catalogue.</div>
+    <div class="gls-actions">
+      <button class="gls-action" type="button" onclick="document.getElementById('groceryCameraInput').click()">
+        <svg viewBox="0 0 24 24"><path d="M4 7h3l2-2h6l2 2h3a2 2 0 012 2v9a2 2 0 01-2 2H4a2 2 0 01-2-2V9a2 2 0 012-2z"/><circle cx="12" cy="13" r="3.5"/></svg>
+        Use camera
+      </button>
+      <button class="gls-action" type="button" onclick="document.getElementById('groceryGalleryInput').click()">
+        <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8" cy="9" r="1.5"/><path d="M21 15l-5-5L5 19"/></svg>
+        Choose from gallery
+      </button>
+    </div>
+    <input id="groceryCameraInput" type="file" accept="image/*" capture="environment" style="display:none" onchange="handleGroceryImage(this)">
+    <input id="groceryGalleryInput" type="file" accept="image/*" style="display:none" onchange="handleGroceryImage(this)">
+    <div class="gls-lang"><span>List language</span><select id="groceryOcrLang"><option value="eng">English</option><option value="ara">Arabic</option><option value="hin">Hindi</option><option value="urd">Urdu</option></select></div>
+    <div class="gls-status" id="groceryScanStatus"></div>
+    <div class="gls-preview" id="groceryScanPreview"><img id="groceryScanImage" alt="Grocery list preview"></div>
+    <div class="gls-results" id="groceryScanResults"></div>
   </div>
 </div>
 
@@ -3395,12 +3518,6 @@ button,input,textarea,select{font-family:inherit}
   <div class="sec-hdr"><div class="sec-title">Explore Special Offers</div><div class="sec-link" id="exploreViewAll" onclick="document.getElementById('offersRow').scrollIntoView({behavior:'smooth',block:'center'})">View all</div></div>
   <div class="explore-wrap" id="exploreWrap">
     <div class="explore-carousel" id="exploreCarousel"></div>
-    <button class="explore-arrow prev" onclick="exploreScroll(-1)" aria-label="Previous">
-      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
-    </button>
-    <button class="explore-arrow next" onclick="exploreScroll(1)" aria-label="Next">
-      <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
-    </button>
   </div>
   <div class="explore-dots" id="exploreDots"></div>
   <!-- Sponsored slots — example promo content with fictional partner
@@ -3817,7 +3934,7 @@ const ESSENTIALS=[
    NEXUS SYNC LAYER — shared with the DevX Nexus backend platform
    (localStorage + BroadcastChannel + storage events + polling)
 ══════════════════════════════════════ */
-const NXK={cat:'devx-catalog',ord:'devx-orders',off:'devx-offers',ntf:'devx-notifs-customer',act:'devx-activity',ver:'devx-sync-ver'};
+const NXK={cat:'devx-catalog',ord:'devx-orders',off:'devx-offers',sponsored:'devx-sponsored',ntf:'devx-notifs-customer',act:'devx-activity',ver:'devx-sync-ver'};
 /* Dual mode:
    ONLINE (hosted on the Nexus server) — REST API + Socket.IO real-time push, multi-device.
    LOCAL  (opened as a file)           — localStorage demo mode, single device. */
@@ -4344,33 +4461,52 @@ function renderOffers(){
 /* ─── EXPLORE SPECIAL OFFERS — big carousel ─────────────────────────
    Reuses the same real deal-tagged products as Today's Deals, just
    shown one-at-a-time in a large swipeable card with dot pagination. */
+let exploreTimer=null, exploreIndex=0;
 function renderExplore(){
   const wrap=document.getElementById('exploreWrap');
   const dots=document.getElementById('exploreDots');
   const car=document.getElementById('exploreCarousel');
   if(!wrap||!dots||!car)return;
-  /* Keep Explore Special Offers intact, but use non-product sponsored
-     placements here so catalogue products are not duplicated. */
-  const sponsored=[
-    {brand:'RideGo',headline:'20% off your first ride',sub:'A featured partner message',code:'USE RIDE20',tone:'sponsor-green',mark:'PARTNER'},
-    {brand:'DevX Rewards',headline:'Save up to 15% on your next order',sub:'Exclusive partner benefit',code:'USE SAVE15',tone:'sponsor-navy',mark:'CARD'},
-    {brand:'DevX Plus',headline:'Free delivery for everyday shopping',sub:'Featured membership placement',code:'LEARN MORE',tone:'sponsor-purple',mark:'MEMBERSHIP'}
+  /* Keep Explore Special Offers intact, but use the three admin-managed
+     sponsored placements instead of catalogue products. */
+  const defaults=[
+    {brand:'RideGo',headline:'20% off your first ride',sub:'A featured partner message',code:'USE RIDE20',tone:'sponsor-green',mark:'PARTNER',active:true},
+    {brand:'DevX Rewards',headline:'Save up to 15% on your next order',sub:'Exclusive partner benefit',code:'USE SAVE15',tone:'sponsor-navy',mark:'CARD',active:true},
+    {brand:'DevX Plus',headline:'Free delivery for everyday shopping',sub:'Featured membership placement',code:'LEARN MORE',tone:'sponsor-purple',mark:'MEMBERSHIP',active:true}
   ];
+  const sponsored=nxRead(NXK.sponsored,defaults).filter(a=>a&&a.active!==false).slice(0,3);
   wrap.style.display='';dots.style.display='';
+  clearInterval(exploreTimer);
+  exploreIndex=0;
+  car.scrollLeft=0;
   car.innerHTML=sponsored.map(a=>`<div class="explore-slide sponsored-explore-slide ${a.tone}" onclick="showToast('Example sponsored placement — not a live offer','green')">
-    <div class="sponsor-top"><span class="sponsor-label">Sponsored</span><span class="sponsor-mark">${a.mark}</span></div>
-    <div class="sponsor-content"><div class="sponsor-brand">${a.brand}</div><div class="sponsor-headline">${a.headline}</div><div class="sponsor-sub">${a.sub}</div><div class="sponsor-code">${a.code}</div></div>
+    ${a.image?`<img class="sponsor-image" src="${esc(a.image)}" alt="" loading="lazy">`:''}
+    <div class="sponsor-image-overlay"></div>
+    <div class="sponsor-top"><span class="sponsor-label">Sponsored</span><span class="sponsor-mark">${esc(a.mark||'PARTNER')}</span></div>
+    <div class="sponsor-content"><div class="sponsor-brand">${esc(a.brand)}</div><div class="sponsor-headline">${esc(a.headline)}</div><div class="sponsor-sub">${esc(a.sub)}</div><div class="sponsor-code">${esc(a.code)}</div></div>
     <div class="sponsor-art">✦</div>
   </div>`).join('');
   dots.innerHTML=sponsored.map((_,i)=>`<span class="explore-dot ${i===0?'on':''}"></span>`).join('');
-  car.onscroll=()=>{
-    const i=Math.round(car.scrollLeft/car.clientWidth);
+  const updateDots=()=>{
+    const i=Math.max(0,Math.min(sponsored.length-1,Math.round(car.scrollLeft/Math.max(1,car.clientWidth))));
+    exploreIndex=i;
     [...dots.children].forEach((d,di)=>d.classList.toggle('on',di===i));
   };
+  car.onscroll=updateDots;
+  if(sponsored.length>1){
+    exploreTimer=setInterval(()=>{
+      exploreIndex=(exploreIndex+1)%sponsored.length;
+      car.scrollTo({left:exploreIndex*car.clientWidth,behavior:'smooth'});
+      updateDots();
+    },4000);
+  }
 }
 function exploreScroll(dir){
   const car=document.getElementById('exploreCarousel');
-  car.scrollBy({left:dir*car.clientWidth,behavior:'smooth'});
+  if(!car)return;
+  const count=car.children.length||1;
+  exploreIndex=(exploreIndex+dir+count)%count;
+  car.scrollTo({left:exploreIndex*car.clientWidth,behavior:'smooth'});
 }
 /* ─── POPULAR FOR YOU ────────────────────────────────────────────────
    No real popularity/sales metric exists yet, so this surfaces a set
@@ -4566,6 +4702,151 @@ function doSearch(q){
   }
   const res=DB.filter(p=>p.name.toLowerCase().includes(q.toLowerCase())||p.cat.toLowerCase().includes(q.toLowerCase()));
   document.getElementById('srchGrid').innerHTML=res.length?res.map(pCardHTML).join(''):`<div class="srch-empty" style="grid-column:span 2"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><p>No results for "${esc(q)}"</p></div>`;
+}
+
+/* ─── GROCERY LIST SCANNER — camera/gallery + OCR + catalogue matching ─── */
+let groceryScanObjectUrl='';
+let groceryScanMatches=[];
+let groceryScanUnmatched=[];
+let groceryOcrLoading=false;
+function openGroceryScanner(){
+  const m=document.getElementById('groceryScanner');
+  if(!m)return;
+  m.classList.add('on');
+  const st=document.getElementById('groceryScanStatus');
+  const res=document.getElementById('groceryScanResults');
+  if(st){st.classList.remove('on');st.textContent=''}
+  if(res){res.classList.remove('on');res.innerHTML=''}
+}
+function closeGroceryScanner(){
+  const m=document.getElementById('groceryScanner');if(m)m.classList.remove('on');
+  if(groceryScanObjectUrl){URL.revokeObjectURL(groceryScanObjectUrl);groceryScanObjectUrl=''}
+}
+function groceryStatus(msg,on=true){
+  const el=document.getElementById('groceryScanStatus');if(!el)return;
+  el.textContent=msg;el.classList.toggle('on',on);
+}
+function handleGroceryImage(input){
+  const file=input&&input.files&&input.files[0];
+  if(!file)return;
+  if(!file.type||!file.type.startsWith('image/')){groceryStatus('Please choose an image file.');return;}
+  const preview=document.getElementById('groceryScanPreview'),img=document.getElementById('groceryScanImage');
+  if(groceryScanObjectUrl)URL.revokeObjectURL(groceryScanObjectUrl);
+  groceryScanObjectUrl=URL.createObjectURL(file);
+  if(img)img.src=groceryScanObjectUrl;
+  if(preview)preview.classList.add('on');
+  const res=document.getElementById('groceryScanResults');if(res){res.classList.remove('on');res.innerHTML=''}
+  runGroceryOCR(file);
+  input.value='';
+}
+async function ensureGroceryOCR(){
+  if(window.Tesseract)return window.Tesseract;
+  if(groceryOcrLoading){
+    await new Promise(resolve=>{const t=setInterval(()=>{if(window.Tesseract){clearInterval(t);resolve()}},100);setTimeout(()=>{clearInterval(t);resolve()},15000)});
+    if(window.Tesseract)return window.Tesseract;
+  }
+  groceryOcrLoading=true;
+  try{
+    await loadScript('https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js');
+    if(!window.Tesseract)throw new Error('OCR engine could not be loaded');
+    return window.Tesseract;
+  }finally{groceryOcrLoading=false}
+}
+function normScanText(v){
+  return String(v||'').toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g,'').replace(/[^\p{L}\p{N}\s]/gu,' ').replace(/\s+/g,' ').trim();
+}
+function scanTokens(v){return normScanText(v).split(/\s+/).filter(x=>x.length>1)}
+function levenshtein(a,b){
+  if(a===b)return 0;if(!a)return b.length;if(!b)return a.length;
+  const prev=Array.from({length:b.length+1},(_,i)=>i);
+  for(let i=1;i<=a.length;i++){
+    let cur=[i];
+    for(let j=1;j<=b.length;j++)cur[j]=Math.min(cur[j-1]+1,prev[j]+1,prev[j-1]+(a[i-1]===b[j-1]?0:1));
+    for(let j=0;j<cur.length;j++)prev[j]=cur[j];
+  }
+  return prev[b.length];
+}
+function scanProductScore(line,p){
+  const hay=normScanText((p.name||'')+' '+(p.brand||'')+' '+(p.cat||''));
+  const lt=scanTokens(line),pt=scanTokens(hay);
+  if(!lt.length||!pt.length)return 0;
+  let score=0;
+  lt.forEach(t=>{
+    if(pt.includes(t))score+=1;
+    else if(pt.some(x=>x.includes(t)||t.includes(x)))score+=.72;
+    else{
+      let best=99;pt.forEach(x=>{if(Math.abs(x.length-t.length)<=2)best=Math.min(best,levenshtein(t,x))});
+      if(best<=1)score+=.55;else if(best<=2)score+=.3;
+    }
+  });
+  if(hay.includes(normScanText(line)))score+=1.5;
+  const denom=Math.max(1,lt.length);
+  return score/denom;
+}
+function scanQuantity(line){
+  const m=String(line||'').match(/(?:^|\s)(\d{1,2})(?:\s|$|x|×)/i);
+  if(m)return Math.max(1,Math.min(20,Number(m[1])));
+  const m2=String(line||'').match(/(?:qty|quantity|x)\s*[:=]?\s*(\d{1,2})/i);
+  return m2?Math.max(1,Math.min(20,Number(m2[1]))):1;
+}
+function cleanOcrLines(text){
+  return String(text||'').split(/\r?\n/).map(x=>x.replace(/[|¦]/g,' ').replace(/\s+/g,' ').trim()).filter(x=>x.length>=2).filter(x=>!/^(grocery|shopping|list|items?|total|date|name|notes?)$/i.test(x));
+}
+function matchGroceryLines(lines){
+  const products=DB.length?DB:Array.from(PCACHE.values());
+  const matches=[],unmatched=[];
+  lines.forEach(line=>{
+    const cleaned=line.replace(/^[•*\-–—·]+\s*/,'').trim();
+    if(!cleaned)return;
+    let best=null,bestScore=0;
+    products.forEach(p=>{const sc=scanProductScore(cleaned,p);if(sc>bestScore){bestScore=sc;best=p}});
+    if(best&&bestScore>=.45){
+      const existing=matches.find(x=>x.product.id===best.id);
+      if(existing)existing.qty=Math.min(20,existing.qty+scanQuantity(cleaned));
+      else matches.push({product:best,qty:scanQuantity(cleaned),ocr:cleaned,score:bestScore});
+    }else unmatched.push(cleaned);
+  });
+  return {matches,unmatched};
+}
+function renderGroceryResults(rawText){
+  const res=document.getElementById('groceryScanResults');if(!res)return;
+  const {matches,unmatched}=matchGroceryLines(cleanOcrLines(rawText));
+  groceryScanMatches=matches;groceryScanUnmatched=unmatched;
+  if(!matches.length){res.innerHTML='<div class="gls-results-hd"><div class="gls-results-title">No catalogue matches</div><div class="gls-results-count">Try a clearer photo</div></div>'+(unmatched.length?`<div class="gls-unmatched"><b>Couldn’t match:</b><br>${unmatched.map(esc).join('<br>')}</div>`:'');res.classList.add('on');return}
+  res.innerHTML=`<div class="gls-results-hd"><div class="gls-results-title">Matched grocery items</div><div class="gls-results-count">${matches.length} matched</div></div>`+
+    matches.map((m,i)=>`<label class="gls-item"><input class="gls-check" id="glsChk${i}" type="checkbox" checked><span class="gls-item-img">${m.product.img?`<img src="${esc(m.product.img)}" alt="">`:''}</span><span class="gls-item-main"><span class="gls-item-name">${esc(m.product.name)}</span><span class="gls-item-ocr">Read as: ${esc(m.ocr)}</span><span class="gls-item-qty">Quantity: ${m.qty}</span></span></label>`).join('')+
+    (unmatched.length?`<div class="gls-unmatched"><b>Not found in catalogue:</b><br>${unmatched.map(esc).join('<br>')}</div>`:'')+
+    `<div class="gls-footer"><button class="gls-secondary" type="button" onclick="document.getElementById('glsRaw').classList.toggle('on')">View scanned text</button><button class="gls-primary" type="button" onclick="addScannedGroceries()">Add matched items</button></div><div id="glsRaw" class="gls-raw">${esc(rawText)}</div>`;
+  res.classList.add('on');
+}
+async function runGroceryOCR(file){
+  groceryStatus('Preparing the scanner…');
+  try{
+    const T=await ensureGroceryOCR();
+    const lang=document.getElementById('groceryOcrLang')?.value||'eng';
+    groceryStatus('Reading the list… this can take a few seconds.');
+    const out=await T.recognize(file,lang,{logger:m=>{
+      if(m&&m.status==='recognizing text'&&typeof m.progress==='number')groceryStatus('Reading the list… '+Math.round(m.progress*100)+'%');
+    }});
+    const text=out?.data?.text||'';
+    if(!text.trim()){groceryStatus('No readable text found. Try a brighter, closer photo.');return;}
+    groceryStatus('List scanned. Matching items to the catalogue…');
+    renderGroceryResults(text);
+    groceryStatus(`Scanned ${cleanOcrLines(text).length} line${cleanOcrLines(text).length===1?'':'s'} and matched ${groceryScanMatches.length} catalogue item${groceryScanMatches.length===1?'':'s'}.`);
+  }catch(e){
+    groceryStatus((e&&e.message)||'Could not scan the list. Please try again.');
+  }
+}
+function addScannedGroceries(){
+  let added=0;
+  groceryScanMatches.forEach((m,i)=>{
+    const chk=document.getElementById('glsChk'+i);if(!chk?.checked)return;
+    const p=m.product;const want=m.qty||1;const current=cart[p.id]||0;const cap=p.stock==null?want:Math.max(0,Math.min(want,p.stock-current));
+    if(cap>0){cart[p.id]=current+cap;added+=cap;}
+  });
+  renderProds();syncCartBadge();
+  showToast(added?`${added} scanned item${added===1?'':'s'} added to cart`:'No selected items were added','green');
+  if(added)closeGroceryScanner();
 }
 
 /* ─── CART ─── */
