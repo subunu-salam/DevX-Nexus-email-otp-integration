@@ -3344,6 +3344,73 @@ button,input,textarea,select{font-family:inherit}
 }
 
 </style>
+
+<style id="final-mobile-header-sponsored-ocr-fix">
+/* FINAL MOBILE-ONLY POLISH: prevent header and sponsored-card text collisions. */
+@media (max-width:430px){
+  .hdr{
+    height:54px!important;min-height:54px!important;
+    padding:0 8px!important;gap:5px!important;
+    overflow:hidden!important;box-sizing:border-box!important;
+  }
+  .hdr>.logo{
+    width:68px!important;min-width:68px!important;max-width:68px!important;flex:0 0 68px!important;
+    gap:5px!important;overflow:hidden!important;
+  }
+  .hdr>.logo>.logo-mark,.hdr>.logo>img{
+    width:23px!important;height:23px!important;flex:0 0 23px!important;
+  }
+  .hdr>.logo .logo-text{min-width:0!important;overflow:hidden!important}
+  .hdr>.logo .logo-name{font-size:12px!important;line-height:12px!important;white-space:nowrap!important}
+  .hdr>.logo .logo-sub{font-size:5.5px!important;line-height:7px!important;white-space:nowrap!important}
+  .hdr>.hdr-search-btn{
+    flex:1 1 0!important;min-width:0!important;height:34px!important;
+    padding:0 4px 0 8px!important;gap:4px!important;overflow:hidden!important;
+  }
+  .hdr>.hdr-search-btn>svg{width:13px!important;height:13px!important;flex:0 0 13px!important}
+  .hdr>.hdr-search-btn>span{font-size:8.5px!important;min-width:0!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important}
+  .hdr-scan-btn{width:23px!important;height:23px!important;flex:0 0 23px!important}
+  .hdr-scan-btn svg{width:12px!important;height:12px!important}
+  .hdr>.hdr-actions{gap:2px!important;flex:0 0 auto!important}
+  .hdr>.hdr-actions .hdr-icon-btn,.hdr>.hdr-actions #langBtn{
+    width:28px!important;height:28px!important;min-width:28px!important;min-height:28px!important;flex:0 0 28px!important;
+  }
+  .hdr>.hdr-actions .hdr-icon-btn svg{width:13px!important;height:13px!important}
+
+  /* Three sponsored cards: reserve a dedicated text column so art never covers copy. */
+  .sponsored-row{gap:7px!important;padding:9px 12px 2px!important;align-items:stretch!important}
+  .sponsored-card{
+    min-width:0!important;width:calc((100% - 14px)/3)!important;
+    min-height:142px!important;height:142px!important;
+    padding:10px 8px!important;border-radius:14px!important;
+    box-sizing:border-box!important;overflow:hidden!important;
+  }
+  .sponsored-card .sp-tag{font-size:6.5px!important;padding:2px 5px!important;margin-bottom:4px!important}
+  .sponsored-card .sp-brand{font-size:8.2px!important;line-height:1.15!important;margin-bottom:2px!important;max-width:72%!important;overflow-wrap:anywhere!important}
+  .sponsored-card .sp-headline{font-size:10.5px!important;line-height:1.16!important;max-width:74%!important;overflow-wrap:anywhere!important;margin-bottom:0!important}
+  .sponsored-card .sp-code{font-size:7.2px!important;line-height:1.15!important;max-width:72%!important;margin-top:3px!important;overflow-wrap:anywhere!important}
+  .sponsored-card .sp-join{font-size:8px!important;padding:4px 8px!important;margin-top:4px!important;max-width:78%!important;white-space:nowrap!important}
+  .sponsored-card .sp-ic{width:27px!important;height:27px!important;right:5px!important;bottom:5px!important;opacity:.42!important;pointer-events:none!important}
+}
+@media (max-width:360px){
+  .hdr{height:50px!important;min-height:50px!important;padding:0 6px!important;gap:4px!important}
+  .hdr>.logo{width:61px!important;min-width:61px!important;max-width:61px!important;flex-basis:61px!important;gap:4px!important}
+  .hdr>.logo>.logo-mark,.hdr>.logo>img{width:21px!important;height:21px!important;flex-basis:21px!important}
+  .hdr>.logo .logo-name{font-size:10.8px!important;line-height:11px!important}
+  .hdr>.logo .logo-sub{display:none!important}
+  .hdr>.hdr-search-btn{height:32px!important;padding-left:6px!important;gap:3px!important}
+  .hdr>.hdr-search-btn>span{font-size:8px!important}
+  .hdr-scan-btn{width:21px!important;height:21px!important;flex-basis:21px!important}
+  .hdr-scan-btn svg{width:11px!important;height:11px!important}
+  .hdr>.hdr-actions .hdr-icon-btn,.hdr>.hdr-actions #langBtn{width:26px!important;height:26px!important;min-width:26px!important;min-height:26px!important;flex-basis:26px!important}
+  .sponsored-card{min-height:136px!important;height:136px!important;padding:9px 7px!important;border-radius:13px!important}
+  .sponsored-card .sp-brand{font-size:7.5px!important;max-width:70%!important}
+  .sponsored-card .sp-headline{font-size:9.5px!important;max-width:72%!important}
+  .sponsored-card .sp-code{font-size:6.7px!important;max-width:70%!important}
+  .sponsored-card .sp-join{font-size:7.5px!important;padding:4px 7px!important}
+}
+</style>
+
 </head>
 <body>
 
@@ -4742,12 +4809,29 @@ function handleGroceryImage(input){
 async function ensureGroceryOCR(){
   if(window.Tesseract)return window.Tesseract;
   if(groceryOcrLoading){
-    await new Promise(resolve=>{const t=setInterval(()=>{if(window.Tesseract){clearInterval(t);resolve()}},100);setTimeout(()=>{clearInterval(t);resolve()},15000)});
+    await new Promise(resolve=>{const started=Date.now(),t=setInterval(()=>{
+      if(window.Tesseract||Date.now()-started>30000){clearInterval(t);resolve()}
+    },100)});
     if(window.Tesseract)return window.Tesseract;
   }
   groceryOcrLoading=true;
   try{
-    await loadScript('https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js');
+    await new Promise((resolve,reject)=>{
+      const existing=document.querySelector('script[data-grocery-ocr]');
+      if(existing){
+        if(window.Tesseract){resolve();return}
+        existing.addEventListener('load',resolve,{once:true});
+        existing.addEventListener('error',()=>reject(new Error('OCR engine could not be loaded')),{once:true});
+        return;
+      }
+      const t=document.createElement('script');
+      t.src='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js';
+      t.async=true;t.dataset.groceryOcr='1';
+      t.onload=()=>resolve();
+      t.onerror=()=>reject(new Error('OCR engine could not be loaded. Please check your connection and try again.'));
+      document.head.appendChild(t);
+      setTimeout(()=>{if(!window.Tesseract)reject(new Error('OCR engine is taking too long to load. Please try again.'));},30000);
+    });
     if(!window.Tesseract)throw new Error('OCR engine could not be loaded');
     return window.Tesseract;
   }finally{groceryOcrLoading=false}
@@ -4819,20 +4903,59 @@ function renderGroceryResults(rawText){
     `<div class="gls-footer"><button class="gls-secondary" type="button" onclick="document.getElementById('glsRaw').classList.toggle('on')">View scanned text</button><button class="gls-primary" type="button" onclick="addScannedGroceries()">Add matched items</button></div><div id="glsRaw" class="gls-raw">${esc(rawText)}</div>`;
   res.classList.add('on');
 }
+function groceryPrepareImage(file){
+  return new Promise((resolve,reject)=>{
+    const img=new Image();
+    const url=URL.createObjectURL(file);
+    img.onload=()=>{
+      try{
+        const maxSide=2200, scale=Math.min(1,maxSide/Math.max(img.naturalWidth||img.width,img.naturalHeight||img.height));
+        const w=Math.max(1,Math.round((img.naturalWidth||img.width)*scale*1.6));
+        const h=Math.max(1,Math.round((img.naturalHeight||img.height)*scale*1.6));
+        const c=document.createElement('canvas');c.width=w;c.height=h;
+        const ctx=c.getContext('2d',{willReadFrequently:true});
+        ctx.fillStyle='#fff';ctx.fillRect(0,0,w,h);
+        ctx.drawImage(img,0,0,w,h);
+        const data=ctx.getImageData(0,0,w,h), d=data.data;
+        for(let i=0;i<d.length;i+=4){
+          const y=(0.299*d[i])+(0.587*d[i+1])+(0.114*d[i+2]);
+          const boosted=Math.max(0,Math.min(255,(y-128)*1.45+128));
+          d[i]=d[i+1]=d[i+2]=boosted;
+        }
+        ctx.putImageData(data,0,0);
+        const out=c.toDataURL('image/jpeg',0.94);
+        URL.revokeObjectURL(url);resolve(out);
+      }catch(e){URL.revokeObjectURL(url);reject(e)}
+    };
+    img.onerror=()=>{URL.revokeObjectURL(url);reject(new Error('Could not prepare the image'))};
+    img.src=url;
+  });
+}
 async function runGroceryOCR(file){
   groceryStatus('Preparing the scanner…');
   try{
     const T=await ensureGroceryOCR();
     const lang=document.getElementById('groceryOcrLang')?.value||'eng';
+    const prepared=await groceryPrepareImage(file);
     groceryStatus('Reading the list… this can take a few seconds.');
-    const out=await T.recognize(file,lang,{logger:m=>{
-      if(m&&m.status==='recognizing text'&&typeof m.progress==='number')groceryStatus('Reading the list… '+Math.round(m.progress*100)+'%');
-    }});
-    const text=out?.data?.text||'';
-    if(!text.trim()){groceryStatus('No readable text found. Try a brighter, closer photo.');return;}
+    const out=await T.recognize(prepared,lang,{
+      logger:m=>{
+        if(m&&m.status==='recognizing text'&&typeof m.progress==='number') groceryStatus('Reading the list… '+Math.round(m.progress*100)+'%');
+      },
+      config:{tessedit_pageseg_mode:'6',preserve_interword_spaces:'1'}
+    });
+    let text=out?.data?.text||'';
+    /* A sparse-list pass helps when the photographed list has large gaps or one item per line. */
+    if(cleanOcrLines(text).length<2){
+      groceryStatus('Improving the scan…');
+      const retry=await T.recognize(prepared,lang,{config:{tessedit_pageseg_mode:'11',preserve_interword_spaces:'1'}});
+      if((retry?.data?.text||'').trim().length>text.trim().length) text=retry.data.text;
+    }
+    if(!text.trim()){groceryStatus('No readable text found. Try a brighter, closer photo with the list filling most of the frame.');return;}
     groceryStatus('List scanned. Matching items to the catalogue…');
     renderGroceryResults(text);
-    groceryStatus(`Scanned ${cleanOcrLines(text).length} line${cleanOcrLines(text).length===1?'':'s'} and matched ${groceryScanMatches.length} catalogue item${groceryScanMatches.length===1?'':'s'}.`);
+    const lines=cleanOcrLines(text);
+    groceryStatus(`Scanned ${lines.length} line${lines.length===1?'':'s'} and matched ${groceryScanMatches.length} catalogue item${groceryScanMatches.length===1?'':'s'}.`);
   }catch(e){
     groceryStatus((e&&e.message)||'Could not scan the list. Please try again.');
   }
