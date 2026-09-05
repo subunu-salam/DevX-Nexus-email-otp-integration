@@ -3409,6 +3409,43 @@ button,input,textarea,select{font-family:inherit}
   .sponsored-card .sp-code{font-size:6.7px!important;max-width:70%!important}
   .sponsored-card .sp-join{font-size:7.5px!important;padding:4px 7px!important}
 }
+
+/* Final mobile brand-width correction — UI ONLY.
+   Keeps the complete DEVX / AI Concierge label visible. */
+@media screen and (max-width:430px){
+  .hdr > .logo{
+    width:88px !important;
+    min-width:88px !important;
+    max-width:88px !important;
+    flex:0 0 88px !important;
+  }
+  .hdr > .logo > .logo-text{
+    width:88px !important;
+    min-width:88px !important;
+  }
+  .hdr > .logo .logo-sub{
+    font-size:6.6px !important;
+    line-height:8px !important;
+    letter-spacing:.045em !important;
+  }
+  .hdr > .hdr-search-btn{min-width:0 !important;}
+}
+@media screen and (max-width:360px){
+  .hdr > .logo{
+    width:82px !important;
+    min-width:82px !important;
+    max-width:82px !important;
+    flex-basis:82px !important;
+  }
+  .hdr > .logo > .logo-text{
+    width:82px !important;
+    min-width:82px !important;
+  }
+  .hdr > .logo .logo-sub{
+    font-size:6.2px !important;
+    letter-spacing:.035em !important;
+  }
+}
 </style>
 
 </head>
