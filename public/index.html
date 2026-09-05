@@ -3195,6 +3195,58 @@ button,input,textarea,select{font-family:inherit}
   .hero h1{font-size:23px!important;max-width:270px!important}
 }
 
+
+/* FINAL REQUESTED UI FIXES ONLY — do not alter application behavior. */
+/* Product catalogue: keep the complete product image inside the image area. */
+.p-img-w{
+  width:100%!important;
+  height:158px!important;
+  aspect-ratio:auto!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  overflow:hidden!important;
+  background:#FAFBFA!important;
+}
+.p-img-w img{
+  width:100%!important;
+  height:100%!important;
+  max-width:100%!important;
+  max-height:100%!important;
+  object-fit:contain!important;
+  object-position:center!important;
+  padding:5px!important;
+  display:block!important;
+}
+[data-theme="dark"] .p-img-w{background:#101510!important;}
+/* Restore the Explore Special Offers carousel while using sponsored-only content. */
+.sponsored-explore-slide{
+  min-height:184px!important;
+  padding:14px 16px!important;
+  color:#fff!important;
+  display:flex!important;
+  flex-direction:column!important;
+  justify-content:space-between!important;
+  position:relative!important;
+  overflow:hidden!important;
+}
+.sponsor-green{background:linear-gradient(135deg,#176b42,#2fa968)!important;}
+.sponsor-navy{background:linear-gradient(135deg,#19344d,#275d75)!important;}
+.sponsor-purple{background:linear-gradient(135deg,#4d356e,#7651a3)!important;}
+.sponsor-top{display:flex;align-items:center;justify-content:space-between;position:relative;z-index:2;}
+.sponsor-label,.sponsor-mark{font-size:8px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;}
+.sponsor-label{padding:4px 8px;border-radius:999px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.24);}
+.sponsor-mark{color:rgba(255,255,255,.62);}
+.sponsor-content{position:relative;z-index:2;max-width:78%;}
+.sponsor-brand{font-size:10px;font-weight:700;color:rgba(255,255,255,.75);margin-bottom:3px;}
+.sponsor-headline{font-size:17px;font-weight:850;line-height:1.18;letter-spacing:-.02em;}
+.sponsor-sub{font-size:9px;color:rgba(255,255,255,.68);margin-top:5px;}
+.sponsor-code{display:inline-block;margin-top:9px;padding:5px 9px;border-radius:999px;background:#fff;color:#174e35;font-size:8.5px;font-weight:850;letter-spacing:.03em;}
+.sponsor-art{position:absolute;right:-12px;bottom:-26px;width:112px;height:112px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.10);font-size:52px;font-weight:300;color:rgba(255,255,255,.72);}
+/* Remove the straight decorative hero line; no layout/logic impact. */
+.hero::after{display:none!important;content:none!important;}
+@media(max-width:430px){.p-img-w{height:150px!important}.sponsored-explore-slide{min-height:184px!important}}
+
 </style>
 </head>
 <body>
@@ -4293,23 +4345,24 @@ function renderOffers(){
    Reuses the same real deal-tagged products as Today's Deals, just
    shown one-at-a-time in a large swipeable card with dot pagination. */
 function renderExplore(){
-  const deals=DB.filter(p=>p.deal);
   const wrap=document.getElementById('exploreWrap');
   const dots=document.getElementById('exploreDots');
-  if(!deals.length){wrap.style.display='none';dots.style.display='none';return}
   const car=document.getElementById('exploreCarousel');
-  car.innerHTML=deals.map(p=>{
-    const pct=p.offerPct!=null?p.offerPct:(p.was?Math.round((p.was-p.price)/p.was*100):0);
-    return `<div class="explore-slide" onclick="addOne(${p.id});showToast(${JSON.stringify(p.name+' added!')},'green')">
-      <img src="${esc(p.img||'')}" alt="${esc(p.name)}" onerror="this.src='https://images.unsplash.com/photo-1542838132-92c53300491e?w=600&h=300&fit=crop'">
-      <div class="offer-grad">
-        <span class="offer-badge ${pct>=20?'gold':pct>=10?'red':'green'}">${pct}% OFF</span>
-        <div class="offer-name">${esc(p.name)}</div>
-        <div class="offer-price-row">AED ${p.price} <s>AED ${p.was}</s></div>
-      </div>
-    </div>`;
-  }).join('');
-  dots.innerHTML=deals.map((_,i)=>`<span class="explore-dot ${i===0?'on':''}"></span>`).join('');
+  if(!wrap||!dots||!car)return;
+  /* Keep Explore Special Offers intact, but use non-product sponsored
+     placements here so catalogue products are not duplicated. */
+  const sponsored=[
+    {brand:'RideGo',headline:'20% off your first ride',sub:'A featured partner message',code:'USE RIDE20',tone:'sponsor-green',mark:'PARTNER'},
+    {brand:'DevX Rewards',headline:'Save up to 15% on your next order',sub:'Exclusive partner benefit',code:'USE SAVE15',tone:'sponsor-navy',mark:'CARD'},
+    {brand:'DevX Plus',headline:'Free delivery for everyday shopping',sub:'Featured membership placement',code:'LEARN MORE',tone:'sponsor-purple',mark:'MEMBERSHIP'}
+  ];
+  wrap.style.display='';dots.style.display='';
+  car.innerHTML=sponsored.map(a=>`<div class="explore-slide sponsored-explore-slide ${a.tone}" onclick="showToast('Example sponsored placement — not a live offer','green')">
+    <div class="sponsor-top"><span class="sponsor-label">Sponsored</span><span class="sponsor-mark">${a.mark}</span></div>
+    <div class="sponsor-content"><div class="sponsor-brand">${a.brand}</div><div class="sponsor-headline">${a.headline}</div><div class="sponsor-sub">${a.sub}</div><div class="sponsor-code">${a.code}</div></div>
+    <div class="sponsor-art">✦</div>
+  </div>`).join('');
+  dots.innerHTML=sponsored.map((_,i)=>`<span class="explore-dot ${i===0?'on':''}"></span>`).join('');
   car.onscroll=()=>{
     const i=Math.round(car.scrollLeft/car.clientWidth);
     [...dots.children].forEach((d,di)=>d.classList.toggle('on',di===i));
