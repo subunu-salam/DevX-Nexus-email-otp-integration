@@ -74,12 +74,17 @@ const TRANSCRIBER = groq
 console.log('[nexus] LLM provider:', LLM ? LLM.name : 'NONE (keyword fallback only — add GROQ_API_KEY)');
 
 /* ── storage ── */
-const KEYS = ['devx-catalog', 'devx-orders', 'devx-offers', 'devx-notifs-customer', 'devx-activity', 'devx-queries',
+const KEYS = ['devx-catalog', 'devx-orders', 'devx-offers', 'devx-sponsored', 'devx-notifs-customer', 'devx-activity', 'devx-queries',
   'devx-loyalty', 'devx-personal-offers', 'devx-zones', 'devx-staff', 'devx-audit', 'devx-slots', 'devx-branches', 'devx-catalogs', 'devx-order-additions', 'devx-customer-passwords'];
 let db = {
   'devx-catalog': null,
   'devx-orders': [],
   'devx-offers': [],
+  'devx-sponsored': [
+    {id:'SP1',brand:'RideGo',headline:'20% off your first ride',sub:'A featured partner message',code:'USE RIDE20',tone:'sponsor-green',mark:'PARTNER',active:true},
+    {id:'SP2',brand:'DevX Rewards',headline:'Save up to 15% on your next order',sub:'Exclusive partner benefit',code:'USE SAVE15',tone:'sponsor-navy',mark:'CARD',active:true},
+    {id:'SP3',brand:'DevX Plus',headline:'Free delivery for everyday shopping',sub:'Featured membership placement',code:'LEARN MORE',tone:'sponsor-purple',mark:'MEMBERSHIP',active:true}
+  ],
   'devx-notifs-customer': [],
   'devx-activity': [],
   'devx-queries': [],
@@ -283,6 +288,7 @@ function publicState(cid, opts = {}) {
   const verifiedPhone=opts.verifiedPhone||null;
   const s = {
     'devx-offers': db['devx-offers'],
+    'devx-sponsored': db['devx-sponsored'] || [],
     'devx-activity': [],
     'devx-notifs-customer': verifiedPhone ? db['devx-notifs-customer'].filter(n=>n.phone&&LOY.normalisePhone(n.phone)===verifiedPhone) : [],
     'devx-orders': verifiedPhone ? [...new Map(db['devx-orders'].filter(o=>LOY.normalisePhone(o.customer&&o.customer.phone)===verifiedPhone).map(o=>[o.id,o])).values()] : [],
