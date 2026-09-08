@@ -3262,10 +3262,12 @@ button,input,textarea,select{font-family:inherit}
 }
 [data-theme="dark"] .p-img-w{background:#101510!important;}
 /* Sponsored carousel: image-led, mobile-safe cards with automatic rotation. */
-.sponsor-image{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;opacity:.28;z-index:0;}
-.sponsor-image::after{content:'';position:absolute;inset:0;}
-.sponsored-explore-slide > .sponsor-image-overlay{position:absolute;inset:0;z-index:1;background:linear-gradient(90deg,rgba(7,18,12,.94) 0%,rgba(7,18,12,.68) 54%,rgba(7,18,12,.18) 100%);pointer-events:none;}
-.sponsored-explore-slide > *:not(.sponsor-image):not(.sponsor-image-overlay){position:relative;z-index:2;}
+/* Uploaded promotional artwork gets a dedicated right-side square. */
+.sponsor-image{width:100%;height:100%;object-fit:contain;object-position:center;display:block;opacity:1;z-index:0;}
+.sponsored-explore-slide > .sponsor-image-overlay{position:absolute;inset:0;z-index:1;background:linear-gradient(90deg,rgba(7,18,12,.96) 0%,rgba(7,18,12,.82) 58%,rgba(7,18,12,.35) 100%);pointer-events:none;}
+.sponsored-explore-slide > *:not(.sponsor-image):not(.sponsor-image-overlay):not(.sponsor-media){position:relative;z-index:3;}
+.sponsor-media{position:absolute;right:14px;top:50%;transform:translateY(-50%);width:168px;height:168px;border-radius:16px;background:#fff;overflow:hidden;display:flex;align-items:center;justify-content:center;z-index:2;box-sizing:border-box;}
+.sponsor-media .sponsor-image{padding:8px;box-sizing:border-box;}
 /* Restore the Explore Special Offers carousel while using sponsored-only content. */
 .sponsored-explore-slide{
   min-height:184px!important;
@@ -3280,11 +3282,11 @@ button,input,textarea,select{font-family:inherit}
 .sponsor-green{background:linear-gradient(135deg,#176b42,#2fa968)!important;}
 .sponsor-navy{background:linear-gradient(135deg,#19344d,#275d75)!important;}
 .sponsor-purple{background:linear-gradient(135deg,#4d356e,#7651a3)!important;}
-.sponsor-top{display:flex;align-items:center;justify-content:space-between;position:relative;z-index:2;}
+.sponsor-top{display:flex;align-items:center;justify-content:space-between;position:relative;z-index:4;padding-right:188px;box-sizing:border-box;}
 .sponsor-label,.sponsor-mark{font-size:8px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;}
 .sponsor-label{padding:4px 8px;border-radius:999px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.24);}
 .sponsor-mark{color:rgba(255,255,255,.62);}
-.sponsor-content{position:relative;z-index:2;max-width:78%;}
+.sponsor-content{position:relative;z-index:3;width:calc(100% - 198px);max-width:calc(100% - 198px);padding-right:8px;box-sizing:border-box;}
 .sponsor-brand{font-size:10px;font-weight:700;color:rgba(255,255,255,.75);margin-bottom:3px;}
 .sponsor-headline{font-size:17px;font-weight:850;line-height:1.18;letter-spacing:-.02em;}
 .sponsor-sub{font-size:9px;color:rgba(255,255,255,.68);margin-top:5px;}
@@ -3297,12 +3299,18 @@ button,input,textarea,select{font-family:inherit}
   .explore-wrap{padding:0 12px 3px!important}
   .explore-carousel{width:100%;gap:0!important;overflow:hidden!important}
   .sponsored-explore-slide{width:100%!important;min-width:100%!important;max-width:100%!important;min-height:184px!important;padding:15px!important;box-sizing:border-box!important}
-  .sponsor-content{max-width:82%!important}
+  .sponsor-media{width:122px!important;height:122px!important;right:10px!important;border-radius:13px!important}
+  .sponsor-media .sponsor-image{padding:6px!important}
+  .sponsor-top{padding-right:136px!important}
+  .sponsor-content{width:calc(100% - 140px)!important;max-width:calc(100% - 140px)!important;padding-right:4px!important}
   .sponsor-headline{font-size:16px!important}
   .explore-arrow{display:none!important}
 }
 @media(max-width:360px){
   .sponsored-explore-slide{min-height:176px!important;padding:13px!important}
+  .sponsor-media{width:108px!important;height:108px!important;right:8px!important}
+  .sponsor-top{padding-right:120px!important}
+  .sponsor-content{width:calc(100% - 124px)!important;max-width:calc(100% - 124px)!important}
   .sponsor-headline{font-size:15px!important}
 }
 /* The top account/sign-in control is intentionally removed; Account remains in bottom navigation. */
@@ -4584,8 +4592,8 @@ function renderExplore(){
   exploreIndex=0;
   car.scrollLeft=0;
   car.innerHTML=sponsored.map(a=>`<div class="explore-slide sponsored-explore-slide ${a.tone}" onclick="showToast('Example sponsored placement — not a live offer','green')">
-    ${a.image?`<img class="sponsor-image" src="${esc(a.image)}" alt="" loading="lazy">`:''}
     <div class="sponsor-image-overlay"></div>
+    ${a.image?`<div class="sponsor-media"><img class="sponsor-image" src="${esc(a.image)}" alt="" loading="lazy"></div>`:''}
     <div class="sponsor-top"><span class="sponsor-label">Sponsored</span><span class="sponsor-mark">${esc(a.mark||'PARTNER')}</span></div>
     <div class="sponsor-content"><div class="sponsor-brand">${esc(a.brand)}</div><div class="sponsor-headline">${esc(a.headline)}</div><div class="sponsor-sub">${esc(a.sub)}</div><div class="sponsor-code">${esc(a.code)}</div></div>
     <div class="sponsor-art">✦</div>
