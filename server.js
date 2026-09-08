@@ -2885,7 +2885,12 @@ app.get('/api/audit', need('audit.view'), (req, res) => {
   res.json({ data: rows.slice(0, Math.min(300, parseInt(req.query.limit, 10) || 150)) });
 });
 
-app.post('/api/admin/set', need('inventory.edit'), (req, res) => {
+app.post('/api/admin/set', (req, res, next) => {
+  const { key } = req.body || {};
+  if (!KEYS.includes(key)) return res.status(400).json({ error: 'bad key' });
+  if (key === 'devx-sponsored') return need('offers.manage')(req, res, next);
+  return need('inventory.edit')(req, res, next);
+}, (req, res) => {
   const { key, value } = req.body || {};
   if (!KEYS.includes(key)) return res.status(400).json({ error: 'bad key' });
   const bid = branchOf(req);
