@@ -225,6 +225,17 @@ tbody tr.click:hover{background:var(--GL)}
 .dn-leg{display:flex;flex-direction:column;gap:9px}
 .dn-li{display:flex;align-items:center;gap:8px;font-size:11px;font-weight:700;color:var(--tx2)}
 .dn-sw{width:11px;height:11px;border-radius:4px}
+
+/* Special Offers / Monetization — four independently managed cards */
+.sponsored-admin-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.sponsored-admin-card{box-shadow:none!important;border:1px solid var(--line)!important;min-width:0}
+.sponsored-admin-card .card-bd{padding:12px!important}
+.sponsored-admin-card .lbl{font-size:9px!important}
+.sponsored-admin-card .inp,.sponsored-admin-card .sel{width:100%;box-sizing:border-box}
+.sponsored-admin-preview{height:110px;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--bg);display:none;margin-top:7px}
+.sponsored-admin-preview img{width:100%;height:100%;object-fit:cover;display:block}
+@media(max-width:1200px){.sponsored-admin-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:700px){.sponsored-admin-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -414,14 +425,14 @@ tbody tr.click:hover{background:var(--GL)}
       <div class="card"><div id="invTable"></div></div>
     </div>
 
-    <!-- OFFERS -->
+    <!-- SPONSORED / MONETIZATION -->
     <div class="view" id="view-sponsored">
       <div class="card">
-        <div class="card-hd"><span class="card-t">Sponsored / Monetization Content</span><span style="font-size:10px;color:var(--tx3);font-weight:700">Controls the Explore Special Offers carousel</span></div>
+        <div class="card-hd"><span class="card-t">Explore Special Offers — 4 Cards</span><span style="font-size:10px;color:var(--tx3);font-weight:700">All four Home Page cards are managed here and rotate every 4 seconds</span></div>
         <div class="card-bd">
-          <div id="sponsoredList" style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px"></div>
-          <div style="display:flex;justify-content:flex-end;margin-top:14px"><button class="btn grn" onclick="saveSponsored()">Save sponsored content</button></div>
-          <p style="font-size:10px;color:var(--tx3);font-weight:600;margin-top:9px;line-height:1.6">These are placeholder placements only. Changes are pushed to the customer app without changing catalogue products or other store functionality.</p>
+          <div id="sponsoredList" class="sponsored-admin-grid"></div>
+          <div style="display:flex;justify-content:flex-end;margin-top:14px"><button class="btn grn" onclick="saveSponsored()">Save &amp; publish all 4 cards</button></div>
+          <p style="font-size:10px;color:var(--tx3);font-weight:600;margin-top:9px;line-height:1.6">Card 1 is the client-managed Special Offer. Cards 2–4 are sponsored monetization placements. Every card supports its own copy, CTA, theme and promotional image. Saving here updates the customer Home Page.</p>
         </div>
       </div>
     </div>
@@ -782,7 +793,7 @@ const SEED=[
 ];
 
 /* ─── SYNC LAYER (identical contract to the customer app) ─── */
-const NXK={cat:'devx-catalog',ord:'devx-orders',off:'devx-offers',ntf:'devx-notifs-customer',act:'devx-activity',ver:'devx-sync-ver'};
+const NXK={cat:'devx-catalog',ord:'devx-orders',off:'devx-offers',sponsored:'devx-sponsored',ntf:'devx-notifs-customer',act:'devx-activity',ver:'devx-sync-ver'};
 /* Dual mode: ONLINE = REST + Socket.IO against the Nexus server (multi-device, real-time).
               LOCAL  = localStorage demo when opened as a plain file. */
 const NX_HTTP=/^https?:$/.test(location.protocol);
@@ -2981,92 +2992,75 @@ function addProduct(){
   renderInv();
 }
 
-/* ─── SPONSORED CONTENT ─── */
+/* ─── SPONSORED CONTENT / SPECIAL OFFERS ─── */
 const SPONSORED_DEFAULT=[
-  {id:'SP1',brand:'RideGo',headline:'20% off your first ride',sub:'A featured partner message',code:'USE RIDE20',tone:'sponsor-green',mark:'PARTNER',active:true},
-  {id:'SP2',brand:'DevX Rewards',headline:'Save up to 15% on your next order',sub:'Exclusive partner benefit',code:'USE SAVE15',tone:'sponsor-navy',mark:'CARD',active:true},
-  {id:'SP3',brand:'DevX Plus',headline:'Free delivery for everyday shopping',sub:'Featured membership placement',code:'LEARN MORE',tone:'sponsor-purple',mark:'MEMBERSHIP',active:true}
+  {id:'SP1',type:'special',brand:'',headline:'',sub:'',code:'',tone:'sponsor-navy',mark:'SPECIAL OFFER',active:true,image:''},
+  {id:'SP2',type:'sponsored',brand:'',headline:'',sub:'',code:'',tone:'sponsor-green',mark:'SPONSORED',active:true,image:''},
+  {id:'SP3',type:'sponsored',brand:'',headline:'',sub:'',code:'',tone:'sponsor-navy',mark:'SPONSORED',active:true,image:''},
+  {id:'SP4',type:'sponsored',brand:'',headline:'',sub:'',code:'',tone:'sponsor-purple',mark:'SPONSORED',active:true,image:''}
 ];
 function sponsoredState(){
-  const v=nxRead('devx-sponsored',SPONSORED_DEFAULT);
-  return Array.isArray(v)&&v.length?v:SPONSORED_DEFAULT.map(x=>Object.assign({},x));
+  const v=nxRead('devx-sponsored',[]);
+  const rows=Array.isArray(v)?v.slice(0,4):[];
+  while(rows.length<4)rows.push(Object.assign({},SPONSORED_DEFAULT[rows.length]));
+  return rows.map((a,i)=>Object.assign({},SPONSORED_DEFAULT[i],a,{id:SPONSORED_DEFAULT[i].id,type:i===0?'special':'sponsored'}));
 }
 function renderSponsored(){
   const el=document.getElementById('sponsoredList');if(!el)return;
-  const rows=sponsoredState().slice(0,3);
-  while(rows.length<3)rows.push(Object.assign({},SPONSORED_DEFAULT[rows.length]));
-  el.innerHTML=rows.map((a,i)=>`<div class="card" style="box-shadow:none;border:1px solid var(--line)">
+  const rows=sponsoredState();
+  el.innerHTML=rows.map((a,i)=>`<div class="card sponsored-admin-card">
     <div class="card-bd">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px"><b style="font-size:11px">Placement ${i+1}</b><label style="font-size:10px;font-weight:800;color:var(--tx2)"><input type="checkbox" id="spActive${i}" ${a.active!==false?'checked':''}> Active</label></div>
-      <div class="fld"><label class="lbl">Partner / Brand</label><input class="inp" id="spBrand${i}" value="${esc(a.brand)}"></div>
-      <div class="fld"><label class="lbl">Headline</label><input class="inp" id="spHeadline${i}" value="${esc(a.headline)}"></div>
-      <div class="fld"><label class="lbl">Supporting text</label><input class="inp" id="spSub${i}" value="${esc(a.sub)}"></div>
-      <div class="fld"><label class="lbl">Sponsored image</label>
-        <input class="inp" id="spImage${i}" type="file" accept="image/*" onchange="previewSponsoredImage(this,${i})" style="padding:8px 9px">
-        <div id="spImagePreview${i}" style="margin-top:7px;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--bg);height:76px;display:${a.image?'block':'none'}">${a.image?`<img src="${esc(a.image)}" alt="" style="width:100%;height:100%;object-fit:cover;display:block">`:''}</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px"><b style="font-size:11px">${i===0?'Card 1 · Special Offer':'Placement '+i}</b><label style="font-size:10px;font-weight:800;color:var(--tx2)"><input type="checkbox" id="spActive${i}" ${a.active!==false?'checked':''}> Active</label></div>
+      <div class="fld"><label class="lbl">${i===0?'Brand / Business Name':'Partner / Brand'}</label><input class="inp" id="spBrand${i}" value="${esc(a.brand)}" placeholder="Enter your own content"></div>
+      <div class="fld"><label class="lbl">Offer Headline</label><input class="inp" id="spHeadline${i}" value="${esc(a.headline)}" placeholder="Enter headline"></div>
+      <div class="fld"><label class="lbl">Offer Details / Supporting Text</label><textarea class="inp" id="spSub${i}" rows="2" placeholder="Enter supporting content" style="resize:vertical">${esc(a.sub)}</textarea></div>
+      <div class="fld"><label class="lbl">CTA / Code</label><input class="inp" id="spCode${i}" value="${esc(a.code)}" placeholder="e.g. SHOP NOW or SAVE20"></div>
+      <div class="fld"><label class="lbl">Theme / Background</label><select class="sel" id="spTone${i}"><option value="sponsor-green" ${a.tone==='sponsor-green'?'selected':''}>Green gradient</option><option value="sponsor-navy" ${a.tone==='sponsor-navy'?'selected':''}>Deep blue gradient</option><option value="sponsor-purple" ${a.tone==='sponsor-purple'?'selected':''}>Purple gradient</option></select></div>
+      <div class="fld"><label class="lbl">Display Label</label><input class="inp" id="spMark${i}" value="${esc(a.mark||'SPONSORED')}" placeholder="e.g. SPECIAL OFFER"></div>
+      <div class="fld"><label class="lbl">Square Promotional Image — Right Side</label>
+        <input class="inp" id="spImage${i}" type="file" accept="image/jpeg,image/png,image/webp" onchange="previewSponsoredImage(this,${i})" style="padding:8px 9px">
+        <div id="spImagePreview${i}" class="sponsored-admin-preview" style="display:${a.image?'block':'none'}">${a.image?`<img src="${esc(a.image)}" alt="">`:''}</div>
+        <div style="font-size:9px;color:var(--tx3);margin-top:5px">JPG, PNG or WebP · max 5 MB · cropped to square</div>
       </div>
-      <div class="fld"><label class="lbl">CTA / Code</label><input class="inp" id="spCode${i}" value="${esc(a.code)}"></div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><div class="fld"><label class="lbl">Style</label><select class="sel" id="spTone${i}"><option value="sponsor-green" ${a.tone==='sponsor-green'?'selected':''}>Green</option><option value="sponsor-navy" ${a.tone==='sponsor-navy'?'selected':''}>Navy</option><option value="sponsor-purple" ${a.tone==='sponsor-purple'?'selected':''}>Purple</option></select></div><div class="fld"><label class="lbl">Label</label><input class="inp" id="spMark${i}" value="${esc(a.mark||'PARTNER')}"></div></div>
     </div></div>`).join('');
 }
 function previewSponsoredImage(input,i){
-  const file=input&&input.files&&input.files[0];
-  const box=document.getElementById('spImagePreview'+i);
+  const file=input&&input.files&&input.files[0],box=document.getElementById('spImagePreview'+i);
   if(!file||!box)return;
+  if(file.size>5*1024*1024){input.value='';toast('Image must be 5 MB or smaller','red');return;}
   const reader=new FileReader();
-  reader.onload=()=>{
-    box.style.display='block';
-    box.innerHTML=`<img src="${esc(reader.result)}" alt="" style="width:100%;height:100%;object-fit:cover;display:block">`;
-  };
+  reader.onload=()=>{box.style.display='block';box.innerHTML=`<img src="${esc(reader.result)}" alt="">`;};
   reader.readAsDataURL(file);
 }
 function readSponsoredImage(file){
   return new Promise((resolve,reject)=>{
     if(!file){resolve('');return;}
-    if(!file.type.startsWith('image/')){reject(new Error('Please select an image file'));return;}
-    const reader=new FileReader();
-    reader.onerror=()=>reject(new Error('Could not read the image'));
+    if(!/^image\/(jpeg|png|webp)$/.test(file.type)){reject(new Error('Please select a JPG, PNG or WebP image'));return;}
+    if(file.size>5*1024*1024){reject(new Error('Image must be 5 MB or smaller'));return;}
+    const reader=new FileReader();reader.onerror=()=>reject(new Error('Could not read the image'));
     reader.onload=()=>{
-      const img=new Image();
+      const img=new Image();img.onerror=()=>reject(new Error('Could not process the image'));
       img.onload=()=>{
-        const maxW=1200,maxH=600,scale=Math.min(1,maxW/img.width,maxH/img.height);
-        const w=Math.max(1,Math.round(img.width*scale)),h=Math.max(1,Math.round(img.height*scale));
-        const canvas=document.createElement('canvas');canvas.width=w;canvas.height=h;
-        const ctx=canvas.getContext('2d');ctx.drawImage(img,0,0,w,h);
+        const side=Math.min(img.width,img.height),sx=Math.floor((img.width-side)/2),sy=Math.floor((img.height-side)/2),max=700,s=Math.min(1,max/side),w=Math.max(1,Math.round(side*s));
+        const canvas=document.createElement('canvas');canvas.width=w;canvas.height=w;const ctx=canvas.getContext('2d');ctx.drawImage(img,sx,sy,side,side,0,0,w,w);
         resolve(canvas.toDataURL('image/jpeg',0.82));
-      };
-      img.onerror=()=>reject(new Error('Could not process the image'));
-      img.src=reader.result;
-    };
-    reader.readAsDataURL(file);
+      };img.src=reader.result;
+    };reader.readAsDataURL(file);
   });
 }
 async function saveSponsored(){
-  const current=sponsoredState().slice(0,3);
-  while(current.length<3)current.push(Object.assign({},SPONSORED_DEFAULT[current.length]));
-  const rows=[];
+  const old=sponsoredState(),rows=[];
   try{
-    for(let i=0;i<3;i++){
-      const d=SPONSORED_DEFAULT[i],a=current[i]||d,inp=document.getElementById('spImage'+i);
+    for(let i=0;i<4;i++){
+      const d=SPONSORED_DEFAULT[i],a=old[i],inp=document.getElementById('spImage'+i);
       const uploaded=inp&&inp.files&&inp.files[0]?await readSponsoredImage(inp.files[0]):'';
-      rows.push({
-        id:d.id,
-        brand:document.getElementById('spBrand'+i).value.trim()||d.brand,
-        headline:document.getElementById('spHeadline'+i).value.trim()||d.headline,
-        sub:document.getElementById('spSub'+i).value.trim()||d.sub,
-        code:document.getElementById('spCode'+i).value.trim()||d.code,
-        tone:document.getElementById('spTone'+i).value,
-        mark:document.getElementById('spMark'+i).value.trim()||d.mark,
-        image:uploaded||a.image||'',
-        active:document.getElementById('spActive'+i).checked
-      });
+      rows.push({id:d.id,type:i===0?'special':'sponsored',brand:document.getElementById('spBrand'+i).value.trim(),headline:document.getElementById('spHeadline'+i).value.trim(),sub:document.getElementById('spSub'+i).value.trim(),code:document.getElementById('spCode'+i).value.trim(),tone:document.getElementById('spTone'+i).value,mark:document.getElementById('spMark'+i).value.trim(),image:uploaded||a.image||'',active:document.getElementById('spActive'+i).checked});
     }
-    nxSet('devx-sponsored',rows);
-    logAct('offer','Sponsored content placements updated');
-    nxBump();
-    toast('Sponsored content updated · customer app synced');
-    renderSponsored();
-  }catch(e){toast(e.message||'Could not save sponsored content','red')}
+    const r=await fetch('/api/admin/set',{method:'POST',headers:authHeaders({'Content-Type':'application/json'}),body:JSON.stringify({key:'devx-sponsored',value:rows})});
+    if(!r.ok){let msg='Could not save changes to the server';try{const d=await r.json();msg=d.error||msg}catch(e){}throw new Error(msg);}
+    CACHE['devx-sponsored']=rows;nxSet('devx-sponsored',rows);logAct('offer','Special Offers / sponsored content updated');nxBump();
+    toast('All 4 cards saved · customer Home Page synced');renderSponsored();
+  }catch(e){toast(e.message||'Could not save changes to the server','red');}
 }
 
 /* ─── OFFERS ─── */
