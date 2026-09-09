@@ -285,6 +285,7 @@ tbody tr.click:hover{background:var(--GL)}
     <button class="nav-btn" id="nav-insights" onclick="go('insights')">
       <svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 00-4 12.7V17a2 2 0 002 2h4a2 2 0 002-2v-2.3A7 7 0 0012 2z"/><line x1="9" y1="22" x2="15" y2="22"/></svg>AI Insights
     </button>
+    <button class="nav-btn" id="nav-goals" onclick="go('goals')"><svg viewBox="0 0 24 24"><path d="M12 3v4M12 17v4M3 12h4M17 12h4"/><circle cx="12" cy="12" r="6"/><path d="M10 12l1.5 1.5L14.5 10"/></svg>Customer Goals &amp; Streaks</button>
     <button class="nav-btn" id="nav-reorder" onclick="go('reorder')">
       <svg viewBox="0 0 24 24"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0115-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 01-15 6.7L3 16"/></svg>Auto Reorder
       <span class="nav-badge" id="reorderBadge"></span>
@@ -481,6 +482,9 @@ tbody tr.click:hover{background:var(--GL)}
         <div class="card-bd" id="insAffinity"></div>
       </div>
     </div>
+
+    <!-- CUSTOMER GOALS & STREAKS -->
+    <div class="view" id="view-goals"><div class="card"><div class="card-hd"><span class="card-t">Customer Goals &amp; Streaks</span><span style="font-size:10px;color:var(--tx3);font-weight:700">Read-only behaviour-based personalisation</span></div><div class="card-bd"><div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px;flex-wrap:wrap"><div style="font-size:10.5px;color:var(--tx3);font-weight:600;line-height:1.5">Goals are generated from completed orders, purchase cadence and repeated searches without purchase. No random challenges.</div><button class="btn ghost sm" onclick="loadCustomerGoals()">Refresh</button></div><div id="goalConfigNote" style="margin-bottom:12px;padding:9px 11px;border-radius:10px;background:var(--GL);color:var(--GD);font-size:9.5px;font-weight:800"></div><div id="customerGoalsTable"><div class="empty">Loading customer goals…</div></div></div></div></div>
 
     <!-- AUTO REORDER -->
     <div class="view" id="view-reorder">
@@ -906,7 +910,7 @@ function signInScreen(msg){
 /* What each screen needs. Two of these were wrong and it mattered: the audit
    log sat behind orders.view, so a picker could read who refunded what; and
    Branches sat behind inventory.edit, so a buyer saw the shop list. */
-const NAV_PERM={insights:'insights.view',reorder:'insights.view',health:'insights.view',
+const NAV_PERM={insights:'insights.view',goals:'insights.view',reorder:'insights.view',health:'insights.view',
   loyal:'loyalty.view',calc:'forecast.view',demand:'forecast.view',optim:'forecast.view',
   fin:'forecast.view',wh:'forecast.view',inv:'inventory.edit',offers:'offers.manage',sponsored:'offers.manage',
   cust:'loyalty.view',staff:'staff.manage',audit:'audit.view',branch:'branch.view',
@@ -915,7 +919,7 @@ const NAV_PERM={insights:'insights.view',reorder:'insights.view',health:'insight
 /* Which section each screen lives under, so a heading with nothing beneath it
    does not sit there implying a missing feature. */
 const NAV_SEC={group:'overview',dash:'overview',orders:'fulfilment',pkc:'fulfilment',scan:'fulfilment',
-  inv:'merchandising',offers:'merchandising',sponsored:'merchandising',insights:'intelligence',reorder:'intelligence',
+  inv:'merchandising',offers:'merchandising',sponsored:'merchandising',insights:'intelligence',goals:'intelligence',reorder:'intelligence',
   health:'intelligence',calc:'forecastai',demand:'forecastai',optim:'forecastai',fin:'forecastai',
   wh:'forecastai',loyal:'relationships',cust:'relationships',act:'relationships',
   staff:'administration',audit:'administration',roles:'administration',branch:'administration'};
@@ -1058,7 +1062,7 @@ function timeAgo(iso){const s=Math.floor((Date.now()-new Date(iso))/1000);if(s<6
 function esc(s){return String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
 
 /* ─── NAV ─── */
-const TITLES={dash:['Dashboard','Live overview of your store'],pkc:['Pickup Counter','Dedicated queue for in-store collection'],orders:['Orders','Every order from the customer app, in real time'],scan:['Pickup Scanner','Verify customer pickup passes'],inv:['Inventory','Shared catalog — edits go live in the customer app'],offers:['Offers & Promotions','Publish deals straight to customers'],sponsored:['Sponsored Content','Manage monetization placements shown in Explore Special Offers'],cust:['Customers','CRM — built automatically from orders'],act:['Activity Feed','Everything that happened, in order'],insights:['AI Insights','Lost sales and demand your POS cannot see'],reorder:['Auto Reorder','Forecast-driven purchase suggestions'],health:['Stock Health','Where your capital is sitting'],staff:['Staff &amp; Roles','Named accounts — who can do what'],audit:['Audit Log','Every consequential action, and who took it'],loyal:['Loyalty &amp; Personal Offers','Loyalty card joined to app account — catch customers before they drift'],calc:['AI Forecast Calculator','DevX ForecastAI — demand, purchase order and profit in one calculation'],demand:['Sales Forecasting','AI demand engine tuned to the UAE retail calendar'],optim:['Inventory Optimization','ABC-XYZ classification with a prioritised AI action plan'],fin:['Financial Forecast','Projected revenue, margin and cash flow'],wh:['Warehouse Planner','Zone utilisation and space planning'],branch:['Branches','Every shop in the group — and how to open the next one'],group:['Group Overview','Every shop in one place — ranked, with what it is costing you'],roles:['Roles &amp; Access','Exactly what each role can see and do, before you hand out a PIN']};
+const TITLES={dash:['Dashboard','Live overview of your store'],pkc:['Pickup Counter','Dedicated queue for in-store collection'],orders:['Orders','Every order from the customer app, in real time'],scan:['Pickup Scanner','Verify customer pickup passes'],inv:['Inventory','Shared catalog — edits go live in the customer app'],offers:['Offers & Promotions','Publish deals straight to customers'],sponsored:['Sponsored Content','Manage monetization placements shown in Explore Special Offers'],goals:['Customer Goals & Streaks','Read-only view of personalised goals and engagement'],cust:['Customers','CRM — built automatically from orders'],act:['Activity Feed','Everything that happened, in order'],insights:['AI Insights','Lost sales and demand your POS cannot see'],reorder:['Auto Reorder','Forecast-driven purchase suggestions'],health:['Stock Health','Where your capital is sitting'],staff:['Staff &amp; Roles','Named accounts — who can do what'],audit:['Audit Log','Every consequential action, and who took it'],loyal:['Loyalty &amp; Personal Offers','Loyalty card joined to app account — catch customers before they drift'],calc:['AI Forecast Calculator','DevX ForecastAI — demand, purchase order and profit in one calculation'],demand:['Sales Forecasting','AI demand engine tuned to the UAE retail calendar'],optim:['Inventory Optimization','ABC-XYZ classification with a prioritised AI action plan'],fin:['Financial Forecast','Projected revenue, margin and cash flow'],wh:['Warehouse Planner','Zone utilisation and space planning'],branch:['Branches','Every shop in the group — and how to open the next one'],group:['Group Overview','Every shop in one place — ranked, with what it is costing you'],roles:['Roles &amp; Access','Exactly what each role can see and do, before you hand out a PIN']};
 function go(v){
   curView=v;
   document.querySelectorAll('.view').forEach(e=>e.classList.remove('on'));
@@ -1142,6 +1146,7 @@ function renderView(){
   else if(curView==='inv')renderInv();
   else if(curView==='offers')renderOffersView();
   else if(curView==='sponsored')renderSponsored();
+  else if(curView==='goals')loadCustomerGoals();
   else if(curView==='cust')renderCust();
   else if(curView==='act')renderActFull();
   else if(curView==='insights')loadInsights();
@@ -1198,6 +1203,9 @@ async function doRefund(id){
     closeIssue();reload();renderView();openDrawer(id,true);
   }catch(e){toast('Could not reach the server')}
 }
+
+/* ─── CUSTOMER GOALS & STREAKS (read-only) ─── */
+async function loadCustomerGoals(){const el=document.getElementById('customerGoalsTable');if(!el)return;el.innerHTML='<div class="empty">Loading customer goals…</div>';try{const r=await fetch('/api/admin/goals',{headers:authHeaders(),cache:'no-store'}),d=await r.json();if(!r.ok)throw new Error(d.error||'Could not load goals');const c=d.config||{},note=document.getElementById('goalConfigNote');if(note)note.textContent=`Eligibility: ${c.minOrders||3} completed orders + ${c.minHistoryDays||14} days history · Rules: ${(c.templates||['search','complement','cadence']).join(' · ')}`;const rows=d.data||[];if(!rows.length){el.innerHTML='<div class="empty">No customer history is available yet.</div>';return}el.innerHTML=`<div style="overflow:auto"><table><thead><tr><th>Customer</th><th>Personalised goal</th><th>Why this goal</th><th>Daily streak</th><th>Weekly</th><th>Monthly</th></tr></thead><tbody>${rows.map(x=>{const g=x.goal||{},st=x.streak||{};return `<tr><td><div class="td-main">${esc(x.name||'Customer')}</div><div class="td-sub">${esc(x.phone||'')}</div></td><td><div class="td-main">${esc(g.title||'—')}</div><div class="td-sub">${esc(g.type||'')}</div></td><td style="max-width:360px;line-height:1.45">${esc(g.rationale||g.description||'—')}</td><td><span class="offer-pill" style="font-size:10px">🔥 ${Number(st.current||0)} days</span></td><td style="font-weight:800">${Number(st.weekly||0)} active</td><td style="font-weight:800">${Number(st.monthly||0)} active</td></tr>`}).join('')}</tbody></table></div>`}catch(e){el.innerHTML=`<div class="empty">${esc(e.message||'Could not load customer goals.')}</div>`}}
 
 /* ═══════════════════════════════════════════════════════════════
    STAFF & ROLES — named accounts replacing the shared PIN, and the
@@ -1292,7 +1300,7 @@ const toggleStaff=(id,on)=>staffPost('/api/staff/'+id,{active:on},on?'Enabled':'
    opens and every one it does not.
    ═══════════════════════════════════════════════════════════════ */
 const SCREEN_LABEL={group:'Group Overview',dash:'Dashboard',orders:'Orders',pkc:'Pickup Counter',
-  scan:'Pickup Scanner',inv:'Inventory',offers:'Offers & Promotions',sponsored:'Sponsored Content',insights:'AI Insights',
+  scan:'Pickup Scanner',inv:'Inventory',offers:'Offers & Promotions',sponsored:'Sponsored Content',insights:'AI Insights',goals:'Customer Goals & Streaks',
   reorder:'Auto Reorder',health:'Stock Health',calc:'Forecast Calculator',demand:'Sales Forecasting',
   optim:'Optimization',fin:'Financial Forecast',wh:'Warehouse Planner',loyal:'Loyalty & Offers',
   cust:'Customers',act:'Activity Feed',staff:'Staff & Roles',audit:'Audit Log',
