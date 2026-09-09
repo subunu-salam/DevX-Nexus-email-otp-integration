@@ -27,6 +27,7 @@ const INTEG = require('./lib/integrations');
 const STORES = require('./lib/stores');
 const TEN = require('./lib/tenancy');
 const ROLLUP = require('./lib/rollup');
+const GOALS = require('./lib/goals');
 
 const PORT = process.env.PORT || 3000;
 const ADMIN_PIN = process.env.ADMIN_PIN || '1234';
@@ -75,7 +76,7 @@ console.log('[nexus] LLM provider:', LLM ? LLM.name : 'NONE (keyword fallback on
 
 /* ── storage ── */
 const KEYS = ['devx-catalog', 'devx-orders', 'devx-offers', 'devx-sponsored', 'devx-notifs-customer', 'devx-activity', 'devx-queries',
-  'devx-loyalty', 'devx-personal-offers', 'devx-zones', 'devx-staff', 'devx-audit', 'devx-slots', 'devx-branches', 'devx-catalogs', 'devx-order-additions', 'devx-customer-passwords'];
+  'devx-loyalty', 'devx-personal-offers', 'devx-zones', 'devx-staff', 'devx-audit', 'devx-slots', 'devx-branches', 'devx-catalogs', 'devx-order-additions', 'devx-customer-passwords', 'devx-streaks', 'devx-goal-dismissals'];
 let db = {
   'devx-catalog': null,
   'devx-orders': [],
@@ -108,6 +109,8 @@ let db = {
   // Customer requests to add products to an already placed order.
   'devx-order-additions': [],
   'devx-customer-passwords': [],
+  'devx-streaks': {},
+  'devx-goal-dismissals': {},
   'devx-order-count': 0
 };
 
@@ -1415,6 +1418,13 @@ ${storeMenu(groups, !!budget)}${nutriFacts}`;
 /* Customer places an order */
 app.post('/api/orders', GUARD.limit('write'), (req, res) => {
   const o = req.body || {};
+  const shopperSession = shopper(req);
+  if (shopperSession) {
+    o.cid = o.cid || String(req.headers['x-customer-cid'] || '');
+    if (!o.customer) o.customer = {};
+    o.customer.phone = shopperSession.phone;
+    o.customer.name = o.customer.name || shopperSession.name || 'Customer';
+  }
   if (!Array.isArray(o.items) || !o.items.length) return res.status(400).json({ error: 'empty order' });
   if (o.items.length > 200) return res.status(400).json({ error: 'too many line items' });
   if (!['delivery', 'pickup'].includes(o.mode)) return res.status(400).json({ error: 'bad mode' });
@@ -2708,6 +2718,51 @@ app.post('/api/customer/logout', (req, res) => {
    not receive a message. Disappears once a real SMS gateway is wired in. */
 app.get('/api/customer/codes', need('orders.view'), (req, res) => {
   res.json({ data: CUST.outstanding() });
+});
+
+/* ══════════════════════════════════════════════════════════
+   AI PERSONALISATION — deterministic customer goals + streaks
+   Customer records are self-scoped; Admin access is read-only.
+══════════════════════════════════════════════════════════ */
+function goalIdentity(req, id) {
+  const raw = String(id || '').trim(), sh = shopper(req);
+  const phone = sh && LOY.normalisePhone(sh.phone), cid = String(req.headers['x-customer-cid'] || '').trim();
+  if (phone && LOY.normalisePhone(raw) === phone) return { key: phone, phone, type: 'phone' };
+  if (!phone && cid && raw === cid) return { key: cid, phone: null, type: 'cid' };
+  if (phone && raw === cid) return { key: phone, phone, type: 'phone' };
+  return null;
+}
+function goalScopedQueries(branchId) { return (db['devx-queries'] || []).filter(q => !q.branchId || q.branchId === branchId); }
+function goalStreakKey(branchId, identity) { return `${branchId}::${identity}`; }
+app.get('/api/customer/:id/goal', (req,res) => {
+  const ident=goalIdentity(req,req.params.id); if(!ident)return res.status(403).json({error:'not your customer goal'});
+  const bid=branchOf(req), orders=db['devx-orders']||[], catalog=catalogOf(bid), key=goalStreakKey(bid,ident.key);
+  const mine=ident.phone?orders:orders.filter(o=>String(o.cid||'')===String(req.headers['x-customer-cid']||''));
+  const goal=GOALS.goalFor({orders:mine,queries:goalScopedQueries(bid),catalog,phone:ident.phone||'',dismissed:db['devx-goal-dismissals']?.[key]||[]});
+  const streak=GOALS.streakSummary(db['devx-streaks']?.[key]||{});
+  res.json({goal,streak,identity:ident.type,branchId:bid});
+});
+app.post('/api/customer/:id/streak/engage',GUARD.limit('write'),(req,res)=>{
+  const ident=goalIdentity(req,req.params.id);if(!ident)return res.status(403).json({error:'not your streak'});
+  const bid=branchOf(req),key=goalStreakKey(bid,ident.key);db['devx-streaks']=db['devx-streaks']||{};
+  db['devx-streaks'][key]=GOALS.engageStreak(db['devx-streaks'][key]||{});save('devx-streaks');
+  res.json({streak:GOALS.streakSummary(db['devx-streaks'][key])});
+});
+app.post('/api/customer/:id/goal/dismiss',GUARD.limit('write'),(req,res)=>{
+  const ident=goalIdentity(req,req.params.id);if(!ident)return res.status(403).json({error:'not your customer goal'});
+  const bid=branchOf(req),key=goalStreakKey(bid,ident.key),id=String((req.body||{}).goalId||'').trim();if(!id)return res.status(400).json({error:'goalId is required'});
+  db['devx-goal-dismissals']=db['devx-goal-dismissals']||{};const list=db['devx-goal-dismissals'][key]||[];if(!list.includes(id))db['devx-goal-dismissals'][key]=[...list,id].slice(-20);save('devx-goal-dismissals');res.json({ok:true});
+});
+app.post('/api/customer/search-event',GUARD.limit('write'),(req,res)=>{
+  const q=String((req.body||{}).query||'').trim().slice(0,120);if(q.length<3)return res.json({ok:true});const sh=shopper(req),branchId=branchOf(req);
+  db['devx-queries']=db['devx-queries']||[];db['devx-queries'].unshift({id:'search-'+Date.now().toString(36)+Math.random().toString(36).slice(2,7),query:q,phone:sh&&sh.phone||null,cid:String(req.headers['x-customer-cid']||'').slice(0,120),branchId,resultCount:Number((req.body||{}).resultCount||0),source:'product-search',at:new Date().toISOString()});
+  db['devx-queries']=db['devx-queries'].slice(0,5000);save('devx-queries');res.json({ok:true});
+});
+app.get('/api/admin/goals',need('insights.view'),(req,res)=>{
+  const bid=branchOf(req),orders=STORES.scope(db['devx-orders']||[],bid,STORES.fallbackId(db)),catalog=catalogOf(bid),queries=goalScopedQueries(bid),streaks=db['devx-streaks']||{},passwords=db['devx-customer-passwords']||[],phones=new Set();
+  passwords.forEach(x=>{const p=LOY.normalisePhone(x.phone);if(p)phones.add(p)});orders.forEach(o=>{const p=LOY.normalisePhone(o.customer&&o.customer.phone);if(p)phones.add(p)});
+  const rows=[...phones].map(phone=>{const row=passwords.find(x=>LOY.normalisePhone(x.phone)===phone)||{},key=goalStreakKey(bid,phone),goal=GOALS.goalFor({orders:db['devx-orders']||[],queries,catalog,phone,dismissed:db['devx-goal-dismissals']?.[key]||[]}),streak=GOALS.streakSummary(streaks[key]||{});return {phone:CUST.mask(phone),name:row.name||'Customer',goal,streak};}).sort((a,b)=>(b.streak.current-a.streak.current)||String(a.name).localeCompare(String(b.name))).slice(0,200);
+  res.json({data:rows,config:{minOrders:GOALS.MIN_ORDERS,minHistoryDays:GOALS.MIN_HISTORY_DAYS,templates:['search','complement','cadence']}});
 });
 
 /* ══════════════════════════════════════════════════════════
