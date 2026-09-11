@@ -484,7 +484,41 @@ tbody tr.click:hover{background:var(--GL)}
     </div>
 
     <!-- CUSTOMER GOALS & STREAKS -->
-    <div class="view" id="view-goals"><div class="card"><div class="card-hd"><span class="card-t">Customer Goals &amp; Streaks</span><span style="font-size:10px;color:var(--tx3);font-weight:700">Read-only behaviour-based personalisation</span></div><div class="card-bd"><div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px;flex-wrap:wrap"><div style="font-size:10.5px;color:var(--tx3);font-weight:600;line-height:1.5">Goals are generated from completed orders, purchase cadence and repeated searches without purchase. No random challenges.</div><button class="btn ghost sm" onclick="loadCustomerGoals()">Refresh</button></div><div id="goalConfigNote" style="margin-bottom:12px;padding:9px 11px;border-radius:10px;background:var(--GL);color:var(--GD);font-size:9.5px;font-weight:800"></div><div id="customerGoalsTable"><div class="empty">Loading customer goals…</div></div></div></div></div>
+    <div class="view" id="view-goals">
+      <div class="card" style="margin-bottom:14px">
+        <div class="card-hd"><span class="card-t">Streak &amp; Rewards Settings</span><span style="font-size:10px;color:var(--tx3);font-weight:700">Editable configuration · Dubai local calendar</span></div>
+        <div class="card-bd">
+          <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px">
+            <div class="fld"><label class="lbl">Weekly cycle (days)</label><input class="inp" id="streakWeeklyDays" value="7" disabled><div class="td-sub">Fixed business rule</div></div>
+            <div class="fld"><label class="lbl">Timezone</label><input class="inp" id="streakTimezone" value="UAE · Asia/Dubai" disabled><div class="td-sub">All streak dates use UAE time</div></div>
+            <div class="fld"><label class="lbl">Max reward (%)</label><input class="inp" id="streakMaxReward" type="number" min="1" max="50" step="1"></div>
+            <div class="fld"><label class="lbl">7 active days reward (%)</label><input class="inp" id="streakBaseReward" type="number" min="0" max="50" step="1"></div>
+            <div class="fld"><label class="lbl">+1 order additional (%)</label><input class="inp" id="streakOrder1Reward" type="number" min="0" max="50" step="1"></div>
+            <div class="fld"><label class="lbl">+2 orders additional (%)</label><input class="inp" id="streakOrder2Reward" type="number" min="0" max="50" step="1"></div>
+            <div class="fld"><label class="lbl">Coupon validity (days)</label><input class="inp" id="streakCouponDays" type="number" min="1" max="365"></div>
+            <div class="fld"><label class="lbl">Minimum order value (AED)</label><input class="inp" id="streakMinOrder" type="number" min="0" step="1"></div>
+            <div class="fld"><label class="lbl">Redeemable streak coupons</label><label style="display:flex;align-items:center;gap:8px;font-size:10px;font-weight:800;padding:10px 0"><input id="streakAutoCoupons" type="checkbox"> Generate a one-time redeemable coupon when a reward is claimed</label><div class="td-sub">Coupons are linked to the customer and checked by the existing checkout flow.</div></div>
+          </div>
+          <div style="margin-top:12px;padding:12px;border:1px solid var(--bdr);border-radius:12px;background:var(--bg)">
+            <div style="font-weight:900;font-size:11px;margin-bottom:8px">Daily activation rules</div>
+            <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px">
+              <label style="display:flex;align-items:center;gap:7px;font-size:10px;font-weight:700"><input id="streakVisitActive" type="checkbox"> Portal visit counts</label>
+              <label style="display:flex;align-items:center;gap:7px;font-size:10px;font-weight:700"><input id="streakSearchActive" type="checkbox"> Product search counts</label>
+              <label style="display:flex;align-items:center;gap:7px;font-size:10px;font-weight:700"><input id="streakCartActive" type="checkbox"> Add to cart counts</label>
+            </div>
+          </div>
+          <div style="margin-top:12px;display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            <div class="fld"><label class="lbl">Daily goal title</label><input class="inp" id="streakGoalTitle"></div>
+            <div class="fld"><label class="lbl">Daily goal / reward message</label><input class="inp" id="streakGoalMessage"></div>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:12px;flex-wrap:wrap"><span id="streakSettingsMsg" class="td-sub"></span><button class="btn grn" onclick="saveStreakSettings()">Save Streak Settings</button></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-hd"><span class="card-t">Customer Goals &amp; Streaks</span><span style="font-size:10px;color:var(--tx3);font-weight:700">Read-only behaviour-based personalisation</span></div>
+        <div class="card-bd"><div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px;flex-wrap:wrap"><div style="font-size:10.5px;color:var(--tx3);font-weight:600;line-height:1.5">Goals are generated from completed orders, purchase cadence and repeated searches without purchase. No random challenges.</div><button class="btn ghost sm" onclick="loadCustomerGoals()">Refresh</button></div><div id="goalConfigNote" style="margin-bottom:12px;padding:9px 11px;border-radius:10px;background:var(--GL);color:var(--GD);font-size:9.5px;font-weight:800"></div><div id="customerGoalsTable"><div class="empty">Loading customer goals…</div></div></div>
+      </div>
+    </div>
 
     <!-- AUTO REORDER -->
     <div class="view" id="view-reorder">
@@ -1146,7 +1180,7 @@ function renderView(){
   else if(curView==='inv')renderInv();
   else if(curView==='offers')renderOffersView();
   else if(curView==='sponsored')renderSponsored();
-  else if(curView==='goals')loadCustomerGoals();
+  else if(curView==='goals'){loadStreakSettings();loadCustomerGoals();}
   else if(curView==='cust')renderCust();
   else if(curView==='act')renderActFull();
   else if(curView==='insights')loadInsights();
@@ -1205,7 +1239,20 @@ async function doRefund(id){
 }
 
 /* ─── CUSTOMER GOALS & STREAKS (read-only) ─── */
-async function loadCustomerGoals(){const el=document.getElementById('customerGoalsTable');if(!el)return;el.innerHTML='<div class="empty">Loading customer goals…</div>';try{const r=await fetch('/api/admin/goals',{headers:authHeaders(),cache:'no-store'}),d=await r.json();if(!r.ok)throw new Error(d.error||'Could not load goals');const c=d.config||{},note=document.getElementById('goalConfigNote');if(note)note.textContent=`Eligibility: ${c.minOrders||3} completed orders + ${c.minHistoryDays||14} days history · Rules: ${(c.templates||['search','complement','cadence']).join(' · ')}`;const rows=d.data||[];if(!rows.length){el.innerHTML='<div class="empty">No customer history is available yet.</div>';return}el.innerHTML=`<div style="overflow:auto"><table><thead><tr><th>Customer</th><th>Personalised goal</th><th>Why this goal</th><th>Daily streak</th><th>Weekly</th><th>Monthly</th><th>Rewards</th></tr></thead><tbody>${rows.map(x=>{const g=x.goal||{},st=x.streak||{},claimed=(st.claimed||[]).length,unclaimed=(st.unclaimedRewards||[])[0];return `<tr><td><div class="td-main">${esc(x.name||'Customer')}</div><div class="td-sub">${esc(x.phone||'')}</div></td><td><div class="td-main">${esc(g.title||'—')}</div><div class="td-sub">${esc(g.type||'')}</div></td><td style="max-width:360px;line-height:1.45">${esc(g.rationale||g.description||'—')}</td><td><span class="offer-pill" style="font-size:10px">🔥 ${Number(st.current||0)} days</span></td><td style="font-weight:800">${Number(st.weekly||0)} active</td><td style="font-weight:800">${Number(st.monthly||0)} active</td><td><div class="td-main">${claimed} claimed</div><div class="td-sub">${unclaimed?'Eligible: '+esc(unclaimed.label):(st.nextReward?'Next at '+st.nextReward+'d':'—')}</div></td></tr>`}).join('')}</tbody></table></div>`}catch(e){el.innerHTML=`<div class="empty">${esc(e.message||'Could not load customer goals.')}</div>`}}
+async function loadStreakSettings(){
+  try{const r=await fetch('/api/admin/streak-settings',{headers:authHeaders(),cache:'no-store'});const d=await r.json();if(!r.ok)throw new Error(d.error||'Could not load streak settings');const c=d.config||{};
+    const set=(id,v)=>{const e=document.getElementById(id);if(e)e.value=v??''};
+    set('streakMaxReward',c.maxRewardPct);set('streakBaseReward',c.baseRewardPct);set('streakOrder1Reward',c.order1AdditionalPct);set('streakOrder2Reward',c.order2AdditionalPct);set('streakCouponDays',c.couponValidityDays);set('streakMinOrder',c.minOrderValue);set('streakGoalTitle',c.dailyGoalTitle);set('streakGoalMessage',c.dailyGoalMessage);const ac=document.getElementById('streakAutoCoupons');if(ac)ac.checked=c.autoGenerateCoupons!==false;
+    ['streakVisitActive','streakSearchActive','streakCartActive'].forEach(id=>{const e=document.getElementById(id);if(e)e.checked=id==='streakVisitActive'?c.portalVisitActive!==false:id==='streakSearchActive'?c.searchActive!==false:c.cartAddActive!==false});
+  }catch(e){const m=document.getElementById('streakSettingsMsg');if(m)m.textContent=e.message||'Could not load settings'}
+}
+async function saveStreakSettings(){
+  const body={maxRewardPct:Number(document.getElementById('streakMaxReward')?.value||15),baseRewardPct:Number(document.getElementById('streakBaseReward')?.value||5),order1AdditionalPct:Number(document.getElementById('streakOrder1Reward')?.value||5),order2AdditionalPct:Number(document.getElementById('streakOrder2Reward')?.value||5),couponValidityDays:Number(document.getElementById('streakCouponDays')?.value||30),minOrderValue:Number(document.getElementById('streakMinOrder')?.value||0),autoGenerateCoupons:!!document.getElementById('streakAutoCoupons')?.checked,portalVisitActive:!!document.getElementById('streakVisitActive')?.checked,searchActive:!!document.getElementById('streakSearchActive')?.checked,cartAddActive:!!document.getElementById('streakCartActive')?.checked,dailyGoalTitle:String(document.getElementById('streakGoalTitle')?.value||''),dailyGoalMessage:String(document.getElementById('streakGoalMessage')?.value||'')};
+  const m=document.getElementById('streakSettingsMsg');if(m)m.textContent='Saving…';
+  try{const r=await fetch('/api/admin/streak-settings',{method:'POST',headers:authHeaders({'Content-Type':'application/json'}),body:JSON.stringify(body)});const d=await r.json();if(!r.ok)throw new Error(d.error||'Could not save settings');if(m)m.textContent='Saved ✓ New reward claims use these settings.';loadCustomerGoals()}catch(e){if(m)m.textContent=e.message||'Could not save settings'}
+}
+
+async function loadCustomerGoals(){const el=document.getElementById('customerGoalsTable');if(!el)return;el.innerHTML='<div class="empty">Loading customer goals…</div>';try{const r=await fetch('/api/admin/goals',{headers:authHeaders(),cache:'no-store'}),d=await r.json();if(!r.ok)throw new Error(d.error||'Could not load goals');const c=d.config||{},note=document.getElementById('goalConfigNote');if(note){const rc=c.streak||{};note.textContent=`Goal eligibility: ${c.minOrders||3} completed orders + ${c.minHistoryDays||14} days history · Streak: ${rc.baseRewardPct??5}% + ${rc.order1AdditionalPct??5}% + ${rc.order2AdditionalPct??5}% (max ${rc.maxRewardPct??15}%) · UAE calendar`;}const rows=d.data||[];if(!rows.length){el.innerHTML='<div class="empty">No customer history is available yet.</div>';return}el.innerHTML=`<div style="overflow:auto"><table><thead><tr><th>Customer</th><th>Personalised goal</th><th>Why this goal</th><th>Daily streak</th><th>Weekly</th><th>Monthly</th><th>Rewards</th></tr></thead><tbody>${rows.map(x=>{const g=x.goal||{},st=x.streak||{},rw=st.reward||{};return `<tr><td><div class="td-main">${esc(x.name||'Customer')}</div><div class="td-sub">${esc(x.phone||'')}</div></td><td><div class="td-main">${esc(g.title||'—')}</div><div class="td-sub">${esc(g.type||'')}</div></td><td style="max-width:360px;line-height:1.45">${esc(g.rationale||g.description||'—')}</td><td><span class="offer-pill" style="font-size:10px">🔥 ${Number(st.current||0)} days</span></td><td style="font-weight:800">${Number(st.weekly||0)} active · ${Number(st.weeklyOrders||0)} order${Number(st.weeklyOrders||0)===1?'':'s'}</td><td style="font-weight:800">${Number(st.monthly||0)} active</td><td><div class="td-main">${Number(rw.currentPct||0)}% unlocked</div><div class="td-sub">${rw.eligible?esc(rw.eligible.label):esc(rw.next||'7 active days needed')}</div></td></tr>`}).join('')}</tbody></table></div>`}catch(e){el.innerHTML=`<div class="empty">${esc(e.message||'Could not load customer goals.')}</div>`}}
 
 /* ═══════════════════════════════════════════════════════════════
    STAFF & ROLES — named accounts replacing the shared PIN, and the
