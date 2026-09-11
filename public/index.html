@@ -146,22 +146,50 @@ body{
 .hero h1{font-size:24px;font-weight:900;letter-spacing:-.05em;line-height:1.1;color:#fff;margin-bottom:6px}
 .hero h1 em{color:var(--G);font-style:normal}
 .hero-sub{font-size:11.5px;color:rgba(255,255,255,.6);line-height:1.5;margin:0 auto 12px;font-weight:400;max-width:330px}
-/* Compact personalized goals + streak strip */
-#engageStrip{display:none;grid-template-columns:minmax(0,1.05fr) minmax(0,1.55fr) auto;align-items:center;gap:12px;margin:12px 0 4px;padding:11px 12px;border:1px solid var(--BD);border-radius:15px;background:var(--card);box-shadow:0 5px 18px rgba(0,0,0,.07);transition:transform .22s ease,box-shadow .22s ease,border-color .22s ease;overflow:hidden}
-#engageStrip:hover{transform:translateY(-1px);box-shadow:0 9px 24px rgba(0,0,0,.09);border-color:rgba(61,187,106,.38)}
-.engage-streak{display:flex;align-items:center;gap:8px;min-width:0}
-.engage-fire{font-size:20px;line-height:1;flex:0 0 auto}
-.engage-streak-copy{min-width:0}
-.engage-streak-copy b{display:block;font-size:12px;font-weight:900;color:var(--tx);line-height:1.15;white-space:nowrap}
-.engage-streak-copy small{display:block;margin-top:3px;font-size:8.5px;color:var(--tx3);line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.engage-goal{min-width:0;padding-left:12px;border-left:1px solid var(--BD)}
-.engage-goal-kicker{font-size:8px;font-weight:900;color:var(--G);letter-spacing:.08em;text-transform:uppercase}
-.engage-goal-title{margin-top:2px;font-size:11px;font-weight:850;color:var(--tx);line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.engage-goal-text{margin-top:2px;font-size:8.5px;color:var(--tx3);line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.engage-goal-btn{border:0;border-radius:999px;padding:8px 12px;background:var(--G);color:#fff;font-size:9px;font-weight:850;white-space:nowrap;cursor:pointer;transition:transform .2s ease,box-shadow .2s ease}
-.engage-goal-btn:hover{transform:translateY(-1px);box-shadow:0 6px 15px rgba(61,187,106,.22)}
-[data-theme="dark"] #engageStrip{background:#151c18;border-color:rgba(255,255,255,.09);box-shadow:0 8px 24px rgba(0,0,0,.24)}
-@media(max-width:600px){#engageStrip{grid-template-columns:1fr auto;gap:8px;padding:10px}.engage-goal{grid-column:1/-1;border-left:0;border-top:1px solid var(--BD);padding:8px 0 0}.engage-goal-text{display:none}.engage-goal-btn{grid-column:2;grid-row:1}.engage-streak-copy small{font-size:8px}}
+/* Compact personalized streak strip — home entry */
+#engageStrip{display:none;align-items:center;justify-content:space-between;gap:12px;margin:12px 16px 10px;padding:11px 14px;border:1px solid rgba(255,255,255,.08);border-radius:16px;background:#111;color:#fff;box-shadow:0 7px 22px rgba(0,0,0,.14);cursor:pointer;transition:transform .22s ease,box-shadow .22s ease,background .22s ease;overflow:hidden;user-select:none;-webkit-user-select:none;position:relative}
+#engageStrip::after{content:'';position:absolute;inset:auto -35% -55% 28%;height:90px;background:radial-gradient(circle,rgba(61,187,106,.18),transparent 68%);pointer-events:none}
+#engageStrip:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(0,0,0,.2);background:#141414}
+#engageStrip:active{transform:scale(.988);box-shadow:0 5px 16px rgba(0,0,0,.14)}
+#engageStrip:focus-visible{outline:3px solid rgba(61,187,106,.3);outline-offset:3px}
+.engage-streak{display:flex;align-items:center;gap:10px;min-width:0;flex:1;position:relative;z-index:1}
+.engage-fire{width:38px;height:38px;display:flex;align-items:center;justify-content:center;flex:0 0 38px;font-size:23px;line-height:1;border-radius:12px;background:linear-gradient(145deg,rgba(255,180,40,.16),rgba(255,93,30,.06));box-shadow:inset 0 0 0 1px rgba(255,255,255,.05)}
+.engage-streak-copy{min-width:0;display:flex;flex-direction:column;justify-content:center}
+.engage-streak-copy b{display:block;font-size:14px;font-weight:900;color:#fff;line-height:1.15;white-space:nowrap;letter-spacing:-.025em}
+.engage-streak-copy small{display:block;margin-top:3px;font-size:9.5px;color:rgba(255,255,255,.5);line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.engage-dots{display:flex;align-items:center;gap:5px;flex:0 0 auto;margin-left:auto;position:relative;z-index:1}
+.engage-dot{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,.18);box-shadow:inset 0 0 0 1px rgba(255,255,255,.03);transition:background .22s ease,transform .22s ease,box-shadow .22s ease}
+.engage-dot.on{background:var(--G);transform:scale(1.08);box-shadow:0 0 0 3px rgba(61,187,106,.08)}
+.engage-goal{display:none}.engage-goal-kicker,.engage-goal-title,.engage-goal-text,.engage-goal-btn{display:none}
+
+/* Full-screen streak information view — gamified, product-colour matched */
+.streak-info-overlay{position:fixed;inset:0;z-index:520;display:none;flex-direction:column;background:var(--bg);max-width:480px;margin:0 auto;animation:streakInfoIn .24s ease}
+.streak-info-overlay.on{display:flex}
+.streak-info-hdr{display:flex;align-items:center;gap:11px;padding:12px 14px;background:var(--hbg);border-bottom:1px solid var(--hbdr);flex-shrink:0}
+.streak-info-back{width:36px;height:36px;border-radius:50%;border:1px solid var(--hbdr);background:rgba(255,255,255,.08);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:0 0 36px;transition:transform .18s ease,background .18s ease}
+.streak-info-back:hover{background:rgba(255,255,255,.14);transform:translateX(-2px)}
+.streak-info-back svg{width:18px;height:18px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.streak-info-hdr-copy{min-width:0}.streak-info-hdr-title{font-size:14px;font-weight:900;color:#fff;line-height:1.2}.streak-info-hdr-sub{font-size:9.5px;color:var(--hst);margin-top:2px}
+.streak-info-body{flex:1;overflow-y:auto;padding:16px 14px calc(30px + env(safe-area-inset-bottom,0px));-webkit-overflow-scrolling:touch}
+.streak-badge-hero{position:relative;display:flex;flex-direction:column;align-items:center;padding:18px 14px 20px;border-radius:22px;background:linear-gradient(145deg,#111,#1a1c1d);color:#fff;overflow:hidden;box-shadow:0 12px 28px rgba(0,0,0,.16)}
+.streak-badge-hero::before{content:'';position:absolute;width:190px;height:190px;border-radius:50%;right:-75px;top:-95px;background:radial-gradient(circle,rgba(61,187,106,.2),transparent 68%)}
+.streak-badge-hero::after{content:'';position:absolute;width:150px;height:150px;border-radius:50%;left:-80px;bottom:-100px;background:radial-gradient(circle,rgba(245,158,11,.13),transparent 70%)}
+.streak-badge-ring{position:relative;z-index:1;width:126px;height:126px;border-radius:50%;background:conic-gradient(var(--G) 0% 62%,rgba(255,255,255,.14) 62% 100%);display:flex;align-items:center;justify-content:center;margin-bottom:13px;transition:background .35s ease;box-shadow:0 0 0 8px rgba(255,255,255,.035)}
+.streak-badge-ring-inner{width:98px;height:98px;border-radius:50%;background:#151617;display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)}
+.streak-badge-num{font-size:28px;font-weight:900;color:#fff;line-height:1}.streak-badge-unit{font-size:9px;color:rgba(255,255,255,.48);font-weight:800;letter-spacing:.08em;margin-top:4px}
+.streak-badge-title{position:relative;z-index:1;font-size:16px;font-weight:900;margin-bottom:4px;text-align:center;letter-spacing:-.02em}.streak-badge-sub{position:relative;z-index:1;font-size:10.5px;color:rgba(255,255,255,.62);line-height:1.5;text-align:center;padding:0 10px;max-width:370px}
+.streak-stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}.streak-stat{background:var(--card);border:1px solid var(--bdr);border-radius:15px;padding:13px 8px;text-align:center;box-shadow:var(--shadow);transition:transform .18s ease,border-color .18s ease}.streak-stat:hover{transform:translateY(-2px);border-color:rgba(61,187,106,.35)}.streak-stat b{display:block;font-size:18px;font-weight:900;color:var(--tx)}.streak-stat span{display:block;margin-top:4px;font-size:8.5px;color:var(--tx3);font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+.streak-week-card{margin-top:12px;background:var(--card);border:1px solid var(--bdr);border-radius:16px;padding:15px;box-shadow:var(--shadow)}
+.streak-section-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}.streak-section-head b{font-size:12px;font-weight:900;color:var(--tx)}.streak-section-head span{font-size:9px;font-weight:700;color:var(--GD);background:var(--GL);padding:4px 8px;border-radius:999px}
+.streak-week{display:flex;gap:5px}.streak-week-day{flex:1;text-align:center}.streak-week-dot{width:12px;height:12px;border-radius:50%;background:var(--bdr);margin:0 auto 6px;transition:.22s ease}.streak-week-dot.on{background:var(--G);box-shadow:0 0 0 4px rgba(61,187,106,.1)}.streak-week-day span{font-size:8px;color:var(--tx3);font-weight:800}
+.streak-milestones{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:12px}.streak-milestone{display:flex;flex-direction:column;align-items:center;gap:5px;font-size:8px;color:var(--tx3);font-weight:700;min-width:0;text-align:center}.streak-milestone-dot{width:34px;height:34px;border-radius:50%;background:var(--bdr);display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--tx2);transition:.22s ease}.streak-milestone.done .streak-milestone-dot{background:var(--GM);color:var(--GX);box-shadow:0 0 0 4px rgba(61,187,106,.06)}.streak-milestone.next .streak-milestone-dot{background:var(--BK);color:#fff;box-shadow:0 0 0 4px rgba(17,17,17,.07)}
+.streak-info-card{margin-top:12px;background:var(--card);border:1px solid var(--bdr);border-radius:16px;padding:15px;box-shadow:var(--shadow)}.streak-info-card-kicker{font-size:9px;font-weight:900;color:var(--GD);letter-spacing:.07em;text-transform:uppercase}.streak-info-card-title{margin-top:5px;font-size:13px;font-weight:900;color:var(--tx);line-height:1.35}.streak-info-card-text{margin-top:5px;font-size:10.5px;color:var(--tx2);line-height:1.5}
+.streak-goal-card{margin-top:12px;background:linear-gradient(145deg,var(--card),var(--GL));border:1px solid rgba(61,187,106,.25);border-radius:17px;padding:15px;box-shadow:var(--shadow)}.streak-goal-kicker{font-size:9px;font-weight:900;color:var(--GD);letter-spacing:.07em;text-transform:uppercase}.streak-goal-title{margin-top:5px;font-size:13.5px;font-weight:900;color:var(--tx);line-height:1.3}.streak-goal-text{margin-top:4px;font-size:10.5px;color:var(--tx2);line-height:1.5}.streak-goal-btn{width:100%;margin-top:11px;border:0;border-radius:11px;padding:10px;background:var(--G);color:#fff;font:800 11.5px 'Montserrat',sans-serif;cursor:pointer;transition:transform .2s ease,box-shadow .2s ease}.streak-goal-btn:hover{box-shadow:0 7px 16px rgba(61,187,106,.22);transform:translateY(-1px)}.streak-goal-btn:active{transform:scale(.98)}
+.streak-achievements{margin-top:12px;display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.streak-achievement{background:var(--card);border:1px solid var(--bdr);border-radius:15px;padding:12px 7px;text-align:center;box-shadow:var(--shadow)}.streak-achievement-icon{font-size:22px;line-height:1;margin-bottom:7px}.streak-achievement b{display:block;font-size:9.5px;font-weight:900;color:var(--tx)}.streak-achievement span{display:block;margin-top:3px;font-size:7.5px;color:var(--tx3);font-weight:600;line-height:1.25}
+@keyframes streakInfoIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:430px){#engageStrip{margin:10px 14px 9px;padding:10px 12px;border-radius:15px;gap:8px}.engage-fire{width:35px;height:35px;flex-basis:35px;font-size:21px}.engage-streak-copy b{font-size:13.5px}.engage-streak-copy small{font-size:9px}.engage-dots{gap:4px}.engage-dot{width:8px;height:8px}.streak-info-body{padding-left:12px;padding-right:12px}.streak-badge-ring{width:116px;height:116px}.streak-badge-ring-inner{width:92px;height:92px}.streak-stat{padding:12px 5px}.streak-stat b{font-size:17px}.streak-milestone-dot{width:31px;height:31px;font-size:9px}.streak-milestone{font-size:7.5px}.streak-achievement-icon{font-size:20px}}
+@media(max-width:360px){.engage-streak-copy b{font-size:12.5px}.engage-streak-copy small{font-size:8.5px}.engage-dots{gap:3px}.engage-dot{width:7px;height:7px}.streak-stat-grid{gap:6px}.streak-stat span{font-size:7.5px}.streak-milestones{gap:3px}.streak-milestone-dot{width:28px;height:28px}.streak-achievements{gap:5px}}
+@media(prefers-reduced-motion:reduce){#engageStrip,.streak-info-overlay,.streak-goal-btn,.streak-milestone-dot,.streak-week-dot,.streak-stat{animation:none!important;transition:none!important}}
 
 /* Prominent hero search — centered, animated, theme-safe */
 .hero-search-bar{
@@ -3815,6 +3843,20 @@ button,input,textarea,select{font-family:inherit}
     </div>
   </div>
 
+  <!-- PERSONALIZED STREAK — login-gated, directly below Search Products -->
+  <div id="engageStrip" role="button" tabindex="0" aria-label="Open streak information" onclick="openStreakInfo()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openStreakInfo()}">
+    <div class="engage-streak">
+      <span class="engage-fire" aria-hidden="true">🔥</span>
+      <span class="engage-streak-copy">
+        <b id="engageStreakCount">0-day streak</b>
+        <small id="engageStreakMeta">Engage today to keep it going</small>
+      </span>
+    </div>
+    <div class="engage-dots" id="engageDots" aria-hidden="true">
+      <span class="engage-dot"></span><span class="engage-dot"></span><span class="engage-dot"></span><span class="engage-dot"></span><span class="engage-dot"></span><span class="engage-dot"></span><span class="engage-dot"></span>
+    </div>
+  </div>
+
   <!-- STORE MODE ENTRY -->
   <div class="store-strip" id="storeStrip" onclick="setStoreMode(true)">
     <div class="ss-qr-ic"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><line x1="14" y1="14" x2="17" y2="14"/><line x1="21" y1="14" x2="21" y2="17"/><line x1="14" y1="18" x2="14" y2="21"/><line x1="18" y1="21" x2="21" y2="21"/><line x1="18" y1="17" x2="18" y2="18"/></svg></div>
@@ -3823,23 +3865,6 @@ button,input,textarea,select{font-family:inherit}
       <div class="ss-strip-s" id="stripSTxt">Enter Store Mode — exact aisle, rack &amp; shelf for every product</div>
     </div>
     <svg class="ss-arrow" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
-  </div>
-
-  <!-- PERSONALIZED GOALS + STREAK — login-gated -->
-  <div id="engageStrip" aria-live="polite">
-    <div class="engage-streak">
-      <span class="engage-fire" aria-hidden="true">🔥</span>
-      <span class="engage-streak-copy">
-        <b id="engageStreakCount">0-day streak</b>
-        <small id="engageStreakMeta">Weekly 0 · Monthly 0</small>
-      </span>
-    </div>
-    <div class="engage-goal">
-      <div class="engage-goal-kicker">Daily Pick</div>
-      <div class="engage-goal-title" id="engageGoalTitle">Your personalised daily pick</div>
-      <div class="engage-goal-text" id="engageGoalText">Based on your shopping behaviour — not random challenges.</div>
-    </div>
-    <button class="engage-goal-btn" id="engageGoalBtn" type="button" onclick="openPersonalGoal()">View pick</button>
   </div>
 
   <!-- ONLY FOR YOU — personalised, tied to the loyalty card mobile number -->
@@ -4078,6 +4103,55 @@ button,input,textarea,select{font-family:inherit}
 
     <button class="account-signout" id="accountSignOutBtn" type="button" onclick="custSignOut();closeAccount()">Sign out</button>
     <button class="account-signin" id="accountSignInBtn" type="button" onclick="closeAccount();openLoyalty()">Sign in</button>
+  </div>
+</div>
+
+<!-- STREAK INFORMATION -->
+<div class="streak-info-overlay" id="streakInfoOverlay" role="dialog" aria-modal="true" aria-labelledby="streakInfoTitle">
+  <div class="streak-info-hdr">
+    <button class="streak-info-back" type="button" onclick="closeStreakInfo()" aria-label="Back">
+      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <div class="streak-info-hdr-copy">
+      <div class="streak-info-hdr-title" id="streakInfoTitle">Your Streak</div>
+      <div class="streak-info-hdr-sub">Keep your shopping momentum going</div>
+    </div>
+  </div>
+  <div class="streak-info-body">
+    <div class="streak-badge-hero">
+      <div class="streak-badge-ring" id="streakBadgeRing"><div class="streak-badge-ring-inner"><div class="streak-badge-num" id="streakInfoCount">0</div><div class="streak-badge-unit">DAY STREAK</div></div></div>
+      <div class="streak-badge-title" id="streakInfoHeadline">You're on a roll 🔥</div>
+      <div class="streak-badge-sub" id="streakInfoMessage">Engage with your daily AI goal to keep the streak alive.</div>
+    </div>
+
+    <div class="streak-stat-grid">
+      <div class="streak-stat"><b id="streakInfoCurrentStat">0</b><span>Day streak</span></div>
+      <div class="streak-stat"><b id="streakInfoWeekly">0</b><span>This week</span></div>
+      <div class="streak-stat"><b id="streakInfoMonthly">0</b><span>This month</span></div>
+    </div>
+
+    <div class="streak-week-card">
+      <div class="streak-section-head"><b>Your weekly progress</b><span id="streakWeekLabel">0 / 7 days</span></div>
+      <div class="streak-week" id="streakInfoWeek" aria-label="Weekly streak progress">
+        <div class="streak-week-day"><div class="streak-week-dot"></div><span>M</span></div><div class="streak-week-day"><div class="streak-week-dot"></div><span>T</span></div><div class="streak-week-day"><div class="streak-week-dot"></div><span>W</span></div><div class="streak-week-day"><div class="streak-week-dot"></div><span>T</span></div><div class="streak-week-day"><div class="streak-week-dot"></div><span>F</span></div><div class="streak-week-day"><div class="streak-week-dot"></div><span>S</span></div><div class="streak-week-day"><div class="streak-week-dot"></div><span>S</span></div>
+      </div>
+    </div>
+
+    <div class="streak-info-card" style="margin-top:12px">
+      <div class="streak-section-head" style="margin-bottom:10px"><b>Milestones</b><span>Keep unlocking</span></div>
+      <div class="streak-milestones" id="streakMilestones" aria-label="Streak milestones">
+        <div class="streak-milestone" data-milestone="3"><div class="streak-milestone-dot">3</div><span>3-day</span></div><div class="streak-milestone" data-milestone="5"><div class="streak-milestone-dot">5</div><span>5-day</span></div><div class="streak-milestone" data-milestone="7"><div class="streak-milestone-dot">7</div><span>7-day</span></div><div class="streak-milestone" data-milestone="14"><div class="streak-milestone-dot">14</div><span>14-day</span></div><div class="streak-milestone" data-milestone="30"><div class="streak-milestone-dot">30</div><span>30-day</span></div>
+      </div>
+    </div>
+
+    <div class="streak-goal-card">
+      <div class="streak-goal-kicker">Today's Goal</div><div class="streak-goal-title" id="streakInfoGoalTitle">Your personalised daily pick</div><div class="streak-goal-text" id="streakInfoGoalText">Based on your shopping behaviour — not random challenges.</div>
+      <button class="streak-goal-btn" id="streakInfoGoalBtn" type="button" onclick="closeStreakInfo();openPersonalGoal()">View today's pick →</button>
+    </div>
+
+    <div class="streak-info-card"><div class="streak-info-card-kicker">How it works</div><div class="streak-info-card-title">Small useful actions keep your momentum alive.</div><div class="streak-info-card-text">View your daily pick, add a suggested item, or ask the AI Concierge. Your goals are personalised from your shopping behaviour — not random challenges.</div></div>
+
+    <div class="streak-achievements" aria-label="Streak achievements"><div class="streak-achievement"><div class="streak-achievement-icon">🎯</div><b>Starter</b><span>Reach a 3-day streak</span></div><div class="streak-achievement"><div class="streak-achievement-icon">⭐</div><b>Explorer</b><span>Reach a 7-day streak</span></div><div class="streak-achievement"><div class="streak-achievement-icon">🔥</div><b>On Fire</b><span>Reach a 14-day streak</span></div></div>
   </div>
 </div>
 
@@ -6858,13 +6932,17 @@ async function poLoadProducts(){try{const r=await fetch('/api/products');const d
 window.poSubmit=async function(){const o=poOrder(postOrderAddition.orderId);if(!poEligible(o)){showToast('This order is no longer eligible for modification','red');closeAddProducts();return;}const total=poTotal();if(total<=15)return;const m=poModal(),btn=m?.querySelector('button[onclick="poSubmit()"]');if(btn){btn.disabled=true;btn.textContent='Sending request…';}try{const items=postOrderAddition.items.map(i=>i.loose?{id:i.id,loose:true,grams:i.grams}:{id:i.id,qty:i.qty});const r=await fetch('/api/orders/'+encodeURIComponent(postOrderAddition.orderId)+'/additions',{method:'POST',headers:typeof custHeaders==='function'?custHeaders({'Content-Type':'application/json'}):{'Content-Type':'application/json'},body:JSON.stringify({items})});const d=await r.json();if(!r.ok)throw new Error(d.error||'Unable to submit request');const a=d.data||d;ORDER_ADDITIONS[postOrderAddition.orderId]=[...(ORDER_ADDITIONS[postOrderAddition.orderId]||[]),a];postOrderAddition.step='sent';m.innerHTML=poShell(`<div style="padding:70px 22px;text-align:center;flex:1"><div style="width:82px;height:82px;margin:auto;border-radius:50%;display:grid;place-items:center;background:#eaf7ef;color:#238653;font-size:40px">✓</div><h2 style="margin:18px 0 8px">Request Sent!</h2><p style="color:#6d7872;line-height:1.6">Your additional products request has been sent to the store for approval. You can track the status in My Orders.</p><button onclick="closeAddProducts();openOrders()" style="margin-top:18px;padding:13px 22px;border-radius:13px;border:0;background:#1f7a4d;color:#fff;font-weight:800">View My Order</button></div>`);showToast('Request sent for approval','green');}catch(e){showToast(e.message||'Could not submit request','red');if(btn){btn.disabled=false;btn.textContent='Send Request for Approval';}}};
 
 
-/* ─── PERSONALISATION + STREAK — login-gated compact Home layer ─── */
+/* ─── PERSONALISATION + STREAK — login-gated Home layer ─── */
 let PERSONAL_GOAL=null,PERSONAL_STREAK=null;
 function personalGoalHeaders(){const h={'Content-Type':'application/json','x-customer-cid':CID};if(typeof CTOKEN!=='undefined'&&CTOKEN)h['x-customer-token']=CTOKEN;if(BRANCH)h['x-branch']=BRANCH;return h}
-function setEngagementVisible(on){const el=document.getElementById('engageStrip');if(el)el.style.display=on?'grid':'none';if(!on){PERSONAL_GOAL=null;PERSONAL_STREAK=null}}
-async function loadPersonalGoal(){if(!CTOKEN||!MY_PHONE){setEngagementVisible(false);return}setEngagementVisible(true);try{const r=await fetch('/api/customer/'+encodeURIComponent(MY_PHONE)+'/goal',{headers:personalGoalHeaders(),cache:'no-store'});if(!r.ok)throw new Error('goal');const d=await r.json();PERSONAL_GOAL=d.goal||null;PERSONAL_STREAK=d.streak||null;const st=PERSONAL_STREAK||{},g=PERSONAL_GOAL||{};document.getElementById('engageStreakCount').textContent=`${st.current||0}-day streak`;document.getElementById('engageStreakMeta').textContent=`Weekly ${st.weekly||0} · Monthly ${st.monthly||0} · Next ${st.nextReward||'—'}d reward`;document.getElementById('engageGoalTitle').textContent=g.title||'Your personalised daily pick';document.getElementById('engageGoalText').textContent=g.description||'Based on your shopping behaviour — not random challenges.';document.getElementById('engageGoalBtn').textContent=g.actionLabel||'View pick'}catch(e){if(!CTOKEN||!MY_PHONE){setEngagementVisible(false);return}document.getElementById('engageStreakCount').textContent='0-day streak';document.getElementById('engageStreakMeta').textContent='Daily · Weekly · Monthly';document.getElementById('engageGoalTitle').textContent='Your personalised daily pick';document.getElementById('engageGoalText').textContent='Keep shopping to build your personalised profile.';document.getElementById('engageGoalBtn').textContent='View pick'}}
+function setEngagementVisible(on){const el=document.getElementById('engageStrip');if(el)el.style.display=on?'flex':'none';if(!on){PERSONAL_GOAL=null;PERSONAL_STREAK=null}}
+function renderStreakDots(weekly){const n=Math.max(0,Math.min(7,Number(weekly)||0));document.querySelectorAll('#engageDots .engage-dot').forEach((dot,i)=>dot.classList.toggle('on',i<n));document.querySelectorAll('#streakInfoWeek .streak-week-dot').forEach((dot,i)=>dot.classList.toggle('on',i<n));const wl=document.getElementById('streakWeekLabel');if(wl)wl.textContent=`${n} / 7 days`}
+function renderStreakInfo(){const st=PERSONAL_STREAK||{},g=PERSONAL_GOAL||{};const current=Math.max(0,Number(st.current)||0),weekly=Math.max(0,Number(st.weekly)||0),monthly=Math.max(0,Number(st.monthly)||0);const count=document.getElementById('streakInfoCount'),currentStat=document.getElementById('streakInfoCurrentStat'),week=document.getElementById('streakInfoWeekly'),month=document.getElementById('streakInfoMonthly'),msg=document.getElementById('streakInfoMessage'),headline=document.getElementById('streakInfoHeadline'),gt=document.getElementById('streakInfoGoalTitle'),gx=document.getElementById('streakInfoGoalText'),gb=document.getElementById('streakInfoGoalBtn'),ring=document.getElementById('streakBadgeRing');if(count)count.textContent=current;if(currentStat)currentStat.textContent=current;if(week)week.textContent=weekly;if(month)month.textContent=monthly;if(headline)headline.textContent=current>=5?"You're on a roll 🔥":current>0?"Great start — keep it going 🔥":"Ready to start your streak?";if(msg)msg.textContent=current>0?'Engage with one useful AI shopping action a day — view your pick, add an item, or ask the Concierge — to keep the streak alive.':'Engage with your daily AI shopping goal to start building your streak.';if(gt)gt.textContent=g.title||'Your personalised daily pick';if(gx)gx.textContent=g.description||'Based on your shopping behaviour — not random challenges.';if(gb)gb.textContent=g.actionLabel||"View today's pick";if(ring){const pct=Math.max(0,Math.min(100,(current/30)*100));ring.style.background=`conic-gradient(var(--G) 0% ${pct}%,var(--bdr) ${pct}% 100%)`}document.querySelectorAll('#streakMilestones .streak-milestone').forEach(el=>{const m=Number(el.dataset.milestone)||0;el.classList.toggle('done',current>=m);el.classList.toggle('next',current<m&&current>=Math.max(0,m-1))});renderStreakDots(weekly)}
+async function loadPersonalGoal(){if(!CTOKEN||!MY_PHONE){setEngagementVisible(false);return}setEngagementVisible(true);try{const r=await fetch('/api/customer/'+encodeURIComponent(MY_PHONE)+'/goal',{headers:personalGoalHeaders(),cache:'no-store'});if(!r.ok)throw new Error('goal');const d=await r.json();PERSONAL_GOAL=d.goal||null;PERSONAL_STREAK=d.streak||null;const st=PERSONAL_STREAK||{};document.getElementById('engageStreakCount').textContent=`${st.current||0}-day streak`;document.getElementById('engageStreakMeta').textContent=(Number(st.current)||0)>0?'Engage today to keep it going':'Shop today to start your streak';renderStreakDots(st.weekly);renderStreakInfo()}catch(e){if(!CTOKEN||!MY_PHONE){setEngagementVisible(false);return}document.getElementById('engageStreakCount').textContent='0-day streak';document.getElementById('engageStreakMeta').textContent='Shop today to start your streak';renderStreakDots(0);renderStreakInfo()}}
 async function engagePersonalStreak(){if(!CTOKEN||!MY_PHONE){setEngagementVisible(false);return}try{const r=await fetch('/api/customer/'+encodeURIComponent(MY_PHONE)+'/streak/engage',{method:'POST',headers:personalGoalHeaders(),body:'{}'});if(r.ok){const d=await r.json();PERSONAL_STREAK=d.streak||PERSONAL_STREAK}}catch(e){}}
-function openPersonalGoal(){if(!CTOKEN||!MY_PHONE){openLoyalty();return}const g=PERSONAL_GOAL;if(!g)return;if(g.query){openSearch();setTimeout(()=>fillSearch(g.query),120);return}if(g.category){filterCat(g.category);setTimeout(()=>document.getElementById('prodsGrid')?.scrollIntoView({behavior:'smooth',block:'start'}),80);return}openSearch()}
+function openStreakInfo(){if(!CTOKEN||!MY_PHONE){openLoyalty();return}renderStreakInfo();const el=document.getElementById('streakInfoOverlay');if(el){el.classList.add('on');document.body.style.overflow='hidden'}}
+function closeStreakInfo(){const el=document.getElementById('streakInfoOverlay');if(el)el.classList.remove('on');document.body.style.overflow=''}
+function openPersonalGoal(){if(!CTOKEN||!MY_PHONE){openLoyalty();return}const g=PERSONAL_GOAL;if(!g)return;if(g.query){openSearch();setTimeout(()=>fillSearch(g.query),120);return}if(g.category){closeStreakInfo();filterCat(g.category);setTimeout(()=>document.getElementById('prodsGrid')?.scrollIntoView({behavior:'smooth',block:'start'}),80);return}closeStreakInfo();openSearch()}
 function initEngagementStrip(){const sc=document.querySelector('.home-scroll');if(sc&&!sc.dataset.engageScroll){sc.dataset.engageScroll='1';sc.addEventListener('scroll',()=>{const h=document.querySelector('.hdr');if(h)h.classList.toggle('compact',sc.scrollTop>70)},{passive:true})}if(CTOKEN&&MY_PHONE)engagePersonalStreak().finally(loadPersonalGoal);else setEngagementVisible(false)}
 
 /* ─── INIT ─── */
