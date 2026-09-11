@@ -76,7 +76,7 @@ console.log('[nexus] LLM provider:', LLM ? LLM.name : 'NONE (keyword fallback on
 
 /* ── storage ── */
 const KEYS = ['devx-catalog', 'devx-orders', 'devx-offers', 'devx-sponsored', 'devx-notifs-customer', 'devx-activity', 'devx-queries',
-  'devx-loyalty', 'devx-personal-offers', 'devx-zones', 'devx-staff', 'devx-audit', 'devx-slots', 'devx-branches', 'devx-catalogs', 'devx-order-additions', 'devx-customer-passwords', 'devx-streaks', 'devx-goal-dismissals'];
+  'devx-loyalty', 'devx-personal-offers', 'devx-zones', 'devx-staff', 'devx-audit', 'devx-slots', 'devx-branches', 'devx-catalogs', 'devx-order-additions', 'devx-customer-passwords', 'devx-streaks', 'devx-goal-dismissals', 'devx-streak-config'];
 let db = {
   'devx-catalog': null,
   'devx-orders': [],
@@ -111,6 +111,7 @@ let db = {
   'devx-customer-passwords': [],
   'devx-streaks': {},
   'devx-goal-dismissals': {},
+  'devx-streak-config': GOALS.DEFAULT_STREAK_CONFIG,
   'devx-order-count': 0
 };
 
@@ -2734,54 +2735,64 @@ function goalIdentity(req, id) {
 }
 function goalScopedQueries(branchId) { return (db['devx-queries'] || []).filter(q => !q.branchId || q.branchId === branchId); }
 function goalStreakKey(branchId, identity) { return `${branchId}::${identity}`; }
+function streakConfig(){
+  db['devx-streak-config']=GOALS.sanitizeStreakConfig(db['devx-streak-config']||{});
+  return db['devx-streak-config'];
+}
+function customerWeekOrders(branchId,phone,cid,now=new Date()) {
+  const wk=GOALS.weekKey(now), orders=db['devx-orders']||[];
+  return orders.filter(o=>{
+    if(o.seed || !GOALS.completedOrders([o],phone).length) return false;
+    if(branchId && o.branchId && o.branchId!==branchId)return false;
+    const owned=phone ? LOY.normalisePhone(o.customer&&o.customer.phone)===LOY.normalisePhone(phone) : String(o.cid||'')===String(cid||'');
+    return owned && GOALS.weekKey(new Date(o.date||o.createdAt||now))===wk;
+  });
+}
+app.get('/api/streak/config',(req,res)=>res.json({config:streakConfig()}));
 app.get('/api/customer/:id/goal', (req,res) => {
   const ident=goalIdentity(req,req.params.id); if(!ident)return res.status(403).json({error:'not your customer goal'});
   const bid=branchOf(req), orders=db['devx-orders']||[], catalog=catalogOf(bid), key=goalStreakKey(bid,ident.key);
   const mine=ident.phone?orders:orders.filter(o=>String(o.cid||'')===String(req.headers['x-customer-cid']||''));
   const goal=GOALS.goalFor({orders:mine,queries:goalScopedQueries(bid),catalog,phone:ident.phone||'',dismissed:db['devx-goal-dismissals']?.[key]||[]});
-  const streak=GOALS.streakSummary(db['devx-streaks']?.[key]||{});
-  res.json({goal,streak,identity:ident.type,branchId:bid});
+  const sc=streakConfig();
+  const weeklyOrders=customerWeekOrders(bid,ident.phone,req.headers['x-customer-cid']);
+  const streak=GOALS.streakSummary(db['devx-streaks']?.[key]||{},new Date(),sc,weeklyOrders.length);
+  res.json({goal,streak,identity:ident.type,branchId:bid,config:sc});
 });
 app.post('/api/customer/:id/streak/engage',GUARD.limit('write'),(req,res)=>{
   const ident=goalIdentity(req,req.params.id);if(!ident)return res.status(403).json({error:'not your streak'});
-  const bid=branchOf(req),key=goalStreakKey(bid,ident.key);db['devx-streaks']=db['devx-streaks']||{};
-  db['devx-streaks'][key]=GOALS.engageStreak(db['devx-streaks'][key]||{});save('devx-streaks');
-  res.json({streak:GOALS.streakSummary(db['devx-streaks'][key])});
-});
-/* Cash in a reached streak milestone (3/7/14/30 days) for a real coupon —
-   the gamification payoff. Phone-bound only: a coupon has to belong to a
-   real account, so guests are asked to sign in rather than silently no-op. */
-app.post('/api/customer/:id/streak/claim',GUARD.limit('write'),(req,res)=>{
-  const ident=goalIdentity(req,req.params.id);
-  if(!ident)return res.status(403).json({error:'not your streak'});
-  if(!ident.phone)return res.status(400).json({error:'sign in to claim a streak reward'});
-  const bid=branchOf(req),key=goalStreakKey(bid,ident.key);
+  const bid=branchOf(req),key=goalStreakKey(bid,ident.key),sc=streakConfig(),action=String((req.body||{}).action||'portal_visit');
+  if(!['portal_visit','search','cart_add'].includes(action))return res.status(400).json({error:'unknown activity'});
   db['devx-streaks']=db['devx-streaks']||{};
-  const record=db['devx-streaks'][key]||{};
-  const days=Number((req.body||{}).days);
-  const tier=GOALS.rewardTierFor(days);
-  if(!tier)return res.status(400).json({error:'unknown reward tier'});
-  if((Number(record.current)||0)<tier.days)return res.status(400).json({error:`Reach a ${tier.days}-day streak first`});
-  const claimed=Array.isArray(record.claimed)?record.claimed:[];
-  if(claimed.includes(tier.days))return res.status(400).json({error:'already claimed'});
-  const passwords=db['devx-customer-passwords']||[];
-  const acct=passwords.find(x=>LOY.normalisePhone(x.phone)===ident.phone);
+  db['devx-streaks'][key]=GOALS.engageStreak(db['devx-streaks'][key]||{},new Date(),action,sc);save('devx-streaks');
+  const weeklyOrders=customerWeekOrders(bid,ident.phone,req.headers['x-customer-cid']);
+  res.json({streak:GOALS.streakSummary(db['devx-streaks'][key],new Date(),sc,weeklyOrders.length)});
+});
+/* Progressive weekly reward claim — the customer receives the highest reward
+   reached so far this UAE week. A later order can upgrade the coupon percentage. */
+app.post('/api/customer/:id/streak/claim',GUARD.limit('write'),(req,res)=>{
+  const ident=goalIdentity(req,req.params.id);if(!ident)return res.status(403).json({error:'not your streak'});
+  if(!ident.phone)return res.status(400).json({error:'sign in to claim a streak reward'});
+  const bid=branchOf(req),key=goalStreakKey(bid,ident.key),sc=streakConfig(),weeklyOrders=customerWeekOrders(bid,ident.phone,req.headers['x-customer-cid']);
+  db['devx-streaks']=db['devx-streaks']||{};const record=db['devx-streaks'][key]||{};
+  const summary=GOALS.streakSummary(record,new Date(),sc,weeklyOrders.length), reward=summary.reward, eligible=reward.eligible;
+  if(!eligible)return res.status(400).json({error:'Complete 7 active days first'});
+  const wk=GOALS.weekKey(new Date());const claimed=record.claimedWeeks||{};const previous=Number(claimed[wk])||0;
+  if(previous>=eligible.pct)return res.status(400).json({error:'Your highest reward is already claimed this week'});
+  if(sc.autoGenerateCoupons===false)return res.status(400).json({error:'Redeemable streak coupons are disabled by the store admin'});
+  const passwords=db['devx-customer-passwords']||[];const acct=passwords.find(x=>LOY.normalisePhone(x.phone)===ident.phone);
   const offer=LOY.buildOffer({
     member:{name:(acct&&acct.name)||'Customer',phone:ident.phone},
-    trigger:{kind:'manual',why:`${tier.days}-day shopping streak`,title:`${tier.days}-day streak reward`},
-    pct:tier.pct,products:[],validDays:14,minSpend:0,issuedBy:'AI-Streak'
+    trigger:{kind:'manual',why:`${eligible.label} in UAE week`,title:`🔥 ${eligible.pct}% streak reward`},
+    pct:eligible.pct,products:[],validDays:sc.couponValidityDays,minSpend:sc.minOrderValue,issuedBy:'AI-Streak'
   });
-  db['devx-personal-offers']=db['devx-personal-offers']||[];
-  db['devx-personal-offers'].unshift(offer);
-  record.claimed=[...claimed,tier.days];
-  db['devx-streaks'][key]=record;
+  db['devx-personal-offers']=db['devx-personal-offers']||[];db['devx-personal-offers'].unshift(offer);
+  record.claimedWeeks={...claimed,[wk]:eligible.pct};db['devx-streaks'][key]=record;
   save('devx-personal-offers');save('devx-streaks');
-  notify('offer',`🔥 ${tier.days}-day streak reward unlocked`,
-    `${tier.label}. Use code ${offer.code} on your next order. Valid until ${new Date(offer.expiresAt).toLocaleDateString()}.`,
-    null, ident.phone);
-  activity('offer',`Streak reward ${offer.code} — ${tier.pct}% for ${offer.name} (${tier.days}-day streak)`);
+  notify('offer',`🔥 ${eligible.pct}% streak reward unlocked`,`Use code ${offer.code} on your next order. Valid until ${new Date(offer.expiresAt).toLocaleDateString()}.`,null,ident.phone);
+  activity('offer',`Streak reward ${offer.code} — ${eligible.pct}% (${eligible.label})`);
   broadcast({'devx-personal-offers':db['devx-personal-offers'],'devx-notifs-customer':db['devx-notifs-customer'],'devx-activity':db['devx-activity']});
-  res.json({offer,streak:GOALS.streakSummary(record)});
+  const updated=GOALS.streakSummary(record,new Date(),sc,weeklyOrders.length);res.json({offer,streak:updated});
 });
 app.post('/api/customer/:id/goal/dismiss',GUARD.limit('write'),(req,res)=>{
   const ident=goalIdentity(req,req.params.id);if(!ident)return res.status(403).json({error:'not your customer goal'});
@@ -2791,13 +2802,23 @@ app.post('/api/customer/:id/goal/dismiss',GUARD.limit('write'),(req,res)=>{
 app.post('/api/customer/search-event',GUARD.limit('write'),(req,res)=>{
   const q=String((req.body||{}).query||'').trim().slice(0,120);if(q.length<3)return res.json({ok:true});const sh=shopper(req),branchId=branchOf(req);
   db['devx-queries']=db['devx-queries']||[];db['devx-queries'].unshift({id:'search-'+Date.now().toString(36)+Math.random().toString(36).slice(2,7),query:q,phone:sh&&sh.phone||null,cid:String(req.headers['x-customer-cid']||'').slice(0,120),branchId,resultCount:Number((req.body||{}).resultCount||0),source:'product-search',at:new Date().toISOString()});
-  db['devx-queries']=db['devx-queries'].slice(0,5000);save('devx-queries');res.json({ok:true});
+  db['devx-queries']=db['devx-queries'].slice(0,5000);save('devx-queries');if(sh){const key=goalStreakKey(branchId,LOY.normalisePhone(sh.phone));db['devx-streaks']=db['devx-streaks']||{};db['devx-streaks'][key]=GOALS.engageStreak(db['devx-streaks'][key]||{},new Date(),'search',streakConfig());save('devx-streaks');}res.json({ok:true});
+});
+app.get('/api/admin/streak-settings',need('insights.view'),(req,res)=>{
+  res.json({config:streakConfig()});
+});
+app.post('/api/admin/streak-settings',need('insights.view'),(req,res)=>{
+  const next=GOALS.sanitizeStreakConfig({...streakConfig(),...(req.body||{})});
+  db['devx-streak-config']=next;save('devx-streak-config');
+  audit(req,'streak.settings','Updated streak & reward configuration',{config:next});
+  broadcast({'devx-streak-config':next});
+  res.json({ok:true,config:next});
 });
 app.get('/api/admin/goals',need('insights.view'),(req,res)=>{
   const bid=branchOf(req),orders=STORES.scope(db['devx-orders']||[],bid,STORES.fallbackId(db)),catalog=catalogOf(bid),queries=goalScopedQueries(bid),streaks=db['devx-streaks']||{},passwords=db['devx-customer-passwords']||[],phones=new Set();
   passwords.forEach(x=>{const p=LOY.normalisePhone(x.phone);if(p)phones.add(p)});orders.forEach(o=>{const p=LOY.normalisePhone(o.customer&&o.customer.phone);if(p)phones.add(p)});
-  const rows=[...phones].map(phone=>{const row=passwords.find(x=>LOY.normalisePhone(x.phone)===phone)||{},key=goalStreakKey(bid,phone),goal=GOALS.goalFor({orders:db['devx-orders']||[],queries,catalog,phone,dismissed:db['devx-goal-dismissals']?.[key]||[]}),streak=GOALS.streakSummary(streaks[key]||{});return {phone:CUST.mask(phone),name:row.name||'Customer',goal,streak};}).sort((a,b)=>(b.streak.current-a.streak.current)||String(a.name).localeCompare(String(b.name))).slice(0,200);
-  res.json({data:rows,config:{minOrders:GOALS.MIN_ORDERS,minHistoryDays:GOALS.MIN_HISTORY_DAYS,templates:['search','complement','cadence']}});
+  const sc=streakConfig();const rows=[...phones].map(phone=>{const row=passwords.find(x=>LOY.normalisePhone(x.phone)===phone)||{},key=goalStreakKey(bid,phone),goal=GOALS.goalFor({orders:db['devx-orders']||[],queries,catalog,phone,dismissed:db['devx-goal-dismissals']?.[key]||[]}),weeklyOrders=customerWeekOrders(bid,phone,'').length,streak=GOALS.streakSummary(streaks[key]||{},new Date(),sc,weeklyOrders);return {phone:CUST.mask(phone),name:row.name||'Customer',goal,streak};}).sort((a,b)=>(b.streak.current-a.streak.current)||String(a.name).localeCompare(String(b.name))).slice(0,200);
+  res.json({data:rows,config:{minOrders:GOALS.MIN_ORDERS,minHistoryDays:GOALS.MIN_HISTORY_DAYS,templates:['search','complement','cadence'],streak:sc}});
 });
 
 /* ══════════════════════════════════════════════════════════
