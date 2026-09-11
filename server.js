@@ -74,6 +74,18 @@ const TRANSCRIBER = groq
 
 console.log('[nexus] LLM provider:', LLM ? LLM.name : 'NONE (keyword fallback only — add GROQ_API_KEY)');
 
+// Vision layer for the unified product scanner. Keep this separate from the
+// concierge model so an image-capable model is always selected when a provider
+// key is available. Groq is preferred for speed; OpenAI is the fallback.
+const VISION_GROQ_MODEL = 'qwen/qwen3.6-27b';
+const VISION_OPENAI_MODEL = 'gpt-4o-mini';
+const VISION = groq
+  ? { client: groq, model: VISION_GROQ_MODEL, name: 'Groq ' + VISION_GROQ_MODEL }
+  : openai
+  ? { client: openai, model: VISION_OPENAI_MODEL, name: 'OpenAI ' + VISION_OPENAI_MODEL }
+  : null;
+
+
 /* ── storage ── */
 const KEYS = ['devx-catalog', 'devx-orders', 'devx-offers', 'devx-sponsored', 'devx-notifs-customer', 'devx-activity', 'devx-queries',
   'devx-loyalty', 'devx-personal-offers', 'devx-zones', 'devx-staff', 'devx-audit', 'devx-slots', 'devx-branches', 'devx-catalogs', 'devx-order-additions', 'devx-customer-passwords', 'devx-streaks', 'devx-goal-dismissals', 'devx-streak-config'];
@@ -824,6 +836,76 @@ app.post('/api/transcribe',
       fs.unlink(tmp, () => {});
     }
   });
+
+/* ── Product image recognition for the unified scanner ── */
+function parseVisionJson(text) {
+  let raw = String(text || '').trim();
+  raw = raw.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/i, '').trim();
+  try { return JSON.parse(raw); } catch (_) {}
+  const m = raw.match(/\{[\s\S]*\}/);
+  if (m) { try { return JSON.parse(m[0]); } catch (_) {} }
+  return null;
+}
+function compactVisionImageData(value) {
+  const v = String(value || '');
+  if (!/^data:image\/(?:jpeg|jpg|png|webp);base64,/i.test(v)) return null;
+  if (v.length > 11 * 1024 * 1024) return null;
+  return v;
+}
+app.post('/api/scan/product-image', GUARD.limit('write'), async (req, res) => {
+  const image = compactVisionImageData(req.body?.image);
+  if (!image) return res.status(400).json({ error: 'invalid or oversized image' });
+  if (!VISION) return res.status(503).json({ error: 'no vision provider configured', provider: null });
+
+  const catalog = catalogOf(branchOf(req));
+  const prompt = [
+    'Identify the grocery product in this image for a supermarket catalogue.',
+    'Return JSON only with this exact shape:',
+    '{"productName":"", "brand":"", "category":"", "searchTerms":[], "confidence":0}',
+    'Use empty strings/array when unknown. searchTerms should contain concise English catalogue-search terms. confidence must be 0 to 1.',
+    'Do not invent a brand or product that is not visible.'
+  ].join(' ');
+
+  try {
+    const r = await VISION.client.chat.completions.create({
+      model: VISION.model,
+      messages: [{ role: 'user', content: [
+        { type: 'text', text: prompt },
+        { type: 'image_url', image_url: { url: image, detail: 'auto' } }
+      ]}],
+      temperature: 0,
+      max_completion_tokens: 350,
+      response_format: { type: 'json_object' }
+    });
+    const text = r?.choices?.[0]?.message?.content || '';
+    const identified = parseVisionJson(text) || {};
+    const terms = Array.isArray(identified.searchTerms) ? identified.searchTerms.filter(Boolean).slice(0, 8) : [];
+    const query = [identified.productName, identified.brand, identified.category, ...terms].filter(Boolean).join(' ').trim();
+    const candidates = query ? searchProducts(query, catalog).slice(0, 8) : [];
+    const exact = candidates.find(p => {
+      const pn = String(p.name || '').toLowerCase();
+      const dn = String(identified.productName || '').toLowerCase().trim();
+      const db = String(identified.brand || '').toLowerCase().trim();
+      return dn && (pn === dn || pn.includes(dn) || (db && pn.includes(db) && pn.includes(dn)));
+    });
+    const results = exact ? [exact, ...candidates.filter(p => p.id !== exact.id)].slice(0, 8) : candidates;
+    res.json({
+      provider: VISION.name,
+      identification: {
+        productName: String(identified.productName || ''),
+        brand: String(identified.brand || ''),
+        category: String(identified.category || ''),
+        searchTerms: terms,
+        confidence: Math.max(0, Math.min(1, Number(identified.confidence) || 0))
+      },
+      matchType: exact ? 'exact' : (results.length > 1 ? 'multiple' : (results.length === 1 ? 'similar' : 'none')),
+      results: results.map(p => withImages(p, 180))
+    });
+  } catch (e) {
+    console.error('[nexus] product image scan error:', e.message);
+    res.status(502).json({ error: 'product image recognition failed', provider: VISION.name });
+  }
+});
 
 /* ── 4. The endpoint ── */
 app.post('/api/concierge', GUARD.limit('concierge'), GUARD.sanePrompt, async (req, res) => {
