@@ -2748,6 +2748,41 @@ app.post('/api/customer/:id/streak/engage',GUARD.limit('write'),(req,res)=>{
   db['devx-streaks'][key]=GOALS.engageStreak(db['devx-streaks'][key]||{});save('devx-streaks');
   res.json({streak:GOALS.streakSummary(db['devx-streaks'][key])});
 });
+/* Cash in a reached streak milestone (3/7/14/30 days) for a real coupon —
+   the gamification payoff. Phone-bound only: a coupon has to belong to a
+   real account, so guests are asked to sign in rather than silently no-op. */
+app.post('/api/customer/:id/streak/claim',GUARD.limit('write'),(req,res)=>{
+  const ident=goalIdentity(req,req.params.id);
+  if(!ident)return res.status(403).json({error:'not your streak'});
+  if(!ident.phone)return res.status(400).json({error:'sign in to claim a streak reward'});
+  const bid=branchOf(req),key=goalStreakKey(bid,ident.key);
+  db['devx-streaks']=db['devx-streaks']||{};
+  const record=db['devx-streaks'][key]||{};
+  const days=Number((req.body||{}).days);
+  const tier=GOALS.rewardTierFor(days);
+  if(!tier)return res.status(400).json({error:'unknown reward tier'});
+  if((Number(record.current)||0)<tier.days)return res.status(400).json({error:`Reach a ${tier.days}-day streak first`});
+  const claimed=Array.isArray(record.claimed)?record.claimed:[];
+  if(claimed.includes(tier.days))return res.status(400).json({error:'already claimed'});
+  const passwords=db['devx-customer-passwords']||[];
+  const acct=passwords.find(x=>LOY.normalisePhone(x.phone)===ident.phone);
+  const offer=LOY.buildOffer({
+    member:{name:(acct&&acct.name)||'Customer',phone:ident.phone},
+    trigger:{kind:'manual',why:`${tier.days}-day shopping streak`,title:`${tier.days}-day streak reward`},
+    pct:tier.pct,products:[],validDays:14,minSpend:0,issuedBy:'AI-Streak'
+  });
+  db['devx-personal-offers']=db['devx-personal-offers']||[];
+  db['devx-personal-offers'].unshift(offer);
+  record.claimed=[...claimed,tier.days];
+  db['devx-streaks'][key]=record;
+  save('devx-personal-offers');save('devx-streaks');
+  notify('offer',`🔥 ${tier.days}-day streak reward unlocked`,
+    `${tier.label}. Use code ${offer.code} on your next order. Valid until ${new Date(offer.expiresAt).toLocaleDateString()}.`,
+    null, ident.phone);
+  activity('offer',`Streak reward ${offer.code} — ${tier.pct}% for ${offer.name} (${tier.days}-day streak)`);
+  broadcast({'devx-personal-offers':db['devx-personal-offers'],'devx-notifs-customer':db['devx-notifs-customer'],'devx-activity':db['devx-activity']});
+  res.json({offer,streak:GOALS.streakSummary(record)});
+});
 app.post('/api/customer/:id/goal/dismiss',GUARD.limit('write'),(req,res)=>{
   const ident=goalIdentity(req,req.params.id);if(!ident)return res.status(403).json({error:'not your customer goal'});
   const bid=branchOf(req),key=goalStreakKey(bid,ident.key),id=String((req.body||{}).goalId||'').trim();if(!id)return res.status(400).json({error:'goalId is required'});
