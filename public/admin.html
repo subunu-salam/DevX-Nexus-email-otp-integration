@@ -236,6 +236,10 @@ tbody tr.click:hover{background:var(--GL)}
 .sponsored-admin-preview img{width:100%;height:100%;object-fit:cover;display:block}
 @media(max-width:1200px){.sponsored-admin-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:700px){.sponsored-admin-grid{grid-template-columns:1fr}}
+/* ─── STORE NAVIGATION LOCATION EDITOR — additive inventory support ─── */
+.sn-loc{display:flex;align-items:center;gap:6px}.sn-loc-pencil{width:24px;height:24px;border:1px solid var(--bdr2);background:var(--card);border-radius:7px;display:inline-flex;align-items:center;justify-content:center;color:var(--GD);cursor:pointer}.sn-loc-pencil svg{width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.sn-loc-hint{font-size:9.5px;color:var(--tx3);font-weight:700;margin-top:2px}
+
 </style>
 </head>
 <body>
@@ -748,6 +752,22 @@ tbody tr.click:hover{background:var(--GL)}
   <div class="modal" style="width:520px">
     <div class="modal-hd"><span class="card-t" id="ioTitle">Issue personal offer</span><button class="dw-x" onclick="closeIssue()">✕</button></div>
     <div class="modal-bd" id="ioBody"></div>
+  </div>
+</div>
+
+<div class="modal-ov" id="locModal">
+  <div class="modal" style="width:420px">
+    <div class="modal-hd"><span class="card-t">Edit Store Navigation Location</span><button class="dw-x" onclick="closeLocEditor()">✕</button></div>
+    <div class="modal-bd">
+      <div class="card-t" id="locProdName" style="font-size:14px"></div>
+      <p style="font-size:10.5px;color:var(--tx3);line-height:1.55;margin:4px 0 12px">Navigation uses fixed <b>Aisle · Rack · Shelf</b> labels. Only the location numbers are editable so customer directions stay consistent.</p>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:9px">
+        <div class="fld"><label class="lbl">Aisle</label><input class="inp" id="locAisle" type="number" min="1" max="999" step="1"></div>
+        <div class="fld"><label class="lbl">Rack</label><input class="inp" id="locRack" type="number" min="1" max="999" step="1"></div>
+        <div class="fld"><label class="lbl">Shelf</label><input class="inp" id="locShelf" type="number" min="1" max="999" step="1"></div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:5px"><button class="btn ghost" style="flex:1" onclick="closeLocEditor()">Cancel</button><button class="btn grn" style="flex:1;justify-content:center" onclick="saveLocEditor()">Save location</button></div>
+    </div>
   </div>
 </div>
 
@@ -2964,13 +2984,31 @@ function renderInv(){
     return `<tr class="${out?'out-row':low?'low-row':''}">
       <td style="width:46px"><img class="pimg" src="${p.img||''}" title="Click to change image" style="cursor:pointer" onclick="editImg(${p.id})" onerror="this.style.visibility='hidden'"></td>
       <td><div class="td-main">${esc(p.name)}${p.brand?' <span class="offer-pill" style="background:var(--GL);color:var(--GD)">'+esc(p.brand)+'</span>':''}</div><div class="td-sub">${esc(p.unit)} · ${esc(p.cat)}${hasOff?' · <span class="offer-pill">ON OFFER</span>':''}</div></td>
-      <td style="font-size:10.5px">${esc(p.loc||'—')}</td>
+      <td style="font-size:10.5px"><div class="sn-loc"><span>${esc(p.loc||'—')}</span><button class="sn-loc-pencil" type="button" onclick="editInvLocation(${p.id})" title="Edit aisle, rack and shelf" aria-label="Edit aisle, rack and shelf"><svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 013 3L8 18l-4 1 1-4z"/></svg></button></div></td>
       <td><input class="inp-mini" type="number" min="1" step="0.5" value="${p.price}" id="pr-${p.id}"></td>
       <td><input class="inp-mini" type="number" min="0" value="${p.stock??''}" id="stk-${p.id}"></td>
       <td>${out?'<span class="stock-tag stock-out">OUT OF STOCK</span>':low?`<span class="stock-tag stock-low">LOW · ${p.stock}</span>`:'<span class="stock-tag stock-ok">IN STOCK</span>'}</td>
       <td><button class="btn ghost sm" onclick="saveInv(${p.id})">Save</button></td>
     </tr>`;}).join('')}</tbody></table>`;
   syncInvBadge();
+}
+let locEditId=null;
+function editInvLocation(id){
+  reload();const p=CAT.find(x=>x.id===id);if(!p)return;locEditId=id;
+  document.getElementById('locProdName').textContent=p.name+(p.brand?' · '+p.brand:'');
+  const m=String(p.loc||'').match(/Aisle\s*(\d+)\s*·\s*Rack\s*(\d+)\s*·\s*Shelf\s*(\d+)/i);
+  document.getElementById('locAisle').value=m?m[1]:4;
+  document.getElementById('locRack').value=m?m[2]:1;
+  document.getElementById('locShelf').value=m?m[3]:1;
+  document.getElementById('locModal').classList.add('on');
+}
+function closeLocEditor(){document.getElementById('locModal').classList.remove('on');locEditId=null}
+function saveLocEditor(){
+  if(locEditId==null)return;reload();const p=CAT.find(x=>x.id===locEditId);if(!p){closeLocEditor();return}
+  const a=parseInt(document.getElementById('locAisle').value,10),r=parseInt(document.getElementById('locRack').value,10),sh=parseInt(document.getElementById('locShelf').value,10);
+  if(!Number.isInteger(a)||!Number.isInteger(r)||!Number.isInteger(sh)||a<1||r<1||sh<1){toast('Enter valid aisle, rack and shelf numbers');return}
+  p.loc=`Aisle ${a} · Rack ${r} · Shelf ${sh}`;
+  nxSet(NXK.cat,CAT);nxBump();logAct('stock','Store navigation location updated — '+p.name+' · '+p.loc);toast(p.name+' navigation location updated · live in customer app');closeLocEditor();renderInv();
 }
 function saveInv(id){
   reload();
