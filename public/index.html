@@ -3937,7 +3937,7 @@ button,input,textarea,select{font-family:inherit}
 
   <div class="streak-home-card" onclick="openStreakInfo()" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openStreakInfo()}">
     <div class="streak-home-card-icon">🎁</div>
-    <div class="streak-home-card-copy"><b>Your Streak · up to 15% off</b><span>7 active days → 5% off · +5% with 1 order · +5% with 2 orders</span></div>
+    <div class="streak-home-card-copy"><b id="streakHomeRewardTitle">Your Streak · up to 15% off</b><span id="streakHomeRewardText">7 active days → 5% off · +5% with 1 order · +5% with 2 orders</span></div>
     <span class="streak-home-card-cta">Explore streak <b>›</b></span>
   </div>
 
@@ -4178,7 +4178,7 @@ button,input,textarea,select{font-family:inherit}
       <div><b>Place an order to unlock more</b><span id="streakOrderCtaText">Complete an order after your 7 active days to upgrade your reward.</span></div><span>→</span>
     </div>
 
-    <div class="streak-info-card streak-how-card"><div class="streak-info-card-kicker">HOW STREAKS WORK</div><div class="streak-info-card-title">7 days. More orders. Bigger savings. 🎁</div><div class="streak-info-card-text">One smart move a day keeps your streak alive. Browse the store, find a product, or add an item to your cart — any one useful action makes that day count. Stay active for 7 days, then complete orders to unlock bigger savings, up to 15% off.</div><div class="streak-how-steps"><div class="streak-how-step"><span>1</span><div><b>Show up</b><small>Visit the store and keep your momentum going.</small></div></div><div class="streak-how-step"><span>2</span><div><b>Shop</b><small>Search for something or add an item to your cart.</small></div></div><div class="streak-how-step"><span>3</span><div><b>Unlock</b><small>After 7 active days, orders unlock bigger rewards.</small></div></div></div><div class="streak-info-rules streak-info-rules-actions"><button type="button" onclick="streakBrowseFromHow()" aria-label="Browse the store">👀<b>Browse</b></button><button type="button" onclick="streakFindProductFromHow()" aria-label="Find a product">⌕<b>Find a product</b></button><button type="button" onclick="streakGoToCartFromHow()" aria-label="Add an item to cart">🛒<b>Add to cart</b></button></div></div>
+    <div class="streak-info-card streak-how-card"><div class="streak-info-card-kicker">HOW STREAKS WORK</div><div class="streak-info-card-title">7 days. More orders. Bigger savings. 🎁</div><div class="streak-info-card-text" id="streakHowWorkText">One smart move a day keeps your streak alive. Browse the store, find a product, or add an item to your cart — any one useful action makes that day count. Stay active for 7 days, then complete orders to unlock bigger savings, up to 15% off.</div><div class="streak-how-steps"><div class="streak-how-step"><span>1</span><div><b>Show up</b><small>Visit the store and keep your momentum going.</small></div></div><div class="streak-how-step"><span>2</span><div><b>Shop</b><small>Search for something or add an item to your cart.</small></div></div><div class="streak-how-step"><span>3</span><div><b>Unlock</b><small>After 7 active days, orders unlock bigger rewards.</small></div></div></div><div class="streak-info-rules streak-info-rules-actions"><button type="button" onclick="streakBrowseFromHow()" aria-label="Browse the store">👀<b>Browse</b></button><button type="button" onclick="streakFindProductFromHow()" aria-label="Find a product">⌕<b>Find a product</b></button><button type="button" onclick="streakGoToCartFromHow()" aria-label="Add an item to cart">🛒<b>Add to cart</b></button></div></div>
   </div>
 </div>
 
@@ -4191,8 +4191,8 @@ button,input,textarea,select{font-family:inherit}
     <h3 id="streakOnboardingTitle">Show up. Shop smart. Unlock more. 🎁</h3>
     <p>We'll count one useful shopping action each day.</p>
     <div class="streak-onboarding-step"><span>📅</span><div><b>Stay active for 7 days</b><small>Visit, search, or add a product to cart.</small></div></div>
-    <div class="streak-onboarding-step"><span>🛒</span><div><b>Place orders for bigger rewards</b><small>1 order adds another 5%; 2 orders unlock the maximum.</small></div></div>
-    <div class="streak-onboarding-step"><span>🎁</span><div><b>Earn up to 15% off</b><small>5% + 5% + 5%, capped at the maximum set by the store.</small></div></div>
+    <div class="streak-onboarding-step"><span>🛒</span><div><b>Place orders for bigger rewards</b><small id="streakOnboardingOrderText">1 order adds another 5%; 2 orders unlock the maximum.</small></div></div>
+    <div class="streak-onboarding-step"><span>🎁</span><div><b id="streakOnboardingRewardTitle">Earn up to 15% off</b><small id="streakOnboardingRewardText">5% + 5% + 5%, capped at the maximum set by the store.</small></div></div>
     <button class="streak-onboarding-btn" onclick="closeStreakOnboarding()">Got it — let's shop!</button>
     <label class="streak-onboarding-check"><input type="checkbox" id="streakOnboardingRemember"> Don't show this again today</label>
   </div>
@@ -6983,6 +6983,24 @@ function uaeNow(){return new Date(new Date().toLocaleString('en-US',{timeZone:'A
 function uaeDateKey(){const d=new Date(),p=new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Dubai',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(d);const g=t=>p.find(x=>x.type===t)?.value||'';return `${g('year')}-${g('month')}-${g('day')}`}
 function setEngagementVisible(on){const el=document.getElementById('engageStrip');if(el)el.style.display=on?'flex':'none';const homeFaq=document.querySelector('.streak-home-card');if(homeFaq)homeFaq.style.display=on?'flex':'none';if(!on){PERSONAL_GOAL=null;PERSONAL_STREAK=null}}
 function renderStreakDots(weekly){const n=Math.max(0,Math.min(7,Number(weekly)||0));document.querySelectorAll('#engageDots .engage-dot').forEach((dot,i)=>dot.classList.toggle('on',i<n))}
+function applyStreakRewardMarketingConfig(cfg={},reward={}){
+  const basePct=Number(cfg.baseRewardPct ?? reward.levels?.[0]?.pct ?? 5)||0;
+  const add1Pct=Number(cfg.order1AdditionalPct ?? 0)||0;
+  const add2Pct=Number(cfg.order2AdditionalPct ?? 0)||0;
+  const maxPct=Number(reward.maxPct ?? cfg.maxRewardPct ?? (basePct+add1Pct+add2Pct) ?? 15)||15;
+  const set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v};
+  set('engageStreakMeta',`Stay active 7 days · earn up to ${maxPct}% off`);
+  set('streakInfoMaxReward',`Up to ${maxPct}%`);
+  set('streakHomeRewardTitle',`Your Streak · up to ${maxPct}% off`);
+  set('streakHomeRewardText',`7 active days → ${basePct}% off · +${add1Pct}% with 1 order · +${add2Pct}% with 2 orders`);
+  set('streakHowWorkText',`One smart move a day keeps your streak alive. Browse the store, find a product, or add an item to your cart — any one useful action makes that day count. Stay active for 7 days, then complete orders to unlock bigger savings, up to ${maxPct}% off.`);
+  set('streakOnboardingOrderText',`1 order adds another ${add1Pct}%; 2 orders add ${add2Pct}% to reach the maximum of ${maxPct}%.`);
+  set('streakOnboardingRewardTitle',`Earn up to ${maxPct}% off`);
+  set('streakOnboardingRewardText',`${basePct}% + ${add1Pct}% + ${add2Pct}%, capped at the maximum set by the store.`);
+}
+async function syncStreakRewardMarketing(){
+  try{const r=await fetch('/api/streak/config',{cache:'no-store'});if(!r.ok)return;const d=await r.json();STREAK_CONFIG=d.config||d||STREAK_CONFIG;applyStreakRewardMarketingConfig(STREAK_CONFIG||{},{});}catch(e){}
+}
 function renderStreakInfo(){
   const st=PERSONAL_STREAK||{},g=PERSONAL_GOAL||{},cfg=STREAK_CONFIG||st.config||{};const cal=st.calendar||{};const current=Math.max(0,Number(st.current)||0),weekly=Math.max(0,Number(st.weekly)||0),weeklyOrders=Math.max(0,Number(st.weeklyOrders)||0),reward=st.reward||{};
   const set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v};
@@ -6996,9 +7014,11 @@ function renderStreakInfo(){
   const actionMap={portal_visit:'activationPortal',search:'activationSearch',cart_add:'activationCart'};['activationPortal','activationSearch','activationCart'].forEach(id=>document.getElementById(id)?.classList.remove('done'));(st.todayActions||[]).forEach(a=>{const id=actionMap[a];if(id)document.getElementById(id)?.classList.add('done')});
   const week=Array.isArray(st.weekDays)?st.weekDays:[];const weekEl=document.getElementById('streakInfoWeek');if(weekEl){const todayKey=cal.dateKey||uaeDateKey();const active=new Set((st.todayActions||[]).length?[]:[]);const days=Array.isArray(st.activeWeekDays)?st.activeWeekDays:[];weekEl.innerHTML=week.map(d=>`<div class="streak-week-day ${d.key===todayKey?'today':''} ${days.includes(d.key)?'active':''}"><span class="daynum">${d.day}</span><div class="streak-week-dot"></div><span>${d.short}</span></div>`).join('');}
   const tiers=Array.isArray(reward.levels)?reward.levels:[];const tierEl=document.getElementById('streakRewardTiers');if(tierEl)tierEl.innerHTML=tiers.map((t,i)=>`<div class="reward-tier ${t.unlocked?'unlocked':'locked'} ${reward.eligible&&t.id===reward.eligible.id?'reward-tier-current':''}"><div class="reward-tier-icon">${t.unlocked?'🎁':'🔒'}</div><div class="reward-tier-main"><b>${esc(t.label)}</b><small>${t.unlocked?'Unlocked':'Keep going to unlock this'}</small></div><span class="reward-tier-pct">${t.pct}%</span></div>`).join('');
-  const p=Math.min(100,(weekly/7)*100);const bar=document.getElementById('rewardProgressBar');if(bar)bar.style.width=p+'%';set('rewardProgressText',`${weekly} / 7 active days · ${weeklyOrders} order${weeklyOrders===1?'':'s'} this week`);set('streakRewardStatus',reward.eligible?`${reward.eligible.pct}% unlocked`:`${reward.maxPct||15}% max reward`);
-  const claim=document.getElementById('streakClaimBtn'),note2=document.getElementById('streakClaimNote');if(claim){const can=!!reward.eligible&&!((st.claimedWeeks||{})[st.weekKey||'']>=reward.eligible.pct);claim.style.display=reward.eligible?'block':'none';claim.disabled=false;claim.textContent=can?`Claim ${reward.eligible.pct}% reward 🎁`:'Reward already claimed this week';}if(note2)note2.textContent=reward.eligible?`Your highest unlocked reward is ${reward.eligible.pct}% based on ${weekly} active days and ${weeklyOrders} completed order${weeklyOrders===1?'':'s'}.`:`Stay active for 7 days. Then 1 order adds 5% and 2 orders reach the maximum reward.`;
-  const cta=document.getElementById('streakOrderCtaText');if(cta)cta.textContent=weekly<7?`${7-weekly} more active day${7-weekly===1?'':'s'} to unlock 5% off.`:weeklyOrders<2?`${2-weeklyOrders} more completed order${2-weeklyOrders===1?'':'s'} to reach ${reward.maxPct||15}%.`:`You've reached the maximum promotional reward for this week.`;
+  const p=Math.min(100,(weekly/7)*100);const bar=document.getElementById('rewardProgressBar');if(bar)bar.style.width=p+'%';set('rewardProgressText',`${weekly} / 7 active days · ${weeklyOrders} order${weeklyOrders===1?'':'s'} this week`);set('streakRewardStatus',reward.eligible?`${reward.eligible.pct}% unlocked`:`${reward.maxPct||cfg.maxRewardPct||15}% max reward`);
+  const basePct=Number(cfg.baseRewardPct ?? reward.levels?.[0]?.pct ?? 5)||0;const add1Pct=Number(cfg.order1AdditionalPct ?? 0)||0;const add2Pct=Number(cfg.order2AdditionalPct ?? 0)||0;const maxPct=Number(reward.maxPct ?? cfg.maxRewardPct ?? (basePct+add1Pct+add2Pct) ?? 15)||15;
+  applyStreakRewardMarketingConfig({...cfg,maxRewardPct:maxPct,baseRewardPct:basePct,order1AdditionalPct:add1Pct,order2AdditionalPct:add2Pct},{maxPct});
+  const claim=document.getElementById('streakClaimBtn'),note2=document.getElementById('streakClaimNote');if(claim){const can=!!reward.eligible&&!((st.claimedWeeks||{})[st.weekKey||'']>=reward.eligible.pct);claim.style.display=reward.eligible?'block':'none';claim.disabled=false;claim.textContent=can?`Claim ${reward.eligible.pct}% reward 🎁`:'Reward already claimed this week';}if(note2)note2.textContent=reward.eligible?`Your highest unlocked reward is ${reward.eligible.pct}% based on ${weekly} active days and ${weeklyOrders} completed order${weeklyOrders===1?'':'s'}.`:`Stay active for 7 days. Then 1 order adds ${add1Pct}% and 2 orders add ${add2Pct}% to reach ${maxPct}%.`;
+  const cta=document.getElementById('streakOrderCtaText');if(cta)cta.textContent=weekly<7?`${7-weekly} more active day${7-weekly===1?'':'s'} to unlock ${basePct}% off.`:weeklyOrders<2?`${2-weeklyOrders} more completed order${2-weeklyOrders===1?'':'s'} to reach ${maxPct}%.`:`You've reached the maximum promotional reward of ${maxPct}% for this week.`;
   const ring=document.getElementById('streakBadgeRing');if(ring){const pct=Math.max(0,Math.min(100,(monthly/monthDays)*100));ring.style.background=`conic-gradient(var(--G) 0% ${pct}%,rgba(255,255,255,.14) ${pct}% 100%)`}
   const gt=document.getElementById('streakInfoGoalTitle'),gx=document.getElementById('streakInfoGoalText');if(gt)gt.textContent=(cfg.dailyGoalTitle||g.title||'Your personalised daily pick');if(gx)gx.textContent=g.description||cfg.dailyGoalMessage||'Based on your shopping behaviour — not random challenges.';
 }
@@ -7028,6 +7048,7 @@ function streakShopNow(){closeStreakInfo();if(cartCnt()>0)openCk();else openSear
 function openPersonalGoal(){if(!CTOKEN||!MY_PHONE){openLoyalty();return}const g=PERSONAL_GOAL;if(!g){openSearch();return}if(g.query){openSearch();setTimeout(()=>fillSearch(g.query),120);return}if(g.category){closeStreakInfo();filterCat(g.category);setTimeout(()=>document.getElementById('prodsGrid')?.scrollIntoView({behavior:'smooth',block:'start'}),80);return}closeStreakInfo();openSearch()}
 function initEngagementStrip(){
   const phone=MY_PHONE||localStorage.getItem('devx-phone')||'',token=CTOKEN||localStorage.getItem('devx-ctoken')||'';if(phone)MY_PHONE=phone;if(token)CTOKEN=token;
+  syncStreakRewardMarketing();
   const sc=document.querySelector('.home-scroll');if(sc&&!sc.dataset.engageScroll){sc.dataset.engageScroll='1';sc.addEventListener('scroll',()=>{const h=document.querySelector('.hdr');if(h)h.classList.toggle('compact',sc.scrollTop>70)},{passive:true})}
   if(CTOKEN&&MY_PHONE){(async()=>{const ok=await refreshSignedInIdentity();if(!ok){localStorage.removeItem('devx-ctoken');localStorage.removeItem('devx-phone');CTOKEN='';MY_PHONE='';setEngagementVisible(false);return}setEngagementVisible(true);await markStreakActivity('portal_visit');await loadPersonalGoal()})()}else setEngagementVisible(false)
 }
