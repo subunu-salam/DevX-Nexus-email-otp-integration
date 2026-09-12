@@ -3713,6 +3713,139 @@ button,input,textarea,select{font-family:inherit}
 }
 </style>
 
+
+<style id="store-nav-wow-styles">
+/* ─── SMART STORE NAVIGATION — additive wow-factor layer ───────────── */
+.store-nav-wow{margin:11px 14px 0;border:1px solid rgba(61,187,106,.23);border-radius:20px;background:linear-gradient(135deg,rgba(238,250,243,.98),rgba(255,255,255,.98));overflow:hidden;position:relative;box-shadow:0 10px 28px rgba(20,55,35,.07)}
+[data-theme="dark"] .store-nav-wow{background:linear-gradient(135deg,rgba(20,31,25,.98),rgba(17,22,19,.98));border-color:rgba(61,187,106,.25);box-shadow:0 10px 28px rgba(0,0,0,.22)}
+.store-nav-wow::after{content:'';position:absolute;inset:auto -50px -65px auto;width:170px;height:170px;border-radius:50%;background:radial-gradient(circle,rgba(61,187,106,.16),rgba(61,187,106,0) 68%);pointer-events:none}
+.store-nav-wow-main{display:flex;gap:12px;align-items:center;padding:12px 14px 10px}
+.store-nav-wow-icon{width:42px;height:42px;border-radius:15px;background:var(--G);color:#fff;display:flex;align-items:center;justify-content:center;flex:0 0 42px;box-shadow:0 8px 18px rgba(61,187,106,.25)}
+.store-nav-wow-icon svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.store-nav-wow-copy{min-width:0;flex:1}
+.store-nav-wow-kicker{font-size:9.5px;font-weight:900;letter-spacing:.09em;text-transform:uppercase;color:var(--GD);margin-bottom:3px}
+.store-nav-wow-title{font-size:15.5px;font-weight:900;letter-spacing:-.035em;color:var(--tx);line-height:1.15}
+.store-nav-wow-sub{font-size:9.5px;color:var(--tx2);margin-top:4px;line-height:1.45}
+.store-nav-wow-store{display:flex;align-items:center;gap:6px;font-size:9.5px;font-weight:800;color:var(--tx3);margin-top:6px}
+.store-nav-wow-store svg{width:12px;height:12px;stroke:var(--G);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.store-nav-home-store{display:inline-flex;align-items:center;gap:6px;margin-top:6px;padding:5px 9px;border:1px solid rgba(61,187,106,.18);background:rgba(61,187,106,.07);border-radius:999px;color:var(--tx2);font:inherit;font-size:9px;font-weight:800;cursor:pointer;max-width:100%;text-align:left;white-space:nowrap}
+.store-nav-home-store svg{width:12px;height:12px;flex:0 0 12px;stroke:var(--G);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.store-nav-home-store .store-nav-chevron{margin-left:1px;stroke:var(--tx3)}
+.store-nav-home-store:hover{border-color:rgba(61,187,106,.35);background:rgba(61,187,106,.11)}
+.store-nav-info{margin-top:12px;border:1px solid var(--bdr);background:linear-gradient(135deg,rgba(61,187,106,.07),var(--card));border-radius:18px;padding:13px}
+.store-nav-info-title{font-size:15px;font-weight:900;color:var(--tx);letter-spacing:-.02em}
+.store-nav-info-sub{font-size:10px;color:var(--tx3);line-height:1.45;margin-top:3px}
+.store-nav-info-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:11px}
+.store-nav-info-card{padding:10px 8px;border:1px solid var(--bdr);background:var(--bg);border-radius:13px;text-align:center}
+.store-nav-info-card .ic{font-size:17px;line-height:1}
+.store-nav-info-card b{display:block;font-size:9.5px;color:var(--tx);margin-top:5px}
+.store-nav-info-card span{display:block;font-size:8px;color:var(--tx3);margin-top:2px;line-height:1.3}
+.store-nav-info-foot{margin-top:9px;padding:8px 10px;border-radius:11px;background:var(--GL);color:var(--GD);font-size:9px;font-weight:800;line-height:1.4}
+.store-nav-store-picker{position:fixed;inset:0;background:rgba(4,8,6,.58);backdrop-filter:blur(7px);z-index:640;display:none;align-items:flex-end;justify-content:center}
+.store-nav-store-picker.on{display:flex}
+.store-nav-store-picker-card{width:100%;max-width:480px;background:var(--card);border-radius:22px 22px 0 0;padding:15px 16px calc(16px + env(safe-area-inset-bottom,0px));box-shadow:0 -16px 44px rgba(0,0,0,.2);animation:navGuideIn .28s cubic-bezier(.16,1,.3,1)}
+.store-nav-store-picker-head{display:flex;align-items:center;gap:10px}
+.store-nav-store-picker-head>div{flex:1;min-width:0}
+.store-nav-store-picker-title{font-size:15px;font-weight:900;color:var(--tx)}
+.store-nav-store-picker-sub{font-size:9.5px;color:var(--tx3);margin-top:2px}
+.store-nav-store-picker-close{width:34px;height:34px;border-radius:50%;border:1px solid var(--bdr);background:var(--card);color:var(--tx);cursor:pointer;font-size:18px}
+.store-nav-store-options{margin-top:12px;display:flex;flex-direction:column;gap:7px}
+.store-nav-store-option{display:flex;align-items:center;gap:10px;width:100%;padding:11px 12px;border:1px solid var(--bdr);background:var(--bg);border-radius:14px;color:var(--tx);cursor:pointer;text-align:left;font:inherit}
+.store-nav-store-option.active{border-color:rgba(61,187,106,.48);background:var(--GL);box-shadow:0 5px 16px rgba(61,187,106,.08)}
+.store-nav-store-option .radio{width:14px;height:14px;border-radius:50%;border:2px solid var(--bdr);position:relative;flex:0 0 14px}
+.store-nav-store-option.active .radio{border-color:var(--G)}
+.store-nav-store-option.active .radio::after{content:'';position:absolute;inset:3px;border-radius:50%;background:var(--G)}
+.store-nav-store-option-copy{min-width:0;flex:1}
+.store-nav-store-option-copy b{display:block;font-size:10.5px;color:var(--tx)}
+.store-nav-store-option-copy span{display:block;font-size:8.5px;color:var(--tx3);margin-top:2px}
+.store-nav-store-save{width:100%;margin-top:11px;padding:12px;border:0;border-radius:13px;background:var(--G);color:#fff;font:inherit;font-size:11px;font-weight:900;cursor:pointer}
+.store-nav-exit-btn{width:100%;margin-top:8px;padding:11px;border:1px solid var(--bdr);border-radius:13px;background:var(--card);color:var(--tx2);font:inherit;font-size:10.5px;font-weight:800;cursor:pointer}
+.store-nav-top-right{display:flex;align-items:center;gap:6px;margin-left:auto}
+.store-nav-top-exit{width:34px;height:34px;border-radius:50%;border:1px solid var(--bdr);background:var(--card);color:var(--tx);cursor:pointer;font-size:17px}
+.store-nav-how-list{margin-top:12px;display:flex;flex-direction:column;gap:8px}
+.store-nav-how-row{display:flex;align-items:flex-start;gap:10px;padding:10px;border:1px solid var(--bdr);border-radius:14px;background:var(--card)}
+.store-nav-how-row .n{width:25px;height:25px;border-radius:8px;background:var(--GL);color:var(--GD);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:900;flex:0 0 25px}
+.store-nav-how-row b{display:block;font-size:10.5px;color:var(--tx)}
+.store-nav-how-row span{display:block;font-size:9px;color:var(--tx3);line-height:1.4;margin-top:2px}
+
+.store-nav-wow-actions{display:flex;gap:7px;padding:0 14px 12px}
+.store-nav-wow-btn{flex:1;min-height:38px;border-radius:12px;border:1px solid var(--bdr);background:var(--card);color:var(--tx);font-family:inherit;font-size:11px;font-weight:800;cursor:pointer;transition:.16s;display:flex;align-items:center;justify-content:center;gap:7px}
+.store-nav-wow-btn.primary{background:var(--G);border-color:var(--G);color:#fff;box-shadow:0 6px 16px rgba(61,187,106,.18)}
+.store-nav-wow-btn:hover{transform:translateY(-1px)}
+.store-nav-wow-btn:active{transform:scale(.98)}
+.store-nav-wow-btn svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.store-nav-wow-note{padding:7px 14px 9px;background:rgba(61,187,106,.07);border-top:1px solid rgba(61,187,106,.12);font-size:9.5px;color:var(--tx3);font-weight:600;text-align:center}
+.store-nav-sheet{position:fixed;left:0;right:0;bottom:0;max-width:480px;margin:0 auto;background:var(--card);border-radius:24px 24px 0 0;z-index:560;transform:translateY(105%);transition:transform .34s cubic-bezier(.32,.72,.33,1);max-height:94vh;display:flex;flex-direction:column;box-shadow:0 -14px 45px rgba(0,0,0,.18)}
+.store-nav-sheet.on{transform:none}
+.store-nav-scroll{overflow-y:auto;padding:0 16px calc(22px + env(safe-area-inset-bottom,0px))}
+.store-nav-top{display:flex;align-items:center;gap:10px;padding:4px 0 14px}
+.store-nav-top .store-nav-back{width:36px;height:36px;border-radius:50%;border:1px solid var(--bdr);background:var(--card);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--tx)}
+.store-nav-top .store-nav-back svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.store-nav-top-copy{min-width:0;flex:1}
+.store-nav-top-title{font-size:16px;font-weight:900;color:var(--tx);letter-spacing:-.025em}
+.store-nav-top-sub{font-size:9.5px;color:var(--tx3);margin-top:2px}
+.store-nav-store-pill{display:flex;align-items:center;gap:6px;border:1px solid var(--bdr);background:var(--bg);border-radius:999px;padding:7px 9px;font-size:9.5px;font-weight:800;color:var(--tx);white-space:nowrap}
+.store-nav-store-pill button{border:0;background:none;padding:0;cursor:pointer;color:var(--GD);display:flex}
+.store-nav-store-pill svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.store-nav-hero{border-radius:20px;padding:15px;background:linear-gradient(140deg,#0f1512 0%,#18231d 72%,#203426 100%);color:#fff;overflow:hidden;position:relative;box-shadow:0 14px 30px rgba(0,0,0,.16)}
+.store-nav-hero::after{content:'';position:absolute;width:180px;height:180px;right:-80px;top:-90px;border-radius:50%;background:radial-gradient(circle,rgba(61,187,106,.25),rgba(61,187,106,0) 70%)}
+.store-nav-hero-row{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;position:relative;z-index:1}
+.store-nav-hero-kicker{font-size:9px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:#63db91}
+.store-nav-hero-title{font-size:20px;font-weight:900;letter-spacing:-.045em;margin-top:3px}
+.store-nav-hero-sub{font-size:10.5px;color:rgba(255,255,255,.7);margin-top:4px;line-height:1.45}
+.store-nav-summary{display:flex;gap:7px;margin-top:12px;position:relative;z-index:1}
+.store-nav-stat{padding:8px 10px;border-radius:11px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.08);min-width:74px}
+.store-nav-stat b{display:block;font-size:14px;font-weight:900}
+.store-nav-stat span{display:block;font-size:8.5px;color:rgba(255,255,255,.56);margin-top:2px;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+.store-nav-map-card{margin-top:12px;border:1px solid var(--bdr);background:var(--card);border-radius:18px;padding:12px;overflow:hidden}
+.store-nav-map-head{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:8px}
+.store-nav-map-head b{font-size:12px;color:var(--tx);font-weight:900}
+.store-nav-map-head span{font-size:9px;color:var(--tx3);font-weight:700}
+.store-nav-route-map{width:100%;height:170px;border-radius:14px;background:var(--bg);border:1px solid var(--bdr);display:block}
+.store-nav-map-legend{display:flex;gap:12px;align-items:center;margin-top:8px;font-size:8.5px;color:var(--tx3);font-weight:700}
+.store-nav-map-legend span{display:flex;align-items:center;gap:5px}
+.store-nav-map-legend i{width:8px;height:8px;border-radius:50%;background:var(--G);display:inline-block}
+.store-nav-map-legend i.start{background:#111}
+.store-nav-map-legend i.stop{background:#fff;border:2px solid var(--G);box-sizing:border-box}
+.store-nav-route-list{margin-top:12px;display:flex;flex-direction:column;gap:7px}
+.store-nav-step{display:flex;align-items:flex-start;gap:10px;padding:11px 12px;border:1px solid var(--bdr);border-radius:15px;background:var(--card);transition:.16s}
+.store-nav-step.active{border-color:rgba(61,187,106,.42);box-shadow:0 6px 18px rgba(61,187,106,.08);background:var(--GL)}
+.store-nav-step-num{width:28px;height:28px;border-radius:9px;background:var(--GL);color:var(--GD);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:900;flex:0 0 28px}
+.store-nav-step.active .store-nav-step-num{background:var(--G);color:#fff}
+.store-nav-step-copy{min-width:0;flex:1}
+.store-nav-step-title{font-size:11.5px;color:var(--tx);font-weight:900}
+.store-nav-step-sub{font-size:9.5px;color:var(--tx3);margin-top:2px;line-height:1.45}
+.store-nav-step-items{font-size:9.5px;color:var(--tx2);margin-top:5px;line-height:1.45}
+.store-nav-step-eta{font-size:9px;color:var(--GD);font-weight:900;white-space:nowrap}
+.store-nav-bottom{position:sticky;bottom:0;margin:12px -16px -22px;padding:10px 16px calc(10px + env(safe-area-inset-bottom,0px));background:linear-gradient(to top,var(--card) 78%,transparent);z-index:3}
+.store-nav-guide-btn{width:100%;padding:14px;border:0;border-radius:14px;background:var(--G);color:#fff;font-family:inherit;font-size:13px;font-weight:900;cursor:pointer;box-shadow:0 8px 20px rgba(61,187,106,.22)}
+.store-nav-empty{padding:22px 12px;text-align:center;color:var(--tx3);font-size:11px;line-height:1.55;border:1px dashed var(--bdr);border-radius:15px;background:var(--bg)}
+.store-nav-guide{position:fixed;inset:0;background:rgba(4,8,6,.62);backdrop-filter:blur(8px);z-index:610;display:none;align-items:flex-end;justify-content:center}
+.store-nav-guide.on{display:flex}
+.store-nav-guide-card{width:100%;max-width:480px;background:var(--card);border-radius:24px 24px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom,0px));box-shadow:0 -16px 50px rgba(0,0,0,.22);animation:navGuideIn .32s cubic-bezier(.16,1,.3,1)}
+@keyframes navGuideIn{from{transform:translateY(36px);opacity:0}to{transform:none;opacity:1}}
+.store-nav-guide-head{display:flex;align-items:center;gap:10px}
+.store-nav-guide-head-copy{flex:1;min-width:0}
+.store-nav-guide-kicker{font-size:8.5px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:var(--GD)}
+.store-nav-guide-title{font-size:17px;font-weight:900;color:var(--tx);letter-spacing:-.03em;margin-top:2px}
+.store-nav-guide-close{width:34px;height:34px;border-radius:50%;border:1px solid var(--bdr);background:var(--card);cursor:pointer;color:var(--tx);font-size:18px}
+.store-nav-live-map{margin-top:14px;border-radius:18px;background:linear-gradient(140deg,#0f1512,#1a261f);padding:10px}
+.store-nav-live-map svg{width:100%;height:190px;display:block}
+.store-nav-guide-step{margin-top:12px;padding:14px;border-radius:16px;background:var(--GL);border:1px solid rgba(61,187,106,.2)}
+.store-nav-guide-step .big{font-size:14px;font-weight:900;color:var(--tx)}
+.store-nav-guide-step .small{font-size:10.5px;color:var(--tx2);line-height:1.5;margin-top:4px}
+.store-nav-guide-progress{height:6px;background:var(--bdr);border-radius:999px;overflow:hidden;margin:12px 0 8px}
+.store-nav-guide-progress span{display:block;height:100%;background:var(--G);border-radius:999px;transition:width .25s}
+.store-nav-guide-actions{display:flex;gap:8px;margin-top:10px}
+.store-nav-guide-actions button{flex:1;padding:12px;border-radius:13px;border:1px solid var(--bdr);background:var(--card);font-family:inherit;font-weight:800;cursor:pointer;color:var(--tx)}
+.store-nav-guide-actions button.primary{background:var(--G);border-color:var(--G);color:#fff}
+@media(max-width:420px){.store-nav-wow-main{padding:14px}.store-nav-wow-title{font-size:15.5px}.store-nav-wow-actions{padding:0 14px 14px}.store-nav-wow-note{padding-left:14px;padding-right:14px}.store-nav-summary{gap:5px}.store-nav-stat{min-width:0;flex:1}.store-nav-step{padding:10px}.store-nav-route-map{height:154px}}
+
+.cart-nav-cta{width:100%;padding:12px;border-radius:14px;background:var(--GL);border:1px solid rgba(61,187,106,.22);color:var(--GD);font-family:inherit;font-size:12px;font-weight:900;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin:0 0 8px;transition:.15s}
+.cart-nav-cta:hover{transform:translateY(-1px);filter:saturate(1.04)}
+.cart-nav-cta svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+</style>
+
 </head>
 <body>
 
@@ -3880,6 +4013,29 @@ button,input,textarea,select{font-family:inherit}
     </div>
     <svg class="ss-arrow" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
   </div>
+
+  <!-- SMART STORE NAVIGATION — additive, existing store/search/cart flows remain unchanged -->
+  <section class="store-nav-wow" aria-label="Smart Store Navigation">
+    <div class="store-nav-wow-main">
+      <div class="store-nav-wow-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><path d="M12 21s7-6.2 7-12a7 7 0 10-14 0c0 5.8 7 12 7 12z"/><circle cx="12" cy="9" r="2.4"/><path d="M4 21h16" opacity=".45"/></svg>
+      </div>
+      <div class="store-nav-wow-copy">
+        <div class="store-nav-wow-kicker">SMART STORE NAVIGATION</div>
+        <div class="store-nav-wow-title">Find it faster. Walk less. 🛒✨</div>
+        <div class="store-nav-wow-sub">Your cart → the best aisle route.</div>
+        <button type="button" class="store-nav-home-store" id="storeNavHomeStore" onclick="openStorePicker(event)" aria-label="Change current store">
+          <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          <span>Current store</span><svg viewBox="0 0 24 24" class="store-nav-chevron"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="store-nav-wow-actions">
+      <button class="store-nav-wow-btn primary" type="button" onclick="openCartNavigation()"><svg viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 002 1.6h9.7a2 2 0 002-1.6L23 6H6"/></svg>Navigate my cart</button>
+      <button class="store-nav-wow-btn" type="button" onclick="openStoreNavigation('how')"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="2.5"/><path d="M12 3.5v3M20.5 12h-3M12 20.5v-3M3.5 12h3"/></svg>How it helps</button>
+    </div>
+    <div class="store-nav-wow-note">Whole cart. One optimized route.</div>
+  </section>
 
   <!-- ONLY FOR YOU — personalised, tied to the loyalty card mobile number -->
   <div id="myOffersWrap" style="display:none">
@@ -4215,6 +4371,37 @@ button,input,textarea,select{font-family:inherit}
   <div class="sheet-hdr"><h2>Find in Store</h2><button class="sheet-close" onclick="closeSheets()">✕</button></div>
   <div class="loc-scroll" id="locBody"></div>
 </div>
+<!-- SMART STORE NAVIGATION STORE PICKER — additive only -->
+<div class="store-nav-store-picker" id="storeNavStorePicker" aria-modal="true" role="dialog" aria-label="Choose store" onclick="if(event.target===this)closeStorePicker()">
+  <div class="store-nav-store-picker-card">
+    <div class="store-nav-store-picker-head">
+      <div><div class="store-nav-store-picker-title">Choose your store</div><div class="store-nav-store-picker-sub">Routes and product locations follow the selected store.</div></div>
+      <button class="store-nav-store-picker-close" type="button" onclick="closeStorePicker()" aria-label="Close">×</button>
+    </div>
+    <div class="store-nav-store-options" id="storeNavStoreOptions"><div class="store-nav-empty">Loading stores…</div></div>
+    <button class="store-nav-store-save" type="button" onclick="saveStorePickerSelection()">Use this store</button>
+  </div>
+</div>
+<!-- SMART STORE NAVIGATION SHEETS — additive only -->
+<div class="store-nav-sheet" id="storeNavSheet" aria-modal="true" role="dialog" aria-label="Smart Store Navigation">
+  <div class="sheet-pill"></div>
+  <div class="store-nav-scroll" id="storeNavBody"></div>
+</div>
+<div class="store-nav-guide" id="storeNavGuide" role="dialog" aria-modal="true" aria-label="Guided store navigation" onclick="if(event.target===this)closeStoreNavGuide()">
+  <div class="store-nav-guide-card">
+    <div class="store-nav-guide-head">
+      <div class="store-nav-guide-head-copy"><div class="store-nav-guide-kicker">GUIDED SHOPPING ROUTE</div><div class="store-nav-guide-title" id="storeNavGuideTitle">Ready to go?</div></div>
+      <button class="store-nav-guide-close" type="button" onclick="closeStoreNavGuide()" aria-label="Close">×</button>
+    </div>
+    <div class="store-nav-live-map" id="storeNavGuideMap"></div>
+    <div class="store-nav-guide-step"><div class="big" id="storeNavGuideStepTitle">Start at the entrance</div><div class="small" id="storeNavGuideStepText">We'll take you through the shortest practical route.</div></div>
+    <div class="store-nav-guide-progress"><span id="storeNavGuideProgress" style="width:0%"></span></div>
+    <div class="store-nav-guide-actions">
+      <button type="button" onclick="closeStoreNavGuide()">Back to route</button>
+      <button type="button" class="primary" id="storeNavGuideNext" onclick="advanceStoreNavGuide()">Next stop →</button>
+    </div>
+  </div>
+</div>
 <div class="cart-sheet" id="cartSheet">
   <div class="sheet-pill"></div>
   <div class="sheet-hdr"><h2>My Cart</h2><button class="sheet-close" onclick="closeCart()">✕</button></div>
@@ -4223,6 +4410,7 @@ button,input,textarea,select{font-family:inherit}
     <div class="ct-row"><span>Subtotal</span><span id="ctSub"></span></div>
     <div class="ct-row save" id="ctSaveRow"><span>You save</span><span id="ctSave"></span></div>
     <div class="ct-row total"><span>Total</span><span id="ctTotal"></span></div>
+    <button class="cart-nav-cta" type="button" onclick="openCartNavigation()"><svg viewBox="0 0 24 24"><path d="M12 21s7-6.2 7-12a7 7 0 10-14 0c0 5.8 7 12 7 12z"/><circle cx="12" cy="9" r="2.4"/></svg>Navigate full cart</button>
     <button class="cart-ck-btn" onclick="openCk()">Checkout <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></button>
   </div>
 </div>
@@ -5644,6 +5832,147 @@ function showPassFor(id){
   document.getElementById('locSheet').classList.add('on');
   renderPassQR('pkQR-'+o.id,passPayload(o));
 }
+
+
+/* ─── SMART STORE NAVIGATION — full-cart route engine (additive) ───── */
+let STORE_NAV_STOPS=[];
+let STORE_NAV_ITEMS=[];
+let STORE_NAV_GUIDE_INDEX=0;
+function navLocParts(loc){
+  const s=String(loc||'');
+  const m=s.match(/Aisle\s*(\d+)\s*[·|,\-]?\s*Rack\s*(\d+)\s*[·|,\-]?\s*Shelf\s*(\d+)/i);
+  if(!m)return null;
+  return {aisle:Number(m[1]),rack:Number(m[2]),shelf:Number(m[3])};
+}
+async function navCurrentStoreLabel(){
+  const p=document.getElementById('storeNavHomeStore');
+  if(!p)return;
+  let label=(BRANCH&&BRANCH.trim())?BRANCH:'Your current store';
+  try{const r=await fetch('/api/branches',{cache:'no-store'}),d=await r.json(),rows=Array.isArray(d.data)?d.data:[];
+    const b=rows.find(x=>x.id===BRANCH)||rows[0];
+    if(b){label=[b.name,b.area].filter(Boolean).join(' — ')||b.id;localStorage.setItem('devx-branch-label',label);}
+  }catch(e){label=localStorage.getItem('devx-branch-label')||label}
+  p.innerHTML='<svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg><span>'+esc(label)+'</span><svg viewBox="0 0 24 24" class="store-nav-chevron"><polyline points="6 9 12 15 18 9"/></svg>';
+  document.querySelectorAll('.store-nav-current-store-label').forEach(el=>{el.textContent=label});
+}
+function buildStoreNavRoute(items){
+  const raw=(items||[]).map((item,index)=>Object.assign({__index:index},item));
+  const groups=new Map();
+  raw.forEach(item=>{
+    const loc=navLocParts(item.loc);
+    const key=loc?`${loc.aisle}-${loc.rack}-${loc.shelf}`:`unknown-${item.id}-${item.__index}`;
+    if(!groups.has(key))groups.set(key,{loc,key,items:[]});
+    groups.get(key).items.push(item);
+  });
+  let stops=[...groups.values()].filter(s=>s.loc);
+  const unknown=[...groups.values()].filter(s=>!s.loc);
+  /* Serpentine aisle sweep: enter each aisle once, move rack-to-rack in the
+     direction that keeps the next aisle close, then continue forward. */
+  const aisles=[...new Set(stops.map(s=>s.loc.aisle))].sort((a,b)=>a-b);
+  const ordered=[];
+  aisles.forEach((aisle,idx)=>{
+    const row=stops.filter(s=>s.loc.aisle===aisle).sort((a,b)=>a.loc.rack-b.loc.rack || a.loc.shelf-b.loc.shelf);
+    if(idx%2)row.reverse();
+    row.forEach(x=>ordered.push(x));
+  });
+  unknown.forEach(x=>ordered.push(x));
+  let minute=0;
+  ordered.forEach((s,i)=>{
+    const prev=i?ordered[i-1]:null;
+    const p=s.loc,pp=prev&&prev.loc;
+    const dist=(!p||!pp)?(i?2:2):Math.max(1,Math.abs(p.aisle-pp.aisle)+Math.abs(p.rack-pp.rack)*0.6);
+    minute+=dist;
+    s.eta=Math.max(1,Math.round(dist*0.7));
+  });
+  return ordered;
+}
+function storeNavMapSvg(stops,activeIndex){
+  const cols=10, rows=6, W=100,H=170,left=7,right=5,top=14,bottom=16;
+  const gap=2.5, aisleW=(W-left-right-(cols-1)*gap)/cols, rackH=(H-top-bottom-(rows-1)*gap)/rows;
+  const point=(aisle,rack)=>({x:left+(aisle-1)*(aisleW+gap)+aisleW/2,y:top+(Math.max(1,Math.min(rows,rack))-1)*(rackH+gap)+rackH/2});
+  const parsed=stops.map((s,i)=>s.loc?Object.assign({stop:i+1},point(s.loc.aisle,s.loc.rack),s):Object.assign({stop:i+1,x:W/2,y:H/2},s));
+  const pts=[{x:W/2,y:H-bottom+3},...parsed.map(p=>({x:p.x,y:p.y}))];
+  const route=pts.map((p,i)=>`${i?'L':'M'} ${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(' ');
+  const lanes=[];
+  for(let a=1;a<=cols;a++){
+    const x=left+(a-1)*(aisleW+gap);
+    lanes.push(`<rect x="${x.toFixed(1)}" y="${top}" width="${aisleW.toFixed(1)}" height="${(H-top-bottom).toFixed(1)}" rx="2.2" fill="${a<=Math.max(1,...parsed.filter(p=>p.loc).map(p=>p.loc.aisle))?'rgba(61,187,106,.06)':'var(--bg)'}" stroke="var(--bdr)" stroke-width=".35"/>`);
+    lanes.push(`<text x="${(x+aisleW/2).toFixed(1)}" y="8" text-anchor="middle" font-size="3.8" font-family="Montserrat,sans-serif" fill="var(--tx3)" font-weight="800">A${a}</text>`);
+  }
+  const marks=parsed.map((p,i)=>`<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="${i===activeIndex?'4.5':'3.0'}" fill="${i===activeIndex?'#3DBB6A':'#fff'}" stroke="#3DBB6A" stroke-width="${i===activeIndex?'1.6':'1.2'}"/><text x="${p.x.toFixed(1)}" y="${(p.y+1.3).toFixed(1)}" text-anchor="middle" font-size="3.0" font-family="Montserrat,sans-serif" fill="${i===activeIndex?'#fff':'#17723f'}" font-weight="900">${i+1}</text>`).join('');
+  return `<svg viewBox="0 0 ${W} ${H}" aria-label="Optimized in-store route"><rect width="${W}" height="${H}" rx="8" fill="var(--card)"/>${lanes.join('')}<path d="${route}" fill="none" stroke="#3DBB6A" stroke-width="1.9" stroke-dasharray="4 2.3" stroke-linecap="round" stroke-linejoin="round" opacity=".95"/><circle cx="${W/2}" cy="${H-bottom+3}" r="4.2" fill="#111"/><text x="${W/2}" y="${H-3}" text-anchor="middle" font-size="3.5" font-family="Montserrat,sans-serif" fill="var(--tx3)" font-weight="900">ENTRY / EXIT</text>${marks}</svg>`;
+}
+function renderStoreNavigation(){
+  const body=document.getElementById('storeNavBody');if(!body)return;
+  const items=cartArr(); STORE_NAV_ITEMS=items; STORE_NAV_STOPS=buildStoreNavRoute(items);
+  const validStops=STORE_NAV_STOPS.length;
+  if(!items.length){
+    body.innerHTML=`<div class="store-nav-top"><button class="store-nav-back" onclick="closeStoreNavigation()" aria-label="Back"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button><div class="store-nav-top-copy"><div class="store-nav-top-title">Smart Store Navigation</div><div class="store-nav-top-sub">Turn your basket into an effortless store route</div></div><button class="store-nav-top-exit" type="button" onclick="closeStoreNavigation()" aria-label="Exit">×</button></div><div class="store-nav-empty"><div style="font-size:28px;margin-bottom:8px">🛒</div><b style="display:block;color:var(--tx);font-size:13px;margin-bottom:4px">Your cart is empty</b>Add a few products and we'll build the full aisle → rack → shelf route for you.</div>`;
+    return;
+  }
+  const est=Math.max(2,Math.round(STORE_NAV_STOPS.reduce((a,s)=>a+(s.eta||1),0)+validStops*0.5));
+  const routeMap=storeNavMapSvg(STORE_NAV_STOPS,-1);
+  const list=STORE_NAV_STOPS.map((s,i)=>{
+    const loc=s.loc?`Aisle ${s.loc.aisle} · Rack ${s.loc.rack} · Shelf ${s.loc.shelf}`:'Location needs store update';
+    const names=s.items.map(x=>`${esc(x.name)}${x.qty>1?' ×'+x.qty:''}`).join(' · ');
+    return `<div class="store-nav-step"><span class="store-nav-step-num">${i+1}</span><div class="store-nav-step-copy"><div class="store-nav-step-title">${s.loc?'Aisle '+s.loc.aisle+' · Rack '+s.loc.rack:'Store team location'}</div><div class="store-nav-step-sub">${s.loc?'Shelf '+s.loc.shelf+' · follow the green route':'Ask a team member for this item'}</div><div class="store-nav-step-items">${names}</div></div><span class="store-nav-step-eta">~${s.eta||1} min</span></div>`;
+  }).join('');
+  body.innerHTML=`<div class="store-nav-top"><button class="store-nav-back" onclick="closeStoreNavigation()" aria-label="Back"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button><div class="store-nav-top-copy"><div class="store-nav-top-title">Smart Store Navigation</div><div class="store-nav-top-sub">Optimized for your complete cart</div></div><div class="store-nav-top-right"><button class="store-nav-store-pill" type="button" onclick="openStorePicker(event)" aria-label="Change store"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg><span class="store-nav-current-store-label">${esc(BRANCH||'Current store')}</span><svg viewBox="0 0 24 24" style="width:11px;height:11px"><polyline points="6 9 12 15 18 9"/></svg></button><button class="store-nav-top-exit" type="button" onclick="closeStoreNavigation()" aria-label="Exit navigation">×</button></div></div>
+    <div class="store-nav-hero"><div class="store-nav-hero-row"><div><div class="store-nav-hero-kicker">YOUR ROUTE</div><div class="store-nav-hero-title">Find it. Walk it. Done. ✨</div><div class="store-nav-hero-sub">We've included <b>${items.length} item${items.length===1?'':'s'}</b> from your full cart and grouped them into <b>${validStops} stop${validStops===1?'':'s'}</b> to reduce backtracking.</div></div><div style="font-size:28px">🧭</div></div><div class="store-nav-summary"><div class="store-nav-stat"><b>${items.length}</b><span>Cart items</span></div><div class="store-nav-stat"><b>${validStops}</b><span>Stops</span></div><div class="store-nav-stat"><b>~${est} min</b><span>Walk</span></div></div></div>
+    <div class="store-nav-map-card"><div class="store-nav-map-head"><b>Optimized route</b><span>Entry → every stop → exit</span></div>${routeMap}<div class="store-nav-map-legend"><span><i class="start"></i> Start</span><span><i></i> Route</span><span><i class="stop"></i> Stop</span></div></div>
+    <div class="store-nav-route-list">${list}</div>
+    <div class="store-nav-bottom"><button class="store-nav-guide-btn" type="button" onclick="startStoreNavGuide()">Start guided navigation →</button><button class="store-nav-exit-btn" type="button" onclick="closeStoreNavigation()">Exit navigation</button></div>`;
+}
+async function openStoreNavigation(mode='route'){renderStoreNavigation();const ov=document.getElementById('drkOverlay');if(ov)ov.classList.add('on');const s=document.getElementById('storeNavSheet');if(s)s.classList.add('on');document.body.style.overflow='hidden';navCurrentStoreLabel();if(mode==='how')renderStoreNavHow()}
+let STORE_NAV_PENDING_BRANCH=BRANCH||'';
+async function loadStorePicker(){
+  const el=document.getElementById('storeNavStoreOptions');if(!el)return;el.innerHTML='<div class="store-nav-empty">Loading stores…</div>';
+  try{const r=await fetch('/api/branches',{cache:'no-store'}),d=await r.json(),rows=Array.isArray(d.data)?d.data:[];
+    if(!rows.length){el.innerHTML='<div class="store-nav-empty">No additional stores are available right now.</div>';return;}
+    STORE_NAV_PENDING_BRANCH=BRANCH||rows[0].id;
+    el.innerHTML=rows.map(b=>{const active=(b.id===STORE_NAV_PENDING_BRANCH);const title=[b.name,b.area].filter(Boolean).join(' — ');return `<button type="button" class="store-nav-store-option ${active?'active':''}" data-branch="${esc(b.id)}" onclick="selectStorePicker(this)"><span class="radio"></span><span class="store-nav-store-option-copy"><b>${esc(title||b.id)}</b><span>${esc(b.city||'')}</span></span></button>`}).join('');
+  }catch(e){el.innerHTML='<div class="store-nav-empty">Could not load store locations. Please try again.</div>';}
+}
+function openStorePicker(e){if(e){e.preventDefault();e.stopPropagation()}const el=document.getElementById('storeNavStorePicker');if(!el)return;loadStorePicker();el.classList.add('on');}
+function closeStorePicker(){document.getElementById('storeNavStorePicker')?.classList.remove('on')}
+function selectStorePicker(btn){STORE_NAV_PENDING_BRANCH=btn?.dataset?.branch||'';document.querySelectorAll('.store-nav-store-option').forEach(x=>x.classList.toggle('active',x===btn));}
+function saveStorePickerSelection(){
+  if(!STORE_NAV_PENDING_BRANCH)return;
+  localStorage.setItem('devx-branch',STORE_NAV_PENDING_BRANCH);
+  const active=document.querySelector('.store-nav-store-option.active .store-nav-store-option-copy b');
+  if(active)localStorage.setItem('devx-branch-label',active.textContent||'');
+  closeStorePicker();
+  try{const u=new URL(location.href);u.searchParams.set('branch',STORE_NAV_PENDING_BRANCH);location.href=u.toString()}catch(e){location.reload()}
+}
+function renderStoreNavHow(){
+  const body=document.getElementById('storeNavBody');if(!body)return;
+  const items=cartArr();
+  body.innerHTML=`<div class="store-nav-top"><button class="store-nav-back" onclick="renderStoreNavigation()" aria-label="Back"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button><div class="store-nav-top-copy"><div class="store-nav-top-title">How it helps</div><div class="store-nav-top-sub">A smarter way to shop in-store</div></div><button class="store-nav-top-exit" type="button" onclick="closeStoreNavigation()" aria-label="Exit">×</button></div><div class="store-nav-info"><div class="store-nav-info-title">Less walking. Less searching. ✨</div><div class="store-nav-info-sub">We turn your basket into one practical route using the store's aisle, rack and shelf locations.</div><div class="store-nav-info-grid"><div class="store-nav-info-card"><div class="ic">🛒</div><b>Whole cart</b><span>${items.length?items.length+' items included':'Your full basket is included'}</span></div><div class="store-nav-info-card"><div class="ic">🧭</div><b>Best route</b><span>Stops grouped to reduce backtracking</span></div><div class="store-nav-info-card"><div class="ic">📍</div><b>Exact spot</b><span>Aisle · Rack · Shelf</span></div></div><div class="store-nav-info-foot">Pick your store → build your route → follow each stop → finish at checkout.</div></div><div class="store-nav-how-list"><div class="store-nav-how-row"><span class="n">1</span><div><b>Choose your store</b><span>Keep the right branch selected for accurate product locations.</span></div></div><div class="store-nav-how-row"><span class="n">2</span><div><b>Navigate your cart</b><span>Every cart item is considered and grouped into practical stops.</span></div></div><div class="store-nav-how-row"><span class="n">3</span><div><b>Follow the route</b><span>Move from entry to each stop with a clear step-by-step guide.</span></div></div></div><div class="store-nav-bottom"><button class="store-nav-guide-btn" type="button" onclick="renderStoreNavigation()">See my route →</button><button class="store-nav-exit-btn" type="button" onclick="closeStoreNavigation()">Exit navigation</button></div>`;
+}
+
+function closeStoreNavigation(){const s=document.getElementById('storeNavSheet');if(s)s.classList.remove('on');const g=document.getElementById('storeNavGuide');if(g)g.classList.remove('on');const p=document.getElementById('storeNavStorePicker');if(p)p.classList.remove('on');const ov=document.getElementById('drkOverlay');if(ov)ov.classList.remove('on');document.body.style.overflow=''}
+function openCartNavigation(){
+  const items=cartArr();
+  if(!items.length){showToast('Your cart is empty — add products first','');return}
+  closeCart();renderStoreNavigation();document.getElementById('drkOverlay')?.classList.add('on');document.getElementById('storeNavSheet')?.classList.add('on');document.body.style.overflow='hidden';
+}
+function startStoreNavGuide(){
+  if(!STORE_NAV_STOPS.length){showToast('Add products to your cart first','');return}
+  STORE_NAV_GUIDE_INDEX=0;renderStoreNavGuide();document.getElementById('storeNavGuide')?.classList.add('on')
+}
+function renderStoreNavGuide(){
+  const stops=STORE_NAV_STOPS,idx=STORE_NAV_GUIDE_INDEX,cur=stops[idx];
+  const title=document.getElementById('storeNavGuideTitle'),st=document.getElementById('storeNavGuideStepTitle'),tx=document.getElementById('storeNavGuideStepText'),bar=document.getElementById('storeNavGuideProgress'),map=document.getElementById('storeNavGuideMap'),next=document.getElementById('storeNavGuideNext');
+  if(!cur||!title||!st||!tx||!bar||!map||!next)return;
+  title.textContent=`Stop ${idx+1} of ${stops.length}`;
+  st.textContent=cur.loc?`Aisle ${cur.loc.aisle} · Rack ${cur.loc.rack} · Shelf ${cur.loc.shelf}`:'Location needs store update';
+  tx.textContent=cur.loc?`Pick ${cur.items.map(x=>`${x.name}${x.qty>1?' ×'+x.qty:''}`).join(', ')}. ${idx<stops.length-1?'Then continue to the next highlighted stop.':'You’ve reached the final stop — head to checkout.'}`:`Pick ${cur.items.map(x=>x.name).join(', ')} and ask the store team for the exact location.`;
+  bar.style.width=`${Math.round((idx+1)/stops.length*100)}%`;
+  map.innerHTML=storeNavMapSvg(stops,idx);
+  next.textContent=idx<stops.length-1?'Next stop →':'Finish route ✓';
+}
+function advanceStoreNavGuide(){if(STORE_NAV_GUIDE_INDEX<STORE_NAV_STOPS.length-1){STORE_NAV_GUIDE_INDEX++;renderStoreNavGuide()}else{showToast('Route complete — head to checkout ✓','green');closeStoreNavGuide()}}
+function closeStoreNavGuide(){document.getElementById('storeNavGuide')?.classList.remove('on')}
 
 /* ─── PRODUCT LOCATOR — premium in-store showcase ─── */
 function openLocator(id){
