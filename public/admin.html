@@ -492,9 +492,9 @@ tbody tr.click:hover{background:var(--GL)}
             <div class="fld"><label class="lbl">Weekly cycle (days)</label><input class="inp" id="streakWeeklyDays" value="7" disabled><div class="td-sub">Fixed business rule</div></div>
             <div class="fld"><label class="lbl">Timezone</label><input class="inp" id="streakTimezone" value="UAE · Asia/Dubai" disabled><div class="td-sub">All streak dates use UAE time</div></div>
             <div class="fld"><label class="lbl">Max reward (%)</label><input class="inp" id="streakMaxReward" type="number" min="1" max="50" step="1"></div>
-            <div class="fld"><label class="lbl">7 active days reward (%)</label><input class="inp" id="streakBaseReward" type="number" min="0" max="50" step="1"></div>
-            <div class="fld"><label class="lbl">+1 order additional (%)</label><input class="inp" id="streakOrder1Reward" type="number" min="0" max="50" step="1"></div>
-            <div class="fld"><label class="lbl">+2 orders additional (%)</label><input class="inp" id="streakOrder2Reward" type="number" min="0" max="50" step="1"></div>
+            <div class="fld"><label class="lbl">7 active days reward (%)</label><input class="inp" id="streakBaseReward" type="number" min="0" max="50" step="1" readonly><div class="td-sub">Auto-calculated from max reward</div></div>
+            <div class="fld"><label class="lbl">+1 order additional (%)</label><input class="inp" id="streakOrder1Reward" type="number" min="0" max="50" step="1" readonly><div class="td-sub">Auto-calculated from max reward</div></div>
+            <div class="fld"><label class="lbl">+2 orders additional (%)</label><input class="inp" id="streakOrder2Reward" type="number" min="0" max="50" step="1" readonly><div class="td-sub">Auto-calculated from max reward</div></div>
             <div class="fld"><label class="lbl">Coupon validity (days)</label><input class="inp" id="streakCouponDays" type="number" min="1" max="365"></div>
             <div class="fld"><label class="lbl">Minimum order value (AED)</label><input class="inp" id="streakMinOrder" type="number" min="0" step="1"></div>
             <div class="fld"><label class="lbl">Redeemable streak coupons</label><label style="display:flex;align-items:center;gap:8px;font-size:10px;font-weight:800;padding:10px 0"><input id="streakAutoCoupons" type="checkbox"> Generate a one-time redeemable coupon when a reward is claimed</label><div class="td-sub">Coupons are linked to the customer and checked by the existing checkout flow.</div></div>
@@ -1244,10 +1244,29 @@ async function loadStreakSettings(){
     const set=(id,v)=>{const e=document.getElementById(id);if(e)e.value=v??''};
     set('streakMaxReward',c.maxRewardPct);set('streakBaseReward',c.baseRewardPct);set('streakOrder1Reward',c.order1AdditionalPct);set('streakOrder2Reward',c.order2AdditionalPct);set('streakCouponDays',c.couponValidityDays);set('streakMinOrder',c.minOrderValue);set('streakGoalTitle',c.dailyGoalTitle);set('streakGoalMessage',c.dailyGoalMessage);const ac=document.getElementById('streakAutoCoupons');if(ac)ac.checked=c.autoGenerateCoupons!==false;
     ['streakVisitActive','streakSearchActive','streakCartActive'].forEach(id=>{const e=document.getElementById(id);if(e)e.checked=id==='streakVisitActive'?c.portalVisitActive!==false:id==='streakSearchActive'?c.searchActive!==false:c.cartAddActive!==false});
+    syncStreakRewardBreakdown();
   }catch(e){const m=document.getElementById('streakSettingsMsg');if(m)m.textContent=e.message||'Could not load settings'}
 }
+function syncStreakRewardBreakdown(){
+  const maxEl=document.getElementById('streakMaxReward');
+  const baseEl=document.getElementById('streakBaseReward');
+  const oneEl=document.getElementById('streakOrder1Reward');
+  const twoEl=document.getElementById('streakOrder2Reward');
+  if(!maxEl||!baseEl||!oneEl||!twoEl)return;
+  const max=Math.max(1,Math.min(50,Math.round(Number(maxEl.value)||15)));
+  maxEl.value=max;
+  const base=Math.floor(max/3);
+  const one=Math.floor((max-base)/2);
+  const two=max-base-one;
+  baseEl.value=base;oneEl.value=one;twoEl.value=two;
+}
+
+document.getElementById('streakMaxReward')?.addEventListener('input',syncStreakRewardBreakdown);
+document.getElementById('streakMaxReward')?.addEventListener('change',syncStreakRewardBreakdown);
+
 async function saveStreakSettings(){
-  const body={maxRewardPct:Number(document.getElementById('streakMaxReward')?.value||15),baseRewardPct:Number(document.getElementById('streakBaseReward')?.value||5),order1AdditionalPct:Number(document.getElementById('streakOrder1Reward')?.value||5),order2AdditionalPct:Number(document.getElementById('streakOrder2Reward')?.value||5),couponValidityDays:Number(document.getElementById('streakCouponDays')?.value||30),minOrderValue:Number(document.getElementById('streakMinOrder')?.value||0),autoGenerateCoupons:!!document.getElementById('streakAutoCoupons')?.checked,portalVisitActive:!!document.getElementById('streakVisitActive')?.checked,searchActive:!!document.getElementById('streakSearchActive')?.checked,cartAddActive:!!document.getElementById('streakCartActive')?.checked,dailyGoalTitle:String(document.getElementById('streakGoalTitle')?.value||''),dailyGoalMessage:String(document.getElementById('streakGoalMessage')?.value||'')};
+  syncStreakRewardBreakdown();
+  const body={maxRewardPct:Number(document.getElementById('streakMaxReward')?.value||15),baseRewardPct:Number(document.getElementById('streakBaseReward')?.value||0),order1AdditionalPct:Number(document.getElementById('streakOrder1Reward')?.value||0),order2AdditionalPct:Number(document.getElementById('streakOrder2Reward')?.value||0),couponValidityDays:Number(document.getElementById('streakCouponDays')?.value||30),minOrderValue:Number(document.getElementById('streakMinOrder')?.value||0),autoGenerateCoupons:!!document.getElementById('streakAutoCoupons')?.checked,portalVisitActive:!!document.getElementById('streakVisitActive')?.checked,searchActive:!!document.getElementById('streakSearchActive')?.checked,cartAddActive:!!document.getElementById('streakCartActive')?.checked,dailyGoalTitle:String(document.getElementById('streakGoalTitle')?.value||''),dailyGoalMessage:String(document.getElementById('streakGoalMessage')?.value||'')};
   const m=document.getElementById('streakSettingsMsg');if(m)m.textContent='Saving…';
   try{const r=await fetch('/api/admin/streak-settings',{method:'POST',headers:authHeaders({'Content-Type':'application/json'}),body:JSON.stringify(body)});const d=await r.json();if(!r.ok)throw new Error(d.error||'Could not save settings');if(m)m.textContent='Saved ✓ New reward claims use these settings.';loadCustomerGoals()}catch(e){if(m)m.textContent=e.message||'Could not save settings'}
 }
