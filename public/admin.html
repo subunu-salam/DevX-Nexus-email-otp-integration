@@ -226,6 +226,39 @@ tbody tr.click:hover{background:var(--GL)}
 .dn-li{display:flex;align-items:center;gap:8px;font-size:11px;font-weight:700;color:var(--tx2)}
 .dn-sw{width:11px;height:11px;border-radius:4px}
 
+
+/* ── Customizable Store Map Builder (additive) ───────────────────────── */
+.map-builder-shell{display:grid;grid-template-columns:220px minmax(0,1fr) 250px;gap:12px;align-items:start}
+.map-builder-card{background:var(--card);border:1px solid var(--bdr);border-radius:16px;box-shadow:var(--shadow);overflow:hidden}
+.map-builder-hd{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px;border-bottom:1px solid var(--bdr)}
+.map-builder-title{font-size:13px;font-weight:900;color:var(--tx)}
+.map-builder-sub{font-size:10px;color:var(--tx3);line-height:1.45;margin-top:3px}
+.map-builder-body{padding:12px}
+.map-builder-toolbar{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-bottom:8px}
+.map-builder-toolbar .sel{max-width:210px}
+.map-builder-palette{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.map-builder-tool{border:1px solid var(--bdr);background:var(--bg);border-radius:12px;padding:10px 8px;text-align:left;cursor:grab;font-weight:800;color:var(--tx);font-size:10px;line-height:1.2;user-select:none}
+.map-builder-tool:hover{border-color:var(--G);transform:translateY(-1px)}
+.map-builder-tool:active{cursor:grabbing}
+.map-builder-tool .ico{display:block;font-size:17px;margin-bottom:5px}
+.map-builder-canvas-wrap{position:relative;overflow:auto;background:linear-gradient(180deg,rgba(31,41,55,.03),rgba(31,41,55,.01));padding:10px}
+.map-builder-canvas{position:relative;width:980px;height:640px;border:1px solid var(--bdr);border-radius:15px;background:#fff;overflow:hidden;box-shadow:inset 0 0 0 1px rgba(255,255,255,.45)}
+.map-builder-canvas.grid-on{background-color:#fff;background-image:linear-gradient(to right,rgba(120,135,128,.13) 1px,transparent 1px),linear-gradient(to bottom,rgba(120,135,128,.13) 1px,transparent 1px);background-size:32px 32px}
+.map-builder-bg{position:absolute;inset:0;background-position:center;background-repeat:no-repeat;background-size:contain;pointer-events:none;opacity:.9}
+.map-builder-empty{position:absolute;inset:0;display:grid;place-items:center;text-align:center;color:#9aa59f;font-size:13px;font-weight:800;padding:30px;pointer-events:none}
+.map-builder-el{position:absolute;display:flex;align-items:center;justify-content:center;text-align:center;border:2px solid rgba(20,80,54,.55);background:rgba(217,247,230,.84);border-radius:10px;box-sizing:border-box;cursor:move;user-select:none;touch-action:none;overflow:visible;color:#173326;font-weight:900;line-height:1.05;box-shadow:0 7px 18px rgba(24,54,38,.09)}
+.map-builder-el.small{font-size:9px;border-radius:8px}.map-builder-el.selected{outline:3px solid rgba(39,149,78,.26);border-color:var(--G);z-index:9999}.map-builder-el.entry,.map-builder-el.exit{border-radius:999px;background:#0d5d3b;color:#fff;border-color:#0d5d3b}.map-builder-el.checkout{background:#eaf6ef}.map-builder-el.restroom{background:#eef2ff}.map-builder-el.service{background:#fff5da}.map-builder-el.stairs{background:#efe9ff}.map-builder-el.rack{background:#f8efe2}.map-builder-el.shelf{background:#f2f5f5}.map-builder-el.text{background:rgba(255,255,255,.92);border-style:dashed}
+.map-builder-handle{position:absolute;right:-7px;bottom:-7px;width:14px;height:14px;border-radius:4px;background:var(--G);border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.16);cursor:nwse-resize;display:none}.map-builder-el.selected .map-builder-handle{display:block}
+.map-builder-hint{font-size:10px;color:var(--tx3);line-height:1.5;padding:8px 0 0}
+.map-builder-template-grid{display:grid;gap:8px}.map-builder-template{border:1px solid var(--bdr);border-radius:12px;padding:7px;background:var(--bg);cursor:pointer}.map-builder-template:hover,.map-builder-template.on{border-color:var(--G);box-shadow:0 0 0 2px rgba(39,149,78,.08)}
+.map-builder-mini{height:74px;border:1px solid var(--bdr);border-radius:8px;background:#fff;position:relative;overflow:hidden;margin-bottom:6px}.map-builder-mini span{position:absolute;border:1px solid rgba(39,149,78,.25);background:#e5f5eb;border-radius:4px}.map-builder-template b{display:block;font-size:10px}.map-builder-template small{display:block;font-size:9px;color:var(--tx3);margin-top:2px}
+.map-builder-floor{display:flex;gap:6px;flex-wrap:wrap}.map-builder-floor button{border:1px solid var(--bdr);background:var(--bg);border-radius:999px;padding:6px 9px;font-size:9px;font-weight:800;cursor:pointer}.map-builder-floor button.on{background:var(--GL);color:var(--GD);border-color:rgba(39,149,78,.3)}
+.map-builder-steps{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:7px;margin-bottom:12px}.map-builder-step{padding:9px 10px;border:1px solid var(--bdr);border-radius:12px;background:var(--card)}.map-builder-step strong{display:block;font-size:10px}.map-builder-step span{display:block;margin-top:2px;font-size:9px;color:var(--tx3);line-height:1.35}
+.map-builder-prop-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.map-builder-prop-grid .fld{margin:0}.map-builder-danger{color:var(--red);border-color:rgba(229,57,53,.25)!important}.map-builder-toast{margin-top:8px;font-size:10px;color:var(--tx3)}
+@media(max-width:1150px){.map-builder-shell{grid-template-columns:190px minmax(0,1fr)}.map-builder-shell>.map-builder-card:last-child{grid-column:1/-1}.map-builder-steps{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:760px){.map-builder-shell{grid-template-columns:1fr}.map-builder-canvas-wrap{padding:6px}.map-builder-toolbar{align-items:stretch}.map-builder-steps{grid-template-columns:1fr 1fr}.map-builder-palette{grid-template-columns:repeat(4,minmax(0,1fr))}.map-builder-tool{padding:8px 6px}.map-builder-tool .ico{font-size:15px}.map-builder-prop-grid{grid-template-columns:1fr}}
+@media(max-width:520px){.map-builder-palette{grid-template-columns:1fr 1fr}.map-builder-steps{grid-template-columns:1fr}}
+
 /* Special Offers / Monetization — four independently managed cards */
 .sponsored-admin-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
 .sponsored-admin-card{box-shadow:none!important;border:1px solid var(--line)!important;min-width:0}
@@ -236,10 +269,8 @@ tbody tr.click:hover{background:var(--GL)}
 .sponsored-admin-preview img{width:100%;height:100%;object-fit:cover;display:block}
 @media(max-width:1200px){.sponsored-admin-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:700px){.sponsored-admin-grid{grid-template-columns:1fr}}
-/* ─── STORE NAVIGATION LOCATION EDITOR — additive inventory support ─── */
-.sn-loc{display:flex;align-items:center;gap:6px}.sn-loc-pencil{width:24px;height:24px;border:1px solid var(--bdr2);background:var(--card);border-radius:7px;display:inline-flex;align-items:center;justify-content:center;color:var(--GD);cursor:pointer}.sn-loc-pencil svg{width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-.sn-loc-hint{font-size:9.5px;color:var(--tx3);font-weight:700;margin-top:2px}
 
+.nav-map-admin{margin-top:14px;border:1px solid var(--bdr);border-radius:14px;background:var(--bg);overflow:hidden}.nav-map-admin-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:13px 14px;border-bottom:1px solid var(--bdr)}.nav-map-admin-title{font-size:12px;font-weight:900;color:var(--tx)}.nav-map-admin-sub{font-size:10px;color:var(--tx3);line-height:1.5;margin-top:3px}.nav-map-admin-body{padding:14px}.nav-map-preview{width:100%;height:220px;border:1px solid var(--bdr);border-radius:13px;background:var(--card);object-fit:contain;display:block}.nav-map-aisles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:10px}.nav-map-aisle-row{padding:9px;border:1px solid var(--bdr);background:var(--card);border-radius:11px}.nav-map-aisle-row b{font-size:10px;color:var(--tx)}@media(max-width:800px){.nav-map-aisles{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:520px){.nav-map-aisles{grid-template-columns:1fr}.nav-map-preview{height:180px}}
 </style>
 </head>
 <body>
@@ -337,6 +368,9 @@ tbody tr.click:hover{background:var(--GL)}
     </button>
     <button class="nav-btn" id="nav-branch" onclick="go('branch')">
       <svg viewBox="0 0 24 24"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 21v-6h6v6"/></svg>Branches
+    </button>
+    <button class="nav-btn" id="nav-mapbuilder" onclick="go('mapbuilder')">
+      <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M8 4v16M16 4v16"/><path d="M5 8h2M11 8h2M18 8h1M5 12h2M11 12h2M18 12h1M5 16h2M11 16h2M18 16h1"/></svg>Store Map Builder
     </button>
   </nav>
   <div class="side-foot">
@@ -710,6 +744,11 @@ tbody tr.click:hover{background:var(--GL)}
         <div class="card-bd" id="brSetup"></div></div>
     </div>
 
+    <!-- STORE MAP BUILDER — additive admin tool; existing map editor remains untouched -->
+    <div class="view" id="view-mapbuilder">
+      <div id="mapBuilderRoot"></div>
+    </div>
+
     <!-- ACTIVITY -->
     <div class="view" id="view-act">
       <div class="card"><div class="card-bd" id="actFull"></div></div>
@@ -752,22 +791,6 @@ tbody tr.click:hover{background:var(--GL)}
   <div class="modal" style="width:520px">
     <div class="modal-hd"><span class="card-t" id="ioTitle">Issue personal offer</span><button class="dw-x" onclick="closeIssue()">✕</button></div>
     <div class="modal-bd" id="ioBody"></div>
-  </div>
-</div>
-
-<div class="modal-ov" id="locModal">
-  <div class="modal" style="width:420px">
-    <div class="modal-hd"><span class="card-t">Edit Store Navigation Location</span><button class="dw-x" onclick="closeLocEditor()">✕</button></div>
-    <div class="modal-bd">
-      <div class="card-t" id="locProdName" style="font-size:14px"></div>
-      <p style="font-size:10.5px;color:var(--tx3);line-height:1.55;margin:4px 0 12px">Navigation uses fixed <b>Aisle · Rack · Shelf</b> labels. Only the location numbers are editable so customer directions stay consistent.</p>
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:9px">
-        <div class="fld"><label class="lbl">Aisle</label><input class="inp" id="locAisle" type="number" min="1" max="999" step="1"></div>
-        <div class="fld"><label class="lbl">Rack</label><input class="inp" id="locRack" type="number" min="1" max="999" step="1"></div>
-        <div class="fld"><label class="lbl">Shelf</label><input class="inp" id="locShelf" type="number" min="1" max="999" step="1"></div>
-      </div>
-      <div style="display:flex;gap:8px;margin-top:5px"><button class="btn ghost" style="flex:1" onclick="closeLocEditor()">Cancel</button><button class="btn grn" style="flex:1;justify-content:center" onclick="saveLocEditor()">Save location</button></div>
-    </div>
   </div>
 </div>
 
@@ -968,7 +991,7 @@ const NAV_PERM={insights:'insights.view',goals:'insights.view',reorder:'insights
   loyal:'loyalty.view',calc:'forecast.view',demand:'forecast.view',optim:'forecast.view',
   fin:'forecast.view',wh:'forecast.view',inv:'inventory.edit',offers:'offers.manage',sponsored:'offers.manage',
   cust:'loyalty.view',staff:'staff.manage',audit:'audit.view',branch:'branch.view',
-  roles:'staff.manage',group:'insights.view',
+  roles:'staff.manage',mapbuilder:'inventory.edit',group:'insights.view',
   dash:'orders.view',orders:'orders.view',pkc:'orders.view',scan:'orders.view',act:'orders.view'};
 /* Which section each screen lives under, so a heading with nothing beneath it
    does not sit there implying a missing feature. */
@@ -976,7 +999,7 @@ const NAV_SEC={group:'overview',dash:'overview',orders:'fulfilment',pkc:'fulfilm
   inv:'merchandising',offers:'merchandising',sponsored:'merchandising',insights:'intelligence',goals:'intelligence',reorder:'intelligence',
   health:'intelligence',calc:'forecastai',demand:'forecastai',optim:'forecastai',fin:'forecastai',
   wh:'forecastai',loyal:'relationships',cust:'relationships',act:'relationships',
-  staff:'administration',audit:'administration',roles:'administration',branch:'administration'};
+  staff:'administration',audit:'administration',roles:'administration',branch:'administration',mapbuilder:'administration'};
 function switchBranch(id){
   BRANCH=id;localStorage.setItem('devx-admin-branch',id);noteRecent(id);
   toast('Switched to '+((BRANCHES.find(b=>b.id===id)||{}).area||id));
@@ -1116,7 +1139,7 @@ function timeAgo(iso){const s=Math.floor((Date.now()-new Date(iso))/1000);if(s<6
 function esc(s){return String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
 
 /* ─── NAV ─── */
-const TITLES={dash:['Dashboard','Live overview of your store'],pkc:['Pickup Counter','Dedicated queue for in-store collection'],orders:['Orders','Every order from the customer app, in real time'],scan:['Pickup Scanner','Verify customer pickup passes'],inv:['Inventory','Shared catalog — edits go live in the customer app'],offers:['Offers & Promotions','Publish deals straight to customers'],sponsored:['Sponsored Content','Manage monetization placements shown in Explore Special Offers'],goals:['Customer Goals & Streaks','Read-only view of personalised goals and engagement'],cust:['Customers','CRM — built automatically from orders'],act:['Activity Feed','Everything that happened, in order'],insights:['AI Insights','Lost sales and demand your POS cannot see'],reorder:['Auto Reorder','Forecast-driven purchase suggestions'],health:['Stock Health','Where your capital is sitting'],staff:['Staff &amp; Roles','Named accounts — who can do what'],audit:['Audit Log','Every consequential action, and who took it'],loyal:['Loyalty &amp; Personal Offers','Loyalty card joined to app account — catch customers before they drift'],calc:['AI Forecast Calculator','DevX ForecastAI — demand, purchase order and profit in one calculation'],demand:['Sales Forecasting','AI demand engine tuned to the UAE retail calendar'],optim:['Inventory Optimization','ABC-XYZ classification with a prioritised AI action plan'],fin:['Financial Forecast','Projected revenue, margin and cash flow'],wh:['Warehouse Planner','Zone utilisation and space planning'],branch:['Branches','Every shop in the group — and how to open the next one'],group:['Group Overview','Every shop in one place — ranked, with what it is costing you'],roles:['Roles &amp; Access','Exactly what each role can see and do, before you hand out a PIN']};
+const TITLES={dash:['Dashboard','Live overview of your store'],pkc:['Pickup Counter','Dedicated queue for in-store collection'],orders:['Orders','Every order from the customer app, in real time'],scan:['Pickup Scanner','Verify customer pickup passes'],inv:['Inventory','Shared catalog — edits go live in the customer app'],offers:['Offers & Promotions','Publish deals straight to customers'],sponsored:['Sponsored Content','Manage monetization placements shown in Explore Special Offers'],goals:['Customer Goals & Streaks','Read-only view of personalised goals and engagement'],cust:['Customers','CRM — built automatically from orders'],act:['Activity Feed','Everything that happened, in order'],insights:['AI Insights','Lost sales and demand your POS cannot see'],reorder:['Auto Reorder','Forecast-driven purchase suggestions'],health:['Stock Health','Where your capital is sitting'],staff:['Staff &amp; Roles','Named accounts — who can do what'],audit:['Audit Log','Every consequential action, and who took it'],loyal:['Loyalty &amp; Personal Offers','Loyalty card joined to app account — catch customers before they drift'],calc:['AI Forecast Calculator','DevX ForecastAI — demand, purchase order and profit in one calculation'],demand:['Sales Forecasting','AI demand engine tuned to the UAE retail calendar'],optim:['Inventory Optimization','ABC-XYZ classification with a prioritised AI action plan'],fin:['Financial Forecast','Projected revenue, margin and cash flow'],wh:['Warehouse Planner','Zone utilisation and space planning'],branch:['Branches','Every shop in the group — and how to open the next one'],mapbuilder:['Store Map Builder','Design, customise and publish each store layout'],group:['Group Overview','Every shop in one place — ranked, with what it is costing you'],roles:['Roles &amp; Access','Exactly what each role can see and do, before you hand out a PIN']};
 function go(v){
   curView=v;
   document.querySelectorAll('.view').forEach(e=>e.classList.remove('on'));
@@ -1215,6 +1238,7 @@ function renderView(){
   else if(curView==='fin')loadFinancial();
   else if(curView==='wh')loadWarehouse();
   else if(curView==='branch')loadBranches();
+  else if(curView==='mapbuilder')loadMapBuilder();
   else if(curView==='group')loadGroup();
   else if(curView==='roles')loadRoles();
   paintSetupBanner();
@@ -1661,6 +1685,134 @@ function renderShopList(){
    with one loyalty book across the group.
    ═══════════════════════════════════════════════════════════════ */
 let BRCAT=[];
+
+/* ───────────────────────────────────────────────────────────────────────
+   CUSTOMIZABLE STORE MAP BUILDER
+   Additive: stores the builder draft separately, and only changes the
+   customer-facing navigation when the admin explicitly publishes it.
+─────────────────────────────────────────────────────────────────────── */
+const MAPB_DEFAULT_W=40, MAPB_DEFAULT_H=28;
+let MAPB={branchId:'',mapName:'',background:null,backgroundDirty:false,clearBackground:false,canvasW:MAPB_DEFAULT_W,canvasH:MAPB_DEFAULT_H,grid:true,floor:'Ground Floor',floors:[],elements:[],selectedId:null,drag:null};
+const MAPB_FLOOR_DEFAULTS=['Ground Floor'];
+const MAPB_TYPES={
+  aisle:{label:'Aisle / Rack',icon:'▥',cls:'',defaults:{w:3,h:10}},
+  rack:{label:'Rack',icon:'▤',cls:'rack',defaults:{w:2,h:6}},
+  shelf:{label:'Shelf',icon:'▰',cls:'shelf',defaults:{w:3,h:1.2}},
+  zone:{label:'Section / Zone',icon:'⌂',cls:'',defaults:{w:5,h:3}},
+  entry:{label:'Entry',icon:'↑',cls:'entry',defaults:{w:2.4,h:1.6}},
+  exit:{label:'Exit',icon:'↓',cls:'exit',defaults:{w:2.4,h:1.6}},
+  checkout:{label:'Checkout',icon:'🛒',cls:'checkout',defaults:{w:7,h:2}},
+  restroom:{label:'Restroom',icon:'WC',cls:'restroom',defaults:{w:3,h:2.5}},
+  service:{label:'Service Desk',icon:'◎',cls:'service',defaults:{w:3,h:2.5}},
+  stairs:{label:'Stairs / Elevator',icon:'↕',cls:'stairs',defaults:{w:3,h:3}},
+  text:{label:'Text Label',icon:'T',cls:'text',defaults:{w:5,h:1.5}},
+};
+const MAPB_TEMPLATES={
+  standard:{name:'Standard Supermarket',desc:'Balanced aisle-first layout',canvasW:40,canvasH:28,elements:[
+    ['zone','Fresh Produce',4,3,5,10],['zone','Bakery',4,13,5,4],['zone','Ready to Eat',4,18,5,4],
+    ['aisle','Aisle 1 · Rice & Grains',11,3,3,10],['aisle','Aisle 2 · Dairy & Chilled',15,3,3,10],['aisle','Aisle 3 · Breakfast',19,3,3,10],['aisle','Aisle 4 · Spices',23,3,3,10],['aisle','Aisle 5 · Snacks',27,3,3,10],['aisle','Aisle 6 · Beverages',31,3,3,10],
+    ['aisle','Aisle 7 · Household',11,15,3,10],['aisle','Aisle 8 · Personal Care',15,15,3,10],['aisle','Aisle 9 · Baby',19,15,3,10],['aisle','Aisle 10 · Pet',23,15,3,10],['aisle','Aisle 12 · Stationery',27,15,3,10],['aisle','Aisle 13 · Electrical',31,15,3,10],
+    ['service','Customer Service',35,3,3,3],['restroom','Restrooms',35,7,3,3],['checkout','Checkout',13,26,14,1.5],['entry','ENTRY',10,25.8,2.6,1.6],['exit','EXIT',31,25.8,2.6,1.6]
+  ]},
+  compact:{name:'Compact Store',desc:'Tight footprint for smaller shops',canvasW:32,canvasH:22,elements:[
+    ['zone','Fresh Produce',2,2,4,7],['zone','Bakery',2,10,4,4],['aisle','Aisle 1 · Rice & Grains',8,2,3,7],['aisle','Aisle 2 · Dairy',12,2,3,7],['aisle','Aisle 3 · Snacks',16,2,3,7],['aisle','Aisle 4 · Beverages',20,2,3,7],['aisle','Aisle 5 · Household',8,11,3,7],['aisle','Aisle 6 · Personal Care',12,11,3,7],['aisle','Aisle 7 · Baby',16,11,3,7],['aisle','Aisle 8 · Kitchen',20,11,3,7],['service','Help',26,3,3,3],['checkout','Checkout',10,20,12,1.5],['entry','ENTRY',7,19.7,2.4,1.5],['exit','EXIT',23,19.7,2.4,1.5]
+  ]},
+  multifloor:{name:'Multi-floor Store',desc:'Start with connected ground + upper floors',canvasW:44,canvasH:30,elements:[
+    ['zone','Fresh Produce',3,3,6,7],['aisle','Aisle 1 · Rice & Grains',12,3,3,9],['aisle','Aisle 2 · Dairy',16,3,3,9],['aisle','Aisle 3 · Breakfast',20,3,3,9],['aisle','Aisle 4 · Snacks',24,3,3,9],['aisle','Aisle 5 · Beverages',28,3,3,9],['aisle','Aisle 6 · Household',12,15,3,9],['aisle','Aisle 7 · Personal Care',16,15,3,9],['aisle','Aisle 8 · Baby',20,15,3,9],['aisle','Aisle 9 · Pet',24,15,3,9],['stairs','Stairs / Elevator',32,16,4,3],['service','Customer Service',35,3,5,3],['checkout','Checkout',14,26,16,1.5],['entry','ENTRY',10,25.6,2.6,1.6],['exit','EXIT',31,25.6,2.6,1.6]
+  ]},
+};
+function mapbEsc(s){return String(s??'').replace(/[&<>\"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\\':'&#92;','"':'&quot;'}[c]))}
+function mapbUid(){return 'mb'+Date.now().toString(36)+Math.random().toString(36).slice(2,7)}
+function mapbDeep(v){return JSON.parse(JSON.stringify(v))}
+function mapbTemplate(name){const t=MAPB_TEMPLATES[name]||MAPB_TEMPLATES.standard;const els=t.elements.map((e,i)=>({id:mapbUid()+i,type:e[0],label:e[1],category:e[0]==='aisle'?String(e[1]).split('·').slice(1).join('·').trim():'',x:e[2],y:e[3],w:e[4],h:e[5],floor:'Ground Floor',rotation:0,color:'#e5f5eb',z:i+1}));return {mapName:t.name,canvasW:t.canvasW,canvasH:t.canvasH,floors:['Ground Floor'],floor:'Ground Floor',elements:els,grid:true,background:null}}
+function mapbDataFromDraft(d){const cfg=d||{};return {branchId:MAPB.branchId,mapName:String(cfg.mapName||'Store Map').slice(0,100),canvasW:Number(cfg.canvasW)||MAPB_DEFAULT_W,canvasH:Number(cfg.canvasH)||MAPB_DEFAULT_H,floors:Array.isArray(cfg.floors)&&cfg.floors.length?cfg.floors.map(String):MAPB_FLOOR_DEFAULTS,floor:String(cfg.floor||'Ground Floor'),elements:Array.isArray(cfg.elements)?cfg.elements:[],grid:cfg.grid!==false,background:cfg.background||null,backgroundDirty:false,clearBackground:false}}
+function mapbCurrentFloorEls(){return MAPB.elements.filter(e=>String(e.floor||'Ground Floor')===String(MAPB.floor||'Ground Floor'))}
+function mapbFloorEls(f){return MAPB.elements.filter(e=>String(e.floor||'Ground Floor')===String(f))}
+function mapbClamp(n,lo,hi){return Math.max(lo,Math.min(hi,n))}
+function mapbFind(id){return MAPB.elements.find(e=>e.id===id)||null}
+function mapbInsert(type,xPct,yPct){const t=MAPB_TYPES[type]||MAPB_TYPES.aisle;const x=Number.isFinite(xPct)?xPct:42,y=Number.isFinite(yPct)?yPct:42;const base={id:mapbUid(),type,label:t.label,category:type==='aisle'?'': '',x:mapbClamp(x,1,95),y:mapbClamp(y,1,95),w:t.defaults.w,h:t.defaults.h,floor:MAPB.floor,rotation:0,color:'#e5f5eb',z:MAPB.elements.length+1};MAPB.elements.push(base);MAPB.selectedId=base.id;mapbRender()}
+function mapbScreenPoint(ev){const canvas=document.getElementById('mapBuilderCanvas');if(!canvas)return {x:42,y:42};const r=canvas.getBoundingClientRect();const sx=canvas.clientWidth/(r.width||1),sy=canvas.clientHeight/(r.height||1);return {x:mapbClamp(((ev.clientX-r.left)*sx/canvas.clientWidth)*100,1,95),y:mapbClamp(((ev.clientY-r.top)*sy/canvas.clientHeight)*100,1,95)} }
+function mapbTypeIcon(type){return (MAPB_TYPES[type]||{}).icon||'•'}
+function mapbRender(){const root=document.getElementById('mapBuilderRoot');if(!root)return;const current=mapbCurrentFloorEls();const selected=mapbFind(MAPB.selectedId);root.innerHTML=`
+  <div class="map-builder-steps">
+    <div class="map-builder-step"><strong>1 · Choose</strong><span>Pick a store template.</span></div>
+    <div class="map-builder-step"><strong>2 · Place</strong><span>Drag items onto the canvas.</span></div>
+    <div class="map-builder-step"><strong>3 · Resize</strong><span>Set real dimensions.</span></div>
+    <div class="map-builder-step"><strong>4 · Assign</strong><span>Map aisles to categories/products.</span></div>
+    <div class="map-builder-step"><strong>5 · Preview</strong><span>Test the customer route.</span></div>
+    <div class="map-builder-step"><strong>6 · Publish</strong><span>Push only when ready.</span></div>
+  </div>
+  <div class="map-builder-shell">
+    <div class="map-builder-card"><div class="map-builder-hd"><div><div class="map-builder-title">Templates</div><div class="map-builder-sub">Start from a layout, then customise everything.</div></div></div><div class="map-builder-body">
+      <div class="map-builder-template-grid">${Object.entries(MAPB_TEMPLATES).map(([k,t])=>`<div class="map-builder-template ${MAPB.mapName===t.name?'on':''}" onclick="mapbUseTemplate('${k}')"><div class="map-builder-mini">${[0,1,2,3,4,5].map(i=>`<span style="left:${9+i*14}%;top:${16+(i%2)*42}%;width:8%;height:46%"></span>`).join('')}</div><b>${mapbEsc(t.name)}</b><small>${mapbEsc(t.desc)}</small></div>`).join('')}</div>
+      <button class="btn ghost sm" style="width:100%;margin-top:9px" onclick="mapbBlank()">＋ Blank canvas</button>
+      <div class="map-builder-hint">Templates are starting points only. Every block can be moved, resized, renamed or deleted.</div>
+    </div></div>
+    <div class="map-builder-card"><div class="map-builder-hd"><div><div class="map-builder-title">Design your store</div><div class="map-builder-sub">Drag on canvas · click to edit · use the resize handle.</div></div><div class="map-builder-toolbar"><select class="sel" id="mapbFloorSel" onchange="mapbSwitchFloor(this.value)">${MAPB.floors.map(f=>`<option value="${mapbEsc(f)}" ${f===MAPB.floor?'selected':''}>${mapbEsc(f)}</option>`).join('')}</select><button class="btn ghost sm" onclick="mapbAddFloor()">＋ Floor</button><button class="btn ghost sm" onclick="mapbImportCurrentMap()">Import current map</button><button class="btn ghost sm" onclick="mapbToggleGrid()">${MAPB.grid?'Grid on':'Grid off'}</button></div></div><div class="map-builder-body">
+      <div class="map-builder-toolbar"><span class="td-sub">${mapbEsc(MAPB.mapName||'Untitled map')} · ${MAPB.canvasW}m × ${MAPB.canvasH}m</span><span style="flex:1"></span><button class="btn ghost sm" onclick="mapbFitCanvas()">Fit view</button><button class="btn ghost sm" onclick="mapbClearFloor()">Clear floor</button></div>
+      <div class="map-builder-canvas-wrap"><div id="mapBuilderCanvas" class="map-builder-canvas ${MAPB.grid?'grid-on':''}" style="aspect-ratio:${Math.max(1,MAPB.canvasW)}/${Math.max(1,MAPB.canvasH)};height:auto" ondragover="event.preventDefault()" ondrop="mapbDrop(event)">
+        <div class="map-builder-bg" style="${MAPB.background?`background-image:url('${mapbEsc(MAPB.background)}')`:''}"></div>
+        <div class="map-builder-empty" style="${current.length?'display:none':''}">Drop sections, aisles, entrances, checkout or labels here.</div>
+        ${current.map(el=>{const wi=(el.w/MAPB.canvasW)*100,hi=(el.h/MAPB.canvasH)*100;const cls=MAPB_TYPES[el.type]?.cls||'';return `<div class="map-builder-el ${cls} ${wi<5||hi<6?'small':''} ${el.id===MAPB.selectedId?'selected':''}" data-id="${el.id}" style="left:${el.x}%;top:${el.y}%;width:${wi}%;height:${hi}%;transform:rotate(${Number(el.rotation)||0}deg);z-index:${Number(el.z)||1};background:${mapbEsc(el.color||'#e5f5eb')}" onpointerdown="mapbPointerDown(event,'${el.id}')" ondblclick="mapbSelect('${el.id}')"><div>${mapbEsc(mapbTypeIcon(el.type))} ${mapbEsc(el.label||MAPB_TYPES[el.type]?.label||el.type)}</div><span class="map-builder-handle" onpointerdown="mapbResizeDown(event,'${el.id}')"></span></div>`}).join('')}
+      </div></div>
+      <div class="map-builder-hint">Tip: on desktop, drag a tool from the left. On mobile, tap a tool to insert it at the center. Coordinates and dimensions stay tied to metres, so the customer route remains proportionate.</div>
+    </div></div>
+    <div class="map-builder-card"><div class="map-builder-hd"><div><div class="map-builder-title">Add & customise</div><div class="map-builder-sub">Exact store elements, dimensions and product mapping.</div></div></div><div class="map-builder-body">
+      <div class="map-builder-palette">${Object.entries(MAPB_TYPES).map(([k,t])=>`<button class="map-builder-tool" draggable="true" ondragstart="event.dataTransfer.setData('text/plain','${k}')" onclick="mapbInsert('${k}',42,42)"><span class="ico">${t.icon}</span>${mapbEsc(t.label)}</button>`).join('')}</div>
+      <div style="height:10px"></div>
+      ${selected?`<div style="border-top:1px solid var(--bdr);padding-top:10px"><div class="card-t" style="font-size:11px">Selected: ${mapbEsc(selected.label||'Element')}</div><div class="map-builder-prop-grid" style="margin-top:8px">
+        <div class="fld"><label class="lbl">Type</label><input class="inp" value="${mapbEsc(MAPB_TYPES[selected.type]?.label||selected.type)}" disabled></div>
+        <div class="fld"><label class="lbl">Label</label><input class="inp" id="mapbPropLabel" value="${mapbEsc(selected.label||'')}" onchange="mapbProp('label',this.value)"></div>
+        <div class="fld"><label class="lbl">Category</label><input class="inp" id="mapbPropCategory" value="${mapbEsc(selected.category||'')}" onchange="mapbProp('category',this.value)"></div>
+        <div class="fld"><label class="lbl">Floor</label><select class="sel" onchange="mapbProp('floor',this.value)">${MAPB.floors.map(f=>`<option value="${mapbEsc(f)}" ${String(selected.floor||'Ground Floor')===String(f)?'selected':''}>${mapbEsc(f)}</option>`).join('')}</select></div>
+        <div class="fld"><label class="lbl">Width (m)</label><input class="inp" type="number" step="0.1" value="${Number(selected.w)||1}" onchange="mapbNumProp('w',this.value)"></div>
+        <div class="fld"><label class="lbl">Height (m)</label><input class="inp" type="number" step="0.1" value="${Number(selected.h)||1}" onchange="mapbNumProp('h',this.value)"></div>
+        <div class="fld"><label class="lbl">X (m)</label><input class="inp" type="number" step="0.1" value="${(Number(selected.x)/100*MAPB.canvasW).toFixed(1)}" onchange="mapbMeterProp('x',this.value)"></div>
+        <div class="fld"><label class="lbl">Y (m)</label><input class="inp" type="number" step="0.1" value="${(Number(selected.y)/100*MAPB.canvasH).toFixed(1)}" onchange="mapbMeterProp('y',this.value)"></div>
+        <div class="fld"><label class="lbl">Rotation</label><input class="inp" type="number" value="${Number(selected.rotation)||0}" onchange="mapbNumProp('rotation',this.value)"></div>
+        <div class="fld"><label class="lbl">Colour</label><input class="inp" type="color" value="${/^#[0-9a-f]{6}$/i.test(selected.color||'')?selected.color:'#e5f5eb'}" onchange="mapbProp('color',this.value)"></div>
+      </div>
+      <div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:9px"><button class="btn ghost sm" onclick="mapbDuplicate()">Duplicate</button><button class="btn ghost sm map-builder-danger" onclick="mapbDeleteSelected()">Delete</button><button class="btn ghost sm" onclick="mapbBringFront()">Bring front</button></div>
+      <div style="margin-top:9px;padding:9px 10px;border-radius:10px;background:var(--GL);font-size:9.5px;color:var(--GD);font-weight:700">Products can be assigned after you set the correct section/aisle. This preserves your existing inventory catalogue and lets the builder become the visual layer.</div>
+      </div>`:`<div class="empty" style="margin-top:10px">Select an element to edit its size, position, floor and label.</div>`}
+      <div style="margin-top:12px;border-top:1px solid var(--bdr);padding-top:10px"><div class="card-t" style="font-size:11px">Store map</div><div class="fld" style="margin-top:7px"><label class="lbl">Map name</label><input class="inp" value="${mapbEsc(MAPB.mapName)}" onchange="MAPB.mapName=this.value.slice(0,100);mapbRender()"></div><div class="map-builder-prop-grid"><div class="fld"><label class="lbl">Store width (m)</label><input class="inp" type="number" min="10" max="200" step="0.5" value="${MAPB.canvasW}" onchange="mapbSetCanvasDim('w',this.value)"></div><div class="fld"><label class="lbl">Store depth (m)</label><input class="inp" type="number" min="8" max="200" step="0.5" value="${MAPB.canvasH}" onchange="mapbSetCanvasDim('h',this.value)"></div></div><div class="fld"><label class="lbl">Background floor plan</label><input class="inp" type="file" accept="image/png,image/jpeg,image/webp" onchange="mapbBgUpload(this)"></div><div style="display:flex;gap:7px;flex-wrap:wrap"><button class="btn ghost sm" onclick="mapbImportCurrentMap()">Import existing map</button><button class="btn ghost sm map-builder-danger" onclick="mapbClearBackground()">Remove background</button></div><div class="td-sub">Use a client map as a reference, or design the store from scratch. All element sizes and positions stay tied to the store footprint in metres.</div></div>
+    </div></div>
+  </div>
+  <div class="map-builder-toolbar" style="margin-top:12px"><span class="td-sub" id="mapbMsg"></span><span style="flex:1"></span><button class="btn ghost" onclick="mapbSaveDraft()">Save Draft</button><button class="btn grn" onclick="mapbPublish()">Publish to Customer Navigation</button></div>`;
+  const c=document.getElementById('mapBuilderCanvas');if(c)c.addEventListener('pointerdown',e=>{if(e.target===c)MAPB.selectedId=null;});
+}
+async function loadMapBuilder(){
+  MAPB={branchId:BRANCH||'',mapName:'',background:null,backgroundDirty:false,clearBackground:false,canvasW:MAPB_DEFAULT_W,canvasH:MAPB_DEFAULT_H,grid:true,floor:'Ground Floor',floors:['Ground Floor'],elements:[],selectedId:null,drag:null};
+  try{const r=await fetch('/api/admin/store-map-builder?branch='+encodeURIComponent(BRANCH||''),{headers:authHeaders(),cache:'no-store'});const d=r.ok?await r.json():{data:null};const cfg=d.data;if(cfg){MAPB=Object.assign(MAPB,mapbDataFromDraft(cfg));if(!MAPB.floors.includes(MAPB.floor))MAPB.floors.push(MAPB.floor);}}catch(e){}
+  if(!MAPB.elements.length&&!MAPB.mapName){const t=mapbTemplate('standard');MAPB=Object.assign(MAPB,t,{branchId:BRANCH||''});}
+  mapbRender();
+}
+function mapbUseTemplate(k){const t=mapbTemplate(k);MAPB=Object.assign(MAPB,t,{branchId:MAPB.branchId,background:MAPB.background,backgroundDirty:MAPB.backgroundDirty,clearBackground:MAPB.clearBackground});mapbRender()}
+function mapbBlank(){MAPB={branchId:BRANCH||'',mapName:'Blank Store Map',background:null,backgroundDirty:true,clearBackground:true,canvasW:MAPB_DEFAULT_W,canvasH:MAPB_DEFAULT_H,grid:true,floor:'Ground Floor',floors:['Ground Floor'],elements:[],selectedId:null,drag:null};mapbRender()}
+async function mapbImportCurrentMap(){try{const r=await fetch('/api/store-navigation?branch='+encodeURIComponent(BRANCH||''),{headers:authHeaders(),cache:'no-store'}),d=await r.json(),cfg=d.data||{};if(cfg.mapDataUrl)MAPB.background=cfg.mapDataUrl;if(cfg.mapName)MAPB.mapName=cfg.mapName;if(Array.isArray(cfg.aisles)&&cfg.aisles.length){MAPB.elements=cfg.aisles.map((a,i)=>({id:mapbUid()+i,type:'aisle',label:a.label||('Aisle '+a.number),category:a.category||'',x:Number(a.x)||10,y:Number(a.y)||20,w:Number(a.w)||3,h:Number(a.h)||10,floor:'Ground Floor',rotation:0,color:'#e5f5eb',z:i+1}));}mapbRender();toast('Current navigation map imported into the builder.')}catch(e){toast('Could not import the current navigation map')}}
+function mapbSwitchFloor(f){MAPB.floor=f;MAPB.selectedId=null;mapbRender()}
+function mapbAddFloor(){const n=prompt('Floor name','First Floor');if(!n)return;const f=String(n).trim().slice(0,40);if(!f||MAPB.floors.includes(f))return;MAPB.floors.push(f);MAPB.floor=f;mapbRender()}
+function mapbToggleGrid(){MAPB.grid=!MAPB.grid;mapbRender()}
+function mapbDrop(ev){ev.preventDefault();const type=ev.dataTransfer?.getData('text/plain');if(!type)return;const p=mapbScreenPoint(ev);mapbInsert(type,p.x,p.y)}
+function mapbSelect(id){MAPB.selectedId=id;mapbRender()}
+function mapbPointerDown(ev,id){if(ev.button!==undefined&&ev.button!==0)return;ev.preventDefault();ev.stopPropagation();mapbSelect(id);const el=mapbFind(id),canvas=document.getElementById('mapBuilderCanvas');if(!el||!canvas)return;const r=canvas.getBoundingClientRect();MAPB.drag={id,startX:ev.clientX,startY:ev.clientY,x:el.x,y:el.y,rw:r.width,rh:r.height};const move=e=>{if(!MAPB.drag)return;const dx=(e.clientX-MAPB.drag.startX)/MAPB.drag.rw*100,dy=(e.clientY-MAPB.drag.startY)/MAPB.drag.rh*100;el.x=mapbClamp(MAPB.drag.x+dx,0,100-(el.w/MAPB.canvasW*100));el.y=mapbClamp(MAPB.drag.y+dy,0,100-(el.h/MAPB.canvasH*100));mapbRenderLite()};const up=()=>{MAPB.drag=null;document.removeEventListener('pointermove',move);document.removeEventListener('pointerup',up);mapbRender()};document.addEventListener('pointermove',move);document.addEventListener('pointerup',up)}
+function mapbResizeDown(ev,id){ev.preventDefault();ev.stopPropagation();const el=mapbFind(id),canvas=document.getElementById('mapBuilderCanvas');if(!el||!canvas)return;mapbSelect(id);const r=canvas.getBoundingClientRect(),startW=el.w,startH=el.h,sx=ev.clientX,sy=ev.clientY;const move=e=>{el.w=Math.max(0.8,Math.min(MAPB.canvasW-el.x/100*MAPB.canvasW,startW+(e.clientX-sx)/r.width*MAPB.canvasW));el.h=Math.max(0.8,Math.min(MAPB.canvasH-el.y/100*MAPB.canvasH,startH+(e.clientY-sy)/r.height*MAPB.canvasH));mapbRenderLite()};const up=()=>{document.removeEventListener('pointermove',move);document.removeEventListener('pointerup',up);mapbRender()};document.addEventListener('pointermove',move);document.addEventListener('pointerup',up)}
+function mapbRenderLite(){const c=document.getElementById('mapBuilderCanvas');if(!c)return;mapbCurrentFloorEls().forEach(el=>{const n=c.querySelector(`[data-id="${el.id}"]`);if(n){n.style.left=el.x+'%';n.style.top=el.y+'%';n.style.width=(el.w/MAPB.canvasW*100)+'%';n.style.height=(el.h/MAPB.canvasH*100)+'%';}})}
+function mapbProp(k,v){const e=mapbFind(MAPB.selectedId);if(!e)return;e[k]=String(v||'');if(k==='floor'&&!MAPB.floors.includes(e[k]))MAPB.floors.push(e[k]);mapbRender()}
+function mapbNumProp(k,v){const e=mapbFind(MAPB.selectedId);if(!e)return;e[k]=Number(v)||0;mapbRender()}
+function mapbMeterProp(k,v){const e=mapbFind(MAPB.selectedId);if(!e)return;const n=Number(v)||0;e[k]=mapbClamp(n/(k==='x'?MAPB.canvasW:MAPB.canvasH)*100,0,96);mapbRender()}
+function mapbDuplicate(){const e=mapbFind(MAPB.selectedId);if(!e)return;const n=mapbDeep(e);n.id=mapbUid();n.x=mapbClamp(Number(n.x)+2,0,96);n.y=mapbClamp(Number(n.y)+2,0,96);n.z=MAPB.elements.length+1;MAPB.elements.push(n);MAPB.selectedId=n.id;mapbRender()}
+function mapbDeleteSelected(){if(!MAPB.selectedId)return;MAPB.elements=MAPB.elements.filter(e=>e.id!==MAPB.selectedId);MAPB.selectedId=null;mapbRender()}
+function mapbBringFront(){const e=mapbFind(MAPB.selectedId);if(!e)return;e.z=Math.max(1,...MAPB.elements.map(x=>Number(x.z)||1))+1;mapbRender()}
+function mapbClearFloor(){if(!confirm('Clear all elements from this floor?'))return;MAPB.elements=MAPB.elements.filter(e=>String(e.floor||'Ground Floor')!==String(MAPB.floor));MAPB.selectedId=null;mapbRender()}
+function mapbFitCanvas(){const c=document.getElementById('mapBuilderCanvas');if(c)c.scrollIntoView({behavior:'smooth',block:'center'})}
+async function mapbSetCanvasDim(k,v){const n=Number(v);if(!Number.isFinite(n))return; if(k==='w')MAPB.canvasW=mapbClamp(n,10,200);else MAPB.canvasH=mapbClamp(n,8,200);mapbRender()}
+function mapbClearBackground(){MAPB.background=null;MAPB.backgroundDirty=true;MAPB.clearBackground=true;mapbRender()}
+async function mapbBgUpload(input){const f=(input?.files||[])[0];if(!f)return;if(f.size>8*1024*1024){toast('Choose a map under 8 MB');input.value='';return;}try{const data=await new Promise((ok,no)=>{const r=new FileReader();r.onload=()=>ok(String(r.result||''));r.onerror=no;r.readAsDataURL(f)});const im=await new Promise((ok,no)=>{const i=new Image();i.onload=()=>ok(i);i.onerror=no;i.src=data});const max=1600,sc=Math.min(1,max/Math.max(im.naturalWidth||max,im.naturalHeight||max));const c=document.createElement('canvas');c.width=Math.max(1,Math.round((im.naturalWidth||1200)*sc));c.height=Math.max(1,Math.round((im.naturalHeight||900)*sc));c.getContext('2d').drawImage(im,0,0,c.width,c.height);MAPB.background=c.toDataURL('image/webp',.78);MAPB.backgroundDirty=true;MAPB.clearBackground=false;mapbRender()}catch(e){toast('Could not read that image')}}
+function mapbPayload(){return {branchId:MAPB.branchId,mapName:MAPB.mapName,canvasW:MAPB.canvasW,canvasH:MAPB.canvasH,floors:MAPB.floors,floor:MAPB.floor,grid:MAPB.grid,background:MAPB.backgroundDirty?MAPB.background:null,clearBackground:MAPB.clearBackground,elements:MAPB.elements.map(e=>({id:e.id,type:e.type,label:e.label,category:e.category,x:e.x,y:e.y,w:e.w,h:e.h,floor:e.floor,rotation:e.rotation||0,color:e.color||'#e5f5eb',z:e.z||1}))}}
+async function mapbSaveDraft(){const msg=document.getElementById('mapbMsg');if(msg)msg.textContent='Saving draft…';try{const r=await fetch('/api/admin/store-map-builder',{method:'POST',headers:authHeaders({'Content-Type':'application/json'}),body:JSON.stringify(mapbPayload())}),d=await r.json();if(!r.ok)throw new Error(d.error||'Could not save draft');MAPB.backgroundDirty=false;MAPB.clearBackground=false;if(msg)msg.textContent='Draft saved ✓';toast('Map builder draft saved ✓')}catch(e){if(msg)msg.textContent=e.message||'Could not save draft';toast(e.message||'Could not save draft')}}
+async function mapbPublish(){if(!MAPB.branchId)return;const all=mapbCurrentFloorEls();const aisles=all.filter(e=>e.type==='aisle').map((e,i)=>({number:Math.max(1,i+1),label:e.label||('Aisle '+(i+1)),category:e.category||'',x:(Number(e.x)||0)/MAPB.canvasW*100,y:(Number(e.y)||0)/MAPB.canvasH*100,w:(Number(e.w)||3)/MAPB.canvasW*100,h:(Number(e.h)||10)/MAPB.canvasH*100,order:Number(e.z)||i+1}));const entry=all.find(e=>e.type==='entry'),exit=all.find(e=>e.type==='exit'),checkout=all.find(e=>e.type==='checkout');const point=e=>({x:e?Number(e.x)/MAPB.canvasW*100:50,y:e?Number(e.y)/MAPB.canvasH*100:94});const layoutElements=all.map(e=>({id:e.id,type:e.type,label:e.label||'',category:e.category||'',x:(Number(e.x)||0)/MAPB.canvasW*100,y:(Number(e.y)||0)/MAPB.canvasH*100,w:(Number(e.w)||1)/MAPB.canvasW*100,h:(Number(e.h)||1)/MAPB.canvasH*100,rotation:Number(e.rotation)||0,z:Number(e.z)||1,floor:e.floor||MAPB.floor||'Ground Floor'}));try{await mapbSaveDraft();const r=await fetch('/api/admin/store-navigation',{method:'POST',headers:authHeaders({'Content-Type':'application/json'}),body:JSON.stringify({branchId:MAPB.branchId,mapName:MAPB.mapName||'Store floor plan',mapDataUrl:MAPB.background||null,clearMap:false,canvasW:Number(MAPB.canvasW)||40,canvasH:Number(MAPB.canvasH)||28,entry:point(entry),exit:point(exit),checkout:point(checkout),aisles,layoutElements})}),d=await r.json();if(!r.ok)throw new Error(d.error||'Could not publish');toast('Published to customer navigation ✓');const msg=document.getElementById('mapbMsg');if(msg)msg.textContent='Published ✓';}catch(e){toast(e.message||'Could not publish')}}
+
 async function loadBranches(){
   const el=document.getElementById('brGrid');
   if(!el)return;
@@ -1757,8 +1909,51 @@ function renderBranchSetup(){
     <p class="td-sub" style="margin-top:14px;line-height:1.7;border-top:1px solid var(--bdr);padding-top:12px">
       <b>Then, in this shop:</b> set stock and prices in <b>Inventory</b> · set the floor area per category in <b>Warehouse Planner</b> ·
       add this shop's team in <b>Staff &amp; Roles</b> · share its storefront link
-      <code style="font-size:10.5px">${esc(location.origin)}/?branch=${esc(id)}</code> on the branch WhatsApp number.</p>`;
+      <code style="font-size:10.5px">${esc(location.origin)}/?branch=${esc(id)}</code> on the branch WhatsApp number.</p>
+    <div class="nav-map-admin">
+      <div class="nav-map-admin-head"><div><div class="nav-map-admin-title">Smart Store Navigation Map</div><div class="nav-map-admin-sub">Every store can have a different map. Upload the floor plan for this branch and align its aisle/category anchors to the real layout.</div></div><span class="st-pill" id="navMapStatus">Not configured</span></div>
+      <div class="nav-map-admin-body">
+        <div style="display:grid;grid-template-columns:1fr auto;gap:10px;align-items:end"><div class="fld" style="margin:0"><label class="lbl">Store map image</label><input class="inp" type="file" id="navMapFile" accept="image/png,image/jpeg,image/webp" onchange="previewNavMapFile(this)"></div><button class="btn ghost sm" type="button" onclick="clearNavMapPreview()">Clear map</button></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px"><div class="fld" style="margin:0"><label class="lbl">Map name</label><input class="inp" id="navMapName" placeholder="e.g. Downtown Store Floor Plan"></div><div class="fld" style="margin:0"><label class="lbl">Entry / exit position (X,Y %)</label><input class="inp" id="navMapEntry" placeholder="50,94"></div></div>
+        <img class="nav-map-preview" id="navMapPreview" style="margin-top:10px;display:none" alt="Store map preview">
+        <div id="navMapAislesWrap" style="margin-top:10px"></div>
+        <div style="display:flex;justify-content:flex-end;margin-top:12px"><button class="btn grn" type="button" onclick="saveStoreNavigationMap()">Save navigation map</button></div><div id="navMapMsg" class="td-sub" style="margin-top:8px"></div>
+      </div>
+    </div>`;
+  initStoreNavigationAdmin(id);
+
 }
+let NAV_MAP_ADMIN={branchId:'',mapDataUrl:null,aisles:[],clearMap:false};
+async function initStoreNavigationAdmin(branchId){
+  NAV_MAP_ADMIN={branchId,mapDataUrl:null,aisles:[],clearMap:false};
+  const preview=document.getElementById('navMapPreview'),wrap=document.getElementById('navMapAislesWrap'),status=document.getElementById('navMapStatus');
+  if(preview)preview.style.display='none'; if(wrap)wrap.innerHTML='<div class="empty">Loading map setup…</div>';
+  try{const r=await fetch('/api/store-navigation?branch='+encodeURIComponent(branchId),{headers:authHeaders(),cache:'no-store'}),d=await r.json(),cfg=d.data||{};NAV_MAP_ADMIN={branchId,mapDataUrl:cfg.mapDataUrl||null,aisles:Array.isArray(cfg.aisles)?cfg.aisles:[]};
+    const n=document.getElementById('navMapName'),e=document.getElementById('navMapEntry');if(n)n.value=cfg.mapName||'';if(e)e.value=cfg.entry?`${Math.round(cfg.entry.x)},${Math.round(cfg.entry.y)}`:'50,94';
+    if(cfg.mapDataUrl&&preview){preview.src=cfg.mapDataUrl;preview.style.display='block';}if(status)status.textContent=cfg.mapDataUrl?'Configured':'Not configured';
+  }catch(e){if(wrap)wrap.innerHTML='<div class="empty">Could not load navigation setup.</div>';} renderNavMapAisles();
+}
+async function previewNavMapFile(input){
+  const f=(input&&input.files||[])[0]; if(!f)return;
+  if(f.size>8*1024*1024){toast('Please choose a map under 8 MB');input.value='';return;}
+  try{
+    const data=await new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(String(r.result||''));r.onerror=reject;r.readAsDataURL(f)});
+    const img=await new Promise((resolve,reject)=>{const im=new Image();im.onload=()=>resolve(im);im.onerror=reject;im.src=data});
+    const max=1600,scale=Math.min(1,max/Math.max(img.naturalWidth||max,img.naturalHeight||max)),canvas=document.createElement('canvas');
+    canvas.width=Math.max(1,Math.round((img.naturalWidth||1200)*scale)); canvas.height=Math.max(1,Math.round((img.naturalHeight||900)*scale));
+    canvas.getContext('2d').drawImage(img,0,0,canvas.width,canvas.height);
+    NAV_MAP_ADMIN.mapDataUrl=canvas.toDataURL('image/webp',.78);
+    const p=document.getElementById('navMapPreview');if(p){p.src=NAV_MAP_ADMIN.mapDataUrl;p.style.display='block';}
+    const st=document.getElementById('navMapStatus');if(st)st.textContent='Ready to save';
+  }catch(e){toast('Could not read that map image');}
+}
+function clearNavMapPreview(){NAV_MAP_ADMIN.mapDataUrl=null;NAV_MAP_ADMIN.clearMap=true;const p=document.getElementById('navMapPreview');if(p){p.removeAttribute('src');p.style.display='none';}const f=document.getElementById('navMapFile');if(f)f.value='';const s=document.getElementById('navMapStatus');if(s)s.textContent='Map cleared';}
+function renderNavMapAisles(){const wrap=document.getElementById('navMapAislesWrap');if(!wrap)return;let rows=NAV_MAP_ADMIN.aisles.slice();if(!rows.length){
+  const byAisle=new Map();(CAT||[]).forEach(p=>{const m=String(p.loc||'').match(/Aisle\s*(\d+)/i);if(!m)return;const n=Number(m[1]);if(!byAisle.has(n))byAisle.set(n,new Map());const cm=byAisle.get(n);cm.set(p.cat||'Products',(cm.get(p.cat||'Products')||0)+1);});
+  const nums=[...byAisle.keys()].sort((a,b)=>a-b); const count=nums.length||10;
+  rows=(nums.length?nums:[...Array(count)].map((_,i)=>i+1)).map((n,i)=>{const cm=byAisle.get(n)||new Map(),category=cm.size?[...cm.entries()].sort((a,b)=>b[1]-a[1])[0][0]:'';return {number:n,label:category?'Aisle '+n+' · '+category:'Aisle '+n,category,x:8+(i%10)*9,y:20+Math.floor(i/10)*16,w:8,h:60,order:i+1};});
+  NAV_MAP_ADMIN.aisles=rows;}wrap.innerHTML=`<div style="font-size:10px;font-weight:900;color:var(--tx);margin-bottom:5px">Aisle & category anchors</div><div class="td-sub">Adjust X, Y and route order to match this store's actual layout.</div><div class="nav-map-aisles">${rows.map((a,i)=>`<div class="nav-map-aisle-row"><b>Aisle ${a.number}</b><div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-top:5px"><input class="inp nav-a-number" data-i="${i}" value="${esc(a.number)}" title="Aisle number"><input class="inp nav-a-cat" data-i="${i}" value="${esc(a.category||'')}" placeholder="Category"></div><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-top:5px"><input class="inp nav-a-x" data-i="${i}" value="${Math.round(a.x||10)}" title="X %"><input class="inp nav-a-y" data-i="${i}" value="${Math.round(a.y||24)}" title="Y %"><input class="inp nav-a-order" data-i="${i}" value="${Math.round(a.order||a.number)}" title="Route order"></div></div>`).join('')}</div>`;wrap.querySelectorAll('input').forEach(inp=>inp.addEventListener('change',()=>{const i=Number(inp.dataset.i),a=NAV_MAP_ADMIN.aisles[i];if(!a)return;if(inp.classList.contains('nav-a-number'))a.number=Math.max(1,Math.round(Number(inp.value)||a.number));if(inp.classList.contains('nav-a-cat'))a.category=String(inp.value||'').slice(0,60);if(inp.classList.contains('nav-a-x'))a.x=Math.max(2,Math.min(98,Number(inp.value)||a.x));if(inp.classList.contains('nav-a-y'))a.y=Math.max(2,Math.min(92,Number(inp.value)||a.y));if(inp.classList.contains('nav-a-order'))a.order=Math.max(1,Math.round(Number(inp.value)||a.order));}));}
+async function saveStoreNavigationMap(){const id=NAV_MAP_ADMIN.branchId;if(!id){toast('Choose a store first');return;}const raw=String(document.getElementById('navMapEntry')?.value||'50,94').split(',').map(Number);const body={branchId:id,mapName:document.getElementById('navMapName')?.value||'',mapDataUrl:NAV_MAP_ADMIN.clearMap?null:(NAV_MAP_ADMIN.mapDataUrl||null),clearMap:!!NAV_MAP_ADMIN.clearMap,entry:{x:raw[0]||50,y:raw[1]||94},exit:{x:raw[0]||50,y:raw[1]||94},aisles:NAV_MAP_ADMIN.aisles};try{const r=await fetch('/api/admin/store-navigation',{method:'POST',headers:authHeaders({'Content-Type':'application/json'}),body:JSON.stringify(body)}),d=await r.json();if(!r.ok)throw new Error(d.error||'Could not save navigation map');NAV_MAP_ADMIN=d.data||body;NAV_MAP_ADMIN.clearMap=false;toast('Store navigation map saved ✓');const s=document.getElementById('navMapStatus');if(s)s.textContent='Configured';}catch(e){toast(e.message||'Could not save navigation map');}}
 async function dlTemplate(){
   const id=(document.getElementById('brTarget')||{}).value||'';
   try{
@@ -2984,31 +3179,13 @@ function renderInv(){
     return `<tr class="${out?'out-row':low?'low-row':''}">
       <td style="width:46px"><img class="pimg" src="${p.img||''}" title="Click to change image" style="cursor:pointer" onclick="editImg(${p.id})" onerror="this.style.visibility='hidden'"></td>
       <td><div class="td-main">${esc(p.name)}${p.brand?' <span class="offer-pill" style="background:var(--GL);color:var(--GD)">'+esc(p.brand)+'</span>':''}</div><div class="td-sub">${esc(p.unit)} · ${esc(p.cat)}${hasOff?' · <span class="offer-pill">ON OFFER</span>':''}</div></td>
-      <td style="font-size:10.5px"><div class="sn-loc"><span>${esc(p.loc||'—')}</span><button class="sn-loc-pencil" type="button" onclick="editInvLocation(${p.id})" title="Edit aisle, rack and shelf" aria-label="Edit aisle, rack and shelf"><svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 013 3L8 18l-4 1 1-4z"/></svg></button></div></td>
+      <td style="font-size:10.5px">${esc(p.loc||'—')}</td>
       <td><input class="inp-mini" type="number" min="1" step="0.5" value="${p.price}" id="pr-${p.id}"></td>
       <td><input class="inp-mini" type="number" min="0" value="${p.stock??''}" id="stk-${p.id}"></td>
       <td>${out?'<span class="stock-tag stock-out">OUT OF STOCK</span>':low?`<span class="stock-tag stock-low">LOW · ${p.stock}</span>`:'<span class="stock-tag stock-ok">IN STOCK</span>'}</td>
       <td><button class="btn ghost sm" onclick="saveInv(${p.id})">Save</button></td>
     </tr>`;}).join('')}</tbody></table>`;
   syncInvBadge();
-}
-let locEditId=null;
-function editInvLocation(id){
-  reload();const p=CAT.find(x=>x.id===id);if(!p)return;locEditId=id;
-  document.getElementById('locProdName').textContent=p.name+(p.brand?' · '+p.brand:'');
-  const m=String(p.loc||'').match(/Aisle\s*(\d+)\s*·\s*Rack\s*(\d+)\s*·\s*Shelf\s*(\d+)/i);
-  document.getElementById('locAisle').value=m?m[1]:4;
-  document.getElementById('locRack').value=m?m[2]:1;
-  document.getElementById('locShelf').value=m?m[3]:1;
-  document.getElementById('locModal').classList.add('on');
-}
-function closeLocEditor(){document.getElementById('locModal').classList.remove('on');locEditId=null}
-function saveLocEditor(){
-  if(locEditId==null)return;reload();const p=CAT.find(x=>x.id===locEditId);if(!p){closeLocEditor();return}
-  const a=parseInt(document.getElementById('locAisle').value,10),r=parseInt(document.getElementById('locRack').value,10),sh=parseInt(document.getElementById('locShelf').value,10);
-  if(!Number.isInteger(a)||!Number.isInteger(r)||!Number.isInteger(sh)||a<1||r<1||sh<1){toast('Enter valid aisle, rack and shelf numbers');return}
-  p.loc=`Aisle ${a} · Rack ${r} · Shelf ${sh}`;
-  nxSet(NXK.cat,CAT);nxBump();logAct('stock','Store navigation location updated — '+p.name+' · '+p.loc);toast(p.name+' navigation location updated · live in customer app');closeLocEditor();renderInv();
 }
 function saveInv(id){
   reload();
