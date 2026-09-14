@@ -88,7 +88,7 @@ const VISION = groq
 
 /* ── storage ── */
 const KEYS = ['devx-catalog', 'devx-orders', 'devx-offers', 'devx-sponsored', 'devx-notifs-customer', 'devx-activity', 'devx-queries',
-  'devx-loyalty', 'devx-personal-offers', 'devx-zones', 'devx-staff', 'devx-audit', 'devx-slots', 'devx-branches', 'devx-catalogs', 'devx-order-additions', 'devx-customer-passwords', 'devx-streaks', 'devx-goal-dismissals', 'devx-streak-config'];
+  'devx-loyalty', 'devx-personal-offers', 'devx-zones', 'devx-staff', 'devx-audit', 'devx-slots', 'devx-branches', 'devx-catalogs', 'devx-order-additions', 'devx-customer-passwords', 'devx-streaks', 'devx-goal-dismissals', 'devx-streak-config', 'devx-store-navigation', 'devx-store-map-builder'];
 let db = {
   'devx-catalog': null,
   'devx-orders': [],
@@ -124,6 +124,8 @@ let db = {
   'devx-streaks': {},
   'devx-goal-dismissals': {},
   'devx-streak-config': GOALS.DEFAULT_STREAK_CONFIG,
+  'devx-store-navigation': {},
+  'devx-store-map-builder': {},
   'devx-order-count': 0
 };
 
@@ -1647,6 +1649,121 @@ app.get('/api/group/overview', need('insights.view'), (req, res) => {
 
 app.get('/api/branches', (req, res) => {
   res.json({ data: STORES.list(db).filter(b => b.active !== false) });
+});
+app.get('/api/store-navigation', (req, res) => {
+  const asked = String((req.query && req.query.branch) || '').trim();
+  const bid = asked && STORES.find(db, asked) ? asked : STORES.fallbackId(db);
+  const navAll = db['devx-store-navigation'] || {};
+  const builderAll = db['devx-store-map-builder'] || {};
+  let cfg = navAll[bid] || null;
+  /* If a store has a saved Map Builder design but the published navigation
+     record is missing its background/layout payload, hydrate the public
+     navigation view from that branch's builder design. This is a read-only
+     compatibility fallback and does not alter checkout, cart or inventory. */
+  const draft = builderAll[bid] || null;
+  if (draft && (!cfg || !cfg.mapDataUrl || !Array.isArray(cfg.layoutElements) || !cfg.layoutElements.length)) {
+    const clamp=(n,lo=0,hi=100)=>Math.max(lo,Math.min(hi,Number(n)||0));
+    const cw=Math.max(1,Number(draft.canvasW)||40), ch=Math.max(1,Number(draft.canvasH)||28);
+    const els=Array.isArray(draft.elements)?draft.elements:[];
+    const layoutElements=els.map((e,i)=>({
+      id:String(e.id||('nav-el-'+i)).slice(0,80), type:String(e.type||'zone').slice(0,30),
+      label:String(e.label||'Element').slice(0,80), category:String(e.category||'').slice(0,80),
+      x:clamp((Number(e.x)||0)/cw*100,0,98), y:clamp((Number(e.y)||0)/ch*100,0,96),
+      w:clamp((Number(e.w)||1)/cw*100,.5,98), h:clamp((Number(e.h)||1)/ch*100,.5,96),
+      rotation:Number(e.rotation)||0, z:Math.max(1,Math.round(Number(e.z)||i+1)), floor:String(e.floor||draft.floor||'Ground Floor').slice(0,40)
+    }));
+    const aisles=layoutElements.filter(e=>e.type==='aisle').map((e,i)=>({
+      number:(String(e.label||'').match(/Aisle\s*(\d+)/i)||[])[1]||String(i+1), label:e.label,
+      category:e.category||'',x:e.x,y:e.y,w:e.w,h:e.h,order:e.z
+    }));
+    const pointFor=type=>{const e=layoutElements.find(x=>x.type===type);return e?{x:clamp(e.x+e.w/2,1,99),y:clamp(e.y+e.h/2,1,99)}:null};
+    const hydrated={
+      ...(cfg||{}), branchId:bid, mapName:(cfg&&cfg.mapName)||draft.mapName||'Store floor plan',
+      mapDataUrl:(cfg&&cfg.mapDataUrl)||draft.background||null,
+      layoutElements:(cfg&&Array.isArray(cfg.layoutElements)&&cfg.layoutElements.length)?cfg.layoutElements:layoutElements,
+      aisles:(cfg&&Array.isArray(cfg.aisles)&&cfg.aisles.length)?cfg.aisles:aisles,
+      entry:(cfg&&cfg.entry)||pointFor('entry')||{x:50,y:94}, exit:(cfg&&cfg.exit)||pointFor('exit')||{x:50,y:94},
+      checkout:(cfg&&cfg.checkout)||pointFor('checkout')||null, floor:(cfg&&cfg.floor)||draft.floor||'Ground Floor'
+    };
+    cfg=hydrated;
+  }
+  res.json({ data: cfg ? { ...cfg, branchId: bid } : null, branchId: bid });
+});
+
+app.get('/api/admin/store-map-builder', need('branch.view'), (req,res)=>{
+  const asked=String((req.query&&req.query.branch)||'').trim();
+  const bid=asked&&STORES.find(db,asked)?asked:branchOf(req);
+  if(!STORES.find(db,bid))return res.status(404).json({error:'Unknown branch'});
+  if(!ownsBranch(req,bid))return res.status(403).json({error:'You can only view your own shop'});
+  const data=(db['devx-store-map-builder']||{})[bid]||null;
+  res.json({data:data?{...data,branchId:bid}:null,branchId:bid});
+});
+
+app.post('/api/admin/store-map-builder', need('inventory.edit'), (req,res)=>{
+  const b=req.body||{};
+  const bid=String(b.branchId||branchOf(req)).trim();
+  if(!STORES.find(db,bid))return res.status(404).json({error:'Unknown branch'});
+  if(!ownsBranch(req,bid))return res.status(403).json({error:'You can only change your own shop'});
+  const hasBackgroundField=Object.prototype.hasOwnProperty.call(b,'background');
+  const dataUrl=b.background==null?null:String(b.background);
+  const clearBackground=!!b.clearBackground;
+  if(dataUrl&&!/^data:image\/(png|jpe?g|webp);base64,[A-Za-z0-9+/=]+$/i.test(dataUrl))return res.status(400).json({error:'Background must be a PNG, JPG or WebP image'});
+  if(dataUrl&&dataUrl.length>8_500_000)return res.status(413).json({error:'Background is too large. Upload an image under about 6 MB.'});
+  const clamp=(n,lo,hi)=>Math.max(lo,Math.min(hi,Number(n)||0));
+  const floors=Array.isArray(b.floors)?[...new Set(b.floors.map(x=>String(x||'').trim().slice(0,40)).filter(Boolean))].slice(0,12):['Ground Floor'];
+  if(!floors.length)floors.push('Ground Floor');
+  const safeEl=Array.isArray(b.elements)?b.elements.slice(0,240).map((e,i)=>({
+    id:String(e.id||('mb'+Date.now()+i)).slice(0,80),type:String(e.type||'zone').slice(0,30),label:String(e.label||'Element').slice(0,80),category:String(e.category||'').slice(0,80),
+    x:clamp(e.x,0,96),y:clamp(e.y,0,94),w:clamp(e.w==null?3:e.w,.5,40),h:clamp(e.h==null?3:e.h,.5,40),floor:floors.includes(String(e.floor||''))?String(e.floor):floors[0],rotation:clamp(e.rotation||0,-180,180),color:/^#[0-9a-f]{6}$/i.test(String(e.color||''))?String(e.color):'#e5f5eb',z:Math.max(1,Math.round(Number(e.z)||i+1))
+  })):[];
+  const all=db['devx-store-map-builder']||{};
+  const cur=all[bid]||{};
+  const cfg={version:1,branchId:bid,mapName:String(b.mapName||cur.mapName||'Store Map').slice(0,100),canvasW:Math.max(10,Math.min(200,Number(b.canvasW)||40)),canvasH:Math.max(8,Math.min(200,Number(b.canvasH)||28)),floors,floor:floors.includes(String(b.floor||''))?String(b.floor):floors[0],grid:b.grid!==false,background:clearBackground?null:(dataUrl!==null?dataUrl:(cur.background||null)),elements:safeEl,updatedAt:new Date().toISOString()};
+  if(!db['devx-store-map-builder'])db['devx-store-map-builder']={};
+  db['devx-store-map-builder'][bid]=cfg;save('devx-store-map-builder');audit(req,'inventory.write',`updated store map builder for ${((STORES.find(db,bid)||{}).name||bid)}`);broadcast({'devx-store-map-builder':db['devx-store-map-builder']});
+  res.json({data:cfg});
+});
+
+app.post('/api/admin/store-navigation', need('inventory.edit'), (req, res) => {
+  const b = req.body || {};
+  const bid = String(b.branchId || branchOf(req)).trim();
+  if (!STORES.find(db, bid)) return res.status(404).json({ error: 'Unknown branch' });
+  if (!ownsBranch(req, bid)) return res.status(403).json({ error: 'You can only change your own shop' });
+  const dataUrl = b.mapDataUrl == null ? null : String(b.mapDataUrl);
+  if (dataUrl && !/^data:image\/(png|jpe?g|webp);base64,[A-Za-z0-9+/=]+$/i.test(dataUrl))
+    return res.status(400).json({ error: 'Map must be a PNG, JPG or WebP image' });
+  if (dataUrl && dataUrl.length > 8_500_000)
+    return res.status(413).json({ error: 'Map is too large. Upload an image under about 6 MB.' });
+  const clamp=(n,lo=0,hi=100)=>Math.max(lo,Math.min(hi,Number(n)||0));
+  const aisles=Array.isArray(b.aisles)?b.aisles.slice(0,60).map((a,i)=>({
+    number:Math.max(1,Math.round(Number(a.number)||(i+1))),
+    label:String(a.label||('Aisle '+(Number(a.number)||(i+1)))).slice(0,60),
+    category:String(a.category||'').slice(0,60),
+    x:clamp(a.x,2,98),y:clamp(a.y,2,92),w:clamp(a.w==null?10:a.w,3,40),h:clamp(a.h==null?70:a.h,8,90),
+    order:Math.max(1,Math.round(Number(a.order)||(i+1)))
+  })):[];
+  const point=p=>({x:clamp(p&&p.x,1,99),y:clamp(p&&p.y,1,99)});
+  const all=db['devx-store-navigation']||{};
+  const cur=all[bid]||{};
+  const layoutElements=Array.isArray(b.layoutElements)?b.layoutElements.slice(0,240).map((e,i)=>({
+    id:String(e.id||('nav-el-'+Date.now()+i)).slice(0,80),type:String(e.type||'zone').slice(0,30),label:String(e.label||'Element').slice(0,80),category:String(e.category||'').slice(0,80),
+    x:clamp(e.x,0,98),y:clamp(e.y,0,96),w:clamp(e.w==null?5:e.w,.5,98),h:clamp(e.h==null?5:e.h,.5,96),rotation:clamp(e.rotation||0,-180,180),z:Math.max(1,Math.round(Number(e.z)||i+1)),floor:String(e.floor||'Ground Floor').slice(0,40)
+  })):(cur.layoutElements||[]);
+  const cfg={version:3,branchId:bid,mapName:String(b.mapName||cur.mapName||'Store floor plan').slice(0,100),
+    canvasW:Math.max(10,Math.min(200,Number(b.canvasW)||Number(cur.canvasW)||40)),canvasH:Math.max(8,Math.min(200,Number(b.canvasH)||Number(cur.canvasH)||28)),
+    mapDataUrl:(b.clearMap ? null : (dataUrl||cur.mapDataUrl||null)),entry:point(b.entry||cur.entry||{x:50,y:94}),exit:point(b.exit||cur.exit||b.entry||{x:50,y:94}),checkout:point(b.checkout||cur.checkout||null),aisles,layoutElements:layoutElements.length?layoutElements:(cur.layoutElements||[]),updatedAt:new Date().toISOString()};
+  if(!db['devx-store-navigation'])db['devx-store-navigation']={};
+  db['devx-store-navigation'][bid]=cfg; save('devx-store-navigation');
+  activity('stock',`Store navigation map updated for ${((STORES.find(db,bid)||{}).name||bid)}`,bid);
+  res.json({data:cfg});
+});
+
+app.delete('/api/admin/store-navigation/:id', need('inventory.edit'), (req,res)=>{
+  const bid=String(req.params.id||'').trim();
+  if(!STORES.find(db,bid))return res.status(404).json({error:'Unknown branch'});
+  if(!ownsBranch(req,bid))return res.status(403).json({error:'You can only change your own shop'});
+  if(db['devx-store-navigation'])delete db['devx-store-navigation'][bid];
+  save('devx-store-navigation'); res.json({ok:true,branchId:bid});
 });
 
 /* ══════════════════════════════════════════════════════════
