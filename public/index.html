@@ -3424,6 +3424,161 @@ button,input,textarea,select{font-family:inherit}
 
 /* Keep loyalty state hooks intact without showing the legacy Home banner. */
 #loyalLinkWrap{display:none !important}
+
+/* DEVX MOBILE ALIGNMENT PASS — UI/UX ONLY
+   Product cards, touch controls, safe-area spacing and horizontal content.
+   No business logic or existing interaction flow is changed.
+*/
+@media screen and (max-width: 430px){
+  html,body{width:100%;max-width:100%;min-width:0;overflow:hidden}
+  body{margin:0 auto}
+
+  .home-scroll{
+    width:100%;
+    max-width:100%;
+    overflow-x:hidden;
+    padding-bottom:0;
+  }
+
+  .hdr{
+    width:100%;
+    max-width:100%;
+    box-sizing:border-box;
+  }
+
+  /* Keep two-column product cards perfectly inside the viewport. */
+  .prods-grid{
+    width:100%;
+    max-width:100%;
+    grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+    gap:10px;
+    padding-left:12px;
+    padding-right:12px;
+    padding-bottom:calc(96px + env(safe-area-inset-bottom,0px));
+  }
+  .p-card{
+    min-width:0;
+    width:100%;
+    display:flex;
+    flex-direction:column;
+    overflow:hidden;
+  }
+
+  /* Square image treatment with no clipping or uneven card heights. */
+  .p-img-w{
+    width:100%;
+    height:auto !important;
+    aspect-ratio:1 / 1;
+    flex:0 0 auto;
+  }
+  .p-img-w img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+  }
+
+  .p-body{
+    width:100%;
+    min-width:0;
+    flex:1 1 auto;
+    display:flex;
+    flex-direction:column;
+    padding:10px 10px 11px !important;
+  }
+  .p-cat-l,
+  .p-name,
+  .p-unit{
+    max-width:100%;
+    overflow:hidden;
+  }
+  .p-name{
+    display:-webkit-box;
+    -webkit-box-orient:vertical;
+    -webkit-line-clamp:2;
+    min-height:30px;
+    line-height:1.28;
+  }
+  .p-unit{
+    white-space:nowrap;
+    text-overflow:ellipsis;
+  }
+
+  /* Keep price + add/quantity controls aligned at the card bottom. */
+  .p-bot{
+    width:100%;
+    min-width:0;
+    margin-top:auto;
+    display:flex;
+    align-items:flex-end;
+    justify-content:space-between;
+    gap:7px;
+  }
+  .p-bot > :first-child{
+    min-width:0;
+  }
+  .p-add{
+    width:34px !important;
+    height:34px !important;
+    min-width:34px !important;
+    min-height:34px !important;
+    flex:0 0 34px;
+    opacity:1 !important;
+    transform:none !important;
+    visibility:visible !important;
+    position:relative;
+    z-index:3;
+  }
+  .p-qty{
+    flex:0 0 auto;
+    height:34px !important;
+  }
+  .p-old,.p-price{
+    white-space:nowrap;
+  }
+
+  /* Avoid desktop hover-only behavior on touch screens. */
+  .p-card:hover{
+    transform:none !important;
+    box-shadow:var(--shadow) !important;
+  }
+  .p-card:hover .p-img-w img{
+    transform:none !important;
+  }
+
+  /* Search/offer/category rows stay inside the device width. */
+  .cats-bar,
+  .offers-row,
+  .popular-row,
+  .explore-wrap,
+  .sponsored-row{
+    max-width:100%;
+  }
+
+  /* Bottom navigation sits above iOS home indicator without covering content. */
+  .bot-nav{
+    width:100%;
+    height:calc(76px + env(safe-area-inset-bottom,0px));
+    padding-left:4px;
+    padding-right:4px;
+    padding-bottom:env(safe-area-inset-bottom,0px);
+  }
+}
+
+@media screen and (max-width:360px){
+  .prods-grid{
+    gap:8px;
+    padding-left:10px;
+    padding-right:10px;
+    padding-bottom:calc(92px + env(safe-area-inset-bottom,0px));
+  }
+  .p-body{padding:9px 9px 10px !important}
+  .p-name{font-size:11.5px !important;min-height:29px}
+  .p-unit{font-size:8.5px !important}
+  .p-price{font-size:13px !important}
+  .p-add{width:32px !important;height:32px !important;min-width:32px !important;min-height:32px !important;flex-basis:32px}
+  .p-qty{height:32px !important}
+}
+
 </style>
 
 <style id="final-mobile-header-sponsored-ocr-fix">
@@ -3774,6 +3929,13 @@ button,input,textarea,select{font-family:inherit}
 .store-nav-wow-btn:hover{transform:translateY(-1px)}
 .store-nav-wow-btn:active{transform:scale(.98)}
 .store-nav-wow-btn svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.store-nav-home-preview{margin:0 14px 12px;padding:9px;border:1px solid rgba(61,187,106,.16);border-radius:15px;background:rgba(255,255,255,.72)}
+[data-theme="dark"] .store-nav-home-preview{background:rgba(10,16,12,.52);border-color:rgba(61,187,106,.18)}
+.store-nav-home-preview-head{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:7px;font-size:8.5px;color:var(--GD);font-weight:900;letter-spacing:.08em;text-transform:uppercase}
+.store-nav-home-preview-head span{font-size:8px;color:var(--tx3);letter-spacing:0;text-transform:none;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.store-nav-home-preview-canvas{position:relative;height:122px;border-radius:12px;overflow:hidden;background:var(--bg);border:1px solid var(--bdr)}
+.store-nav-home-preview-canvas svg{width:100%;height:100%;display:block}
+.store-nav-home-preview-canvas .store-nav-walker{display:block}
 .store-nav-wow-note{padding:7px 14px 9px;background:rgba(61,187,106,.07);border-top:1px solid rgba(61,187,106,.12);font-size:9.5px;color:var(--tx3);font-weight:600;text-align:center}
 .store-nav-sheet{position:fixed;left:0;right:0;bottom:0;max-width:480px;margin:0 auto;background:var(--card);border-radius:24px 24px 0 0;z-index:560;transform:translateY(105%);transition:transform .34s cubic-bezier(.32,.72,.33,1);max-height:94vh;display:flex;flex-direction:column;box-shadow:0 -14px 45px rgba(0,0,0,.18)}
 .store-nav-sheet.on{transform:none}
@@ -3801,7 +3963,7 @@ button,input,textarea,select{font-family:inherit}
 .store-nav-map-head{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:8px}
 .store-nav-map-head b{font-size:12px;color:var(--tx);font-weight:900}
 .store-nav-map-head span{font-size:9px;color:var(--tx3);font-weight:700}
-.store-nav-route-map{width:100%;height:170px;border-radius:14px;background:var(--bg);border:1px solid var(--bdr);display:block}
+.store-nav-route-map{width:100%;height:auto;aspect-ratio:3/2;border-radius:14px;background:var(--bg);border:1px solid var(--bdr);display:block;position:relative;overflow:hidden}.store-nav-route-bg{position:absolute;inset:0;width:100%;height:100%;display:block;object-fit:fill;z-index:0}.store-nav-route-overlay{position:absolute;inset:0;width:100%;height:100%;display:block;z-index:1}.store-nav-route-map.has-floor-map{background:#eef4f0}.store-nav-walker{filter:drop-shadow(0 2px 3px rgba(0,0,0,.22))}.store-nav-route-map.has-floor-map .store-nav-walker{display:block}
 .store-nav-map-legend{display:flex;gap:12px;align-items:center;margin-top:8px;font-size:8.5px;color:var(--tx3);font-weight:700}
 .store-nav-map-legend span{display:flex;align-items:center;gap:5px}
 .store-nav-map-legend i{width:8px;height:8px;border-radius:50%;background:var(--G);display:inline-block}
@@ -3829,8 +3991,14 @@ button,input,textarea,select{font-family:inherit}
 .store-nav-guide-kicker{font-size:8.5px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:var(--GD)}
 .store-nav-guide-title{font-size:17px;font-weight:900;color:var(--tx);letter-spacing:-.03em;margin-top:2px}
 .store-nav-guide-close{width:34px;height:34px;border-radius:50%;border:1px solid var(--bdr);background:var(--card);cursor:pointer;color:var(--tx);font-size:18px}
-.store-nav-live-map{margin-top:14px;border-radius:18px;background:linear-gradient(140deg,#0f1512,#1a261f);padding:10px}
-.store-nav-live-map svg{width:100%;height:190px;display:block}
+.store-nav-live-map{margin-top:14px;border-radius:18px;background:linear-gradient(140deg,#0d1612,#17241d);padding:10px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.06)}
+.store-nav-live-map svg{width:100%;height:236px;display:block;border-radius:14px;overflow:hidden}
+.store-nav-live-map:after{content:'LIVE WALKING VIEW';display:block;margin:7px 2px 0;text-align:right;font-size:8px;font-weight:900;letter-spacing:.08em;color:rgba(255,255,255,.58)}
+.store-nav-guide-step{box-shadow:0 4px 18px rgba(11,48,30,.06)}
+.store-nav-guide-step .big{display:flex;align-items:center;gap:8px}
+.store-nav-guide-step .big:before{content:'🧭';font-size:16px;flex:none}
+.store-nav-guide-progress{height:7px}
+@media(max-width:420px){.store-nav-live-map svg{height:220px}}
 .store-nav-guide-step{margin-top:12px;padding:14px;border-radius:16px;background:var(--GL);border:1px solid rgba(61,187,106,.2)}
 .store-nav-guide-step .big{font-size:14px;font-weight:900;color:var(--tx)}
 .store-nav-guide-step .small{font-size:10.5px;color:var(--tx2);line-height:1.5;margin-top:4px}
@@ -3839,7 +4007,7 @@ button,input,textarea,select{font-family:inherit}
 .store-nav-guide-actions{display:flex;gap:8px;margin-top:10px}
 .store-nav-guide-actions button{flex:1;padding:12px;border-radius:13px;border:1px solid var(--bdr);background:var(--card);font-family:inherit;font-weight:800;cursor:pointer;color:var(--tx)}
 .store-nav-guide-actions button.primary{background:var(--G);border-color:var(--G);color:#fff}
-@media(max-width:420px){.store-nav-wow-main{padding:14px}.store-nav-wow-title{font-size:15.5px}.store-nav-wow-actions{padding:0 14px 14px}.store-nav-wow-note{padding-left:14px;padding-right:14px}.store-nav-summary{gap:5px}.store-nav-stat{min-width:0;flex:1}.store-nav-step{padding:10px}.store-nav-route-map{height:154px}}
+@media(max-width:420px){.store-nav-wow-main{padding:14px}.store-nav-wow-title{font-size:15.5px}.store-nav-wow-actions{padding:0 14px 14px}.store-nav-wow-note{padding-left:14px;padding-right:14px}.store-nav-summary{gap:5px}.store-nav-stat{min-width:0;flex:1}.store-nav-step{padding:10px}.store-nav-route-map{height:auto;aspect-ratio:3/2}}
 
 .cart-nav-cta{width:100%;padding:12px;border-radius:14px;background:var(--GL);border:1px solid rgba(61,187,106,.22);color:var(--GD);font-family:inherit;font-size:12px;font-weight:900;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin:0 0 8px;transition:.15s}
 .cart-nav-cta:hover{transform:translateY(-1px);filter:saturate(1.04)}
@@ -4034,7 +4202,7 @@ button,input,textarea,select{font-family:inherit}
       <button class="store-nav-wow-btn primary" type="button" onclick="openCartNavigation()"><svg viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 002 1.6h9.7a2 2 0 002-1.6L23 6H6"/></svg>Navigate my cart</button>
       <button class="store-nav-wow-btn" type="button" onclick="openStoreNavigation('how')"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="2.5"/><path d="M12 3.5v3M20.5 12h-3M12 20.5v-3M3.5 12h3"/></svg>How it helps</button>
     </div>
-    <div class="store-nav-wow-note">Whole cart. One optimized route.</div>
+    <div class="store-nav-wow-note">Same store layout. Guided route. Finish at checkout.</div>
   </section>
 
   <!-- ONLY FOR YOU — personalised, tied to the loyalty card mobile number -->
@@ -5838,13 +6006,115 @@ function showPassFor(id){
 let STORE_NAV_STOPS=[];
 let STORE_NAV_ITEMS=[];
 let STORE_NAV_GUIDE_INDEX=0;
+let STORE_NAV_MAP_CONFIG=null;
 function navLocParts(loc){
   const s=String(loc||'');
   const m=s.match(/Aisle\s*(\d+)\s*[·|,\-]?\s*Rack\s*(\d+)\s*[·|,\-]?\s*Shelf\s*(\d+)/i);
   if(!m)return null;
   return {aisle:Number(m[1]),rack:Number(m[2]),shelf:Number(m[3])};
 }
+async function loadStoreNavMap(){
+  STORE_NAV_MAP_CONFIG=null;
+  const candidates=[];
+  const remembered=String(localStorage.getItem('devx-branch')||'').trim();
+  if(BRANCH) candidates.push(BRANCH);
+  if(remembered && !candidates.includes(remembered)) candidates.push(remembered);
+  const usable=d=>d&&d.data&&(d.data.mapDataUrl||Array.isArray(d.data.layoutElements)||Array.isArray(d.data.aisles));
+  try{
+    for(const bid of candidates){
+      const r=await fetch('/api/store-navigation?branch='+encodeURIComponent(bid),{cache:'no-store'});
+      if(!r.ok) continue;
+      const d=await r.json();
+      if(usable(d)){STORE_NAV_MAP_CONFIG=d.data;return STORE_NAV_MAP_CONFIG;}
+    }
+    const r=await fetch('/api/store-navigation',{cache:'no-store'});
+    if(r.ok){const d=await r.json();if(usable(d))STORE_NAV_MAP_CONFIG=d.data||null;}
+  }catch(e){}
+  return STORE_NAV_MAP_CONFIG;
+}
+function navAisleAnchor(n){const list=STORE_NAV_MAP_CONFIG&&Array.isArray(STORE_NAV_MAP_CONFIG.aisles)?STORE_NAV_MAP_CONFIG.aisles:[];return list.find(a=>Number(a.number)===Number(n))||null;}
+function navLayoutEls(){
+  const list=STORE_NAV_MAP_CONFIG&&Array.isArray(STORE_NAV_MAP_CONFIG.layoutElements)?STORE_NAV_MAP_CONFIG.layoutElements:[];
+  return list.filter(e=>String(e.floor||'Ground Floor')===String((STORE_NAV_MAP_CONFIG&&STORE_NAV_MAP_CONFIG.floor)||'Ground Floor'));
+}
+function navLayoutEl(type){const list=navLayoutEls();return list.find(e=>String(e.type||'')===String(type))||null;}
+function navElementCenter(el){return el?{x:Math.max(2,Math.min(98,Number(el.x||0)+Number(el.w||0)/2)),y:Math.max(2,Math.min(96,Number(el.y||0)+Number(el.h||0)/2))}:null;}
+function navCheckoutPoint(){const el=navLayoutEl('checkout');const c=navElementCenter(el);if(c)return c;const p=STORE_NAV_MAP_CONFIG&&STORE_NAV_MAP_CONFIG.checkout;return p?{x:Number(p.x)||50,y:Number(p.y)||94}:null;}
+function navAisleElFor(aisleNo){const layout=navLayoutEls();return layout.find(e=>String(e.type||'')==='aisle'&&Number((String(e.label||'').match(/Aisle\s*(\d+)/i)||[])[1])===aisleNo)||layout.find(e=>String(e.type||'')==='aisle'&&Number(e.aisle)===aisleNo)||null;}
+function navStopPoint(stop,fromPoint){
+  if(stop&&stop.isCheckout)return navCheckoutPoint();
+  const aisleNo=Number(stop&&stop.loc&&stop.loc.aisle)||0;
+  const aisleEl=navAisleElFor(aisleNo);
+  if(aisleEl){
+    const x=Number(aisleEl.x||0),y=Number(aisleEl.y||0),w=Number(aisleEl.w||10),h=Number(aisleEl.h||20);
+    const candidates=[
+      {x:x+w/2,y:Math.max(2,y-1.8)},
+      {x:x+w/2,y:Math.min(98,y+h+1.8)},
+      {x:Math.max(2,x-1.8),y:y+h/2},
+      {x:Math.min(98,x+w+1.8),y:y+h/2}
+    ];
+    const fp=fromPoint||{x:50,y:94};
+    candidates.sort((a,b)=>Math.hypot(a.x-fp.x,a.y-fp.y)-Math.hypot(b.x-fp.x,b.y-fp.y));
+    return candidates[0];
+  }
+  const a=navAisleAnchor(aisleNo);
+  if(!a)return null;
+  const rack=Number(stop.loc.rack)||1,shelf=Number(stop.loc.shelf)||1;
+  return {x:Math.max(4,Math.min(96,Number(a.x)+(Number(a.w||10)*((rack-1)%4)/5))),y:Math.max(6,Math.min(92,Number(a.y)+(Number(a.h||70)*Math.min(.88,(shelf-1)/8))))};
+}
+function navCategoryForAisle(aisle){const a=navAisleAnchor(aisle);return a&&a.category?a.category:'';}
+function navRouteObstacles(){
+  const blocked=new Set(['aisle','rack','shelf','section','zone','room','restroom','service','service-desk','customer-service']);
+  return navLayoutEls().filter(e=>blocked.has(String(e.type||'').toLowerCase())).map(e=>({x:Number(e.x||0)-1.4,y:Number(e.y||0)-1.4,w:Number(e.w||1)+2.8,h:Number(e.h||1)+2.8}));
+}
+function navCellBlocked(x,y,obs){return obs.some(o=>x>=o.x&&x<=o.x+o.w&&y>=o.y&&y<=o.y+o.h);}
+function navNearestFree(pt,obs,step){
+  const inside=navCellBlocked(pt.x,pt.y,obs);if(!inside)return {x:pt.x,y:pt.y};
+  for(let r=step;r<=16;r+=step){
+    const candidates=[[pt.x+r,pt.y],[pt.x-r,pt.y],[pt.x,pt.y+r],[pt.x,pt.y-r],[pt.x+r,pt.y+r],[pt.x-r,pt.y-r],[pt.x+r,pt.y-r],[pt.x-r,pt.y+r]];
+    for(const c of candidates){const x=Math.max(1,Math.min(99,c[0])),y=Math.max(1,Math.min(99,c[1]));if(!navCellBlocked(x,y,obs))return {x,y};}
+  }
+  return {x:pt.x,y:pt.y};
+}
+function navAStarSegment(start,goal,obs){
+  const step=2, cols=51, rows=51;
+  const toCell=p=>({x:Math.round(Math.max(0,Math.min(50,p.x/step))),y:Math.round(Math.max(0,Math.min(50,p.y/step)))});
+  const fromCell=c=>({x:c.x*step,y:c.y*step});
+  const s0=navNearestFree(start,obs,step),g0=navNearestFree(goal,obs,step),s=toCell(s0),g=toCell(g0);
+  const key=(x,y)=>x+','+y, open=[{x:s.x,y:s.y,g:0,f:Math.abs(s.x-g.x)+Math.abs(s.y-g.y)}], came=new Map(), cost=new Map([[key(s.x,s.y),0]]), closed=new Set();
+  const dirs=[[1,0],[-1,0],[0,1],[0,-1]];
+  while(open.length){
+    open.sort((a,b)=>a.f-b.f);const cur=open.shift(),ck=key(cur.x,cur.y);if(closed.has(ck))continue;closed.add(ck);
+    if(cur.x===g.x&&cur.y===g.y){let path=[],k=ck;while(k){const [xx,yy]=k.split(',').map(Number);path.push(fromCell({x:xx,y:yy}));k=came.get(k)||null;}return path.reverse();}
+    for(const [dx,dy] of dirs){const nx=cur.x+dx,ny=cur.y+dy;if(nx<0||ny<0||nx>=cols||ny>=rows)continue;const p=fromCell({x:nx,y:ny});if(navCellBlocked(p.x,p.y,obs)&&!(nx===g.x&&ny===g.y))continue;const nk=key(nx,ny);const ng=cur.g+1;if(ng<(cost.get(nk)??Infinity)){cost.set(nk,ng);came.set(nk,ck);open.push({x:nx,y:ny,g:ng,f:ng+Math.abs(nx-g.x)+Math.abs(ny-g.y)})}}
+  }
+  return [start,goal];
+}
+function navSimplifyPath(points){
+  const out=[];for(const p of points){const q=out[out.length-1];if(!q||Math.abs(p.x-q.x)>.01||Math.abs(p.y-q.y)>.01)out.push(p)}
+  if(out.length<3)return out;
+  const simp=[out[0]];for(let i=1;i<out.length-1;i++){const a=simp[simp.length-1],b=out[i],c=out[i+1];const sameX=Math.abs(a.x-b.x)<.01&&Math.abs(b.x-c.x)<.01,sameY=Math.abs(a.y-b.y)<.01&&Math.abs(b.y-c.y)<.01;if(!sameX&&!sameY)simp.push(b)}simp.push(out[out.length-1]);return simp;
+}
+function navBuildPathPoints(stops,activeIndex){
+  const obs=navRouteObstacles();const points=[];let from=STORE_NAV_MAP_CONFIG&&STORE_NAV_MAP_CONFIG.entry?{x:Number(STORE_NAV_MAP_CONFIG.entry.x)||50,y:Number(STORE_NAV_MAP_CONFIG.entry.y)||94}:{x:50,y:94};
+  const upto=activeIndex>=0?Math.min(activeIndex,stops.length-1):stops.length-1;
+  for(let i=0;i<=upto;i++){const target=navStopPoint(stops[i],from);if(!target)continue;const seg=navAStarSegment(from,target,obs);if(points.length)seg.shift();points.push(...seg);from=target;}
+  return points.length?navSimplifyPath(points):[from];
+}
+function navHumanSvg(pathD,durMs){if(!pathD)return '';return `<g class="store-nav-walker" transform="scale(2.05)" aria-hidden="true"><circle cx="0" cy="-1.45" r="0.62" fill="#f3c3a0" stroke="#fff" stroke-width=".28"/><path d="M-.18,-.88 Q0,-.55 .18,-.88 L.5,.1 Q0,.4 -.5,.1 Z" fill="#19a75b" stroke="#0f8b4f" stroke-width=".24"/><path d="M-.35,-.1 L-.82,.55 M.35,-.1 L.82,.55 M-.18,.26 L-.62,1.25 M.18,.26 L.62,1.25" fill="none" stroke="#123c29" stroke-width=".42" stroke-linecap="round"/><path d="M.48,.38 h.7 l.18,.45 h-.95 z" fill="#f1f5f2" stroke="#0f8b4f" stroke-width=".18"/><circle cx=".66" cy=".95" r=".1" fill="#0f8b4f"/><circle cx="1.0" cy=".95" r=".1" fill="#0f8b4f"/><animateTransform attributeName="transform" type="rotate" values="-3 0 0;3 0 0;-3 0 0" dur=".9s" repeatCount="indefinite" additive="sum"/><animateMotion dur="${durMs}ms" repeatCount="1" rotate="auto" path="${pathD}"/></g>`;}
+function navGuideSegmentPoints(stops,idx){const obs=navRouteObstacles();let from=STORE_NAV_MAP_CONFIG&&STORE_NAV_MAP_CONFIG.entry?{x:Number(STORE_NAV_MAP_CONFIG.entry.x)||50,y:Number(STORE_NAV_MAP_CONFIG.entry.y)||94}:{x:50,y:94};if(idx>0){const prev=navStopPoint(stops[idx-1],from);if(prev)from=prev;}const target=navStopPoint(stops[idx],from);if(!target)return [from];const seg=navAStarSegment(from,target,obs);return navSimplifyPath(seg);}
+function navRouteArrows(points){let html='';for(let i=0;i<points.length-1;i++){const a=points[i],b=points[i+1],mx=(a.x+b.x)/2,my=(a.y+b.y)/2,ang=Math.atan2(b.y-a.y,b.x-a.x)*180/Math.PI;html+=`<g transform="translate(${mx.toFixed(2)} ${my.toFixed(2)}) rotate(${ang.toFixed(1)})" pointer-events="none"><path d="M-1.9 0 L1.3 0 M.1 -1.2 L1.5 0 L.1 1.2" fill="none" stroke="#0f9b54" stroke-width="1.05" stroke-linecap="round" stroke-linejoin="round"/></g>`;}return html}
+function navMapElementIcon(type){return ({aisle:'▦',rack:'▤',shelf:'▥',section:'◇',zone:'◇',entry:'↑',exit:'↓',checkout:'▤',restroom:'WC','service-desk':'ⓘ','customer-service':'ⓘ'}[String(type||'').toLowerCase()]||'•');}
+function navRenderLayoutElements(cfg){
+  const els=navLayoutEls();if(!els.length)return '';
+  return els.slice().sort((a,b)=>(Number(a.z)||0)-(Number(b.z)||0)).map(e=>{
+    const x=Number(e.x)||0,y=Number(e.y)||0,w=Math.max(.8,Number(e.w)||1),h=Math.max(.8,Number(e.h)||1),rot=Number(e.rotation)||0,label=String(e.label||'Element'),icon=navMapElementIcon(e.type),fill=/^#[0-9a-f]{6}$/i.test(e.color||'')?e.color:'#e5f5eb';
+    const fs=Math.max(1.8,Math.min(3.4,Math.min(w,h)*.28));
+    return `<g transform="rotate(${rot} ${(x+w/2).toFixed(2)} ${(y+h/2).toFixed(2)})" pointer-events="none"><rect x="${x.toFixed(2)}" y="${y.toFixed(2)}" width="${w.toFixed(2)}" height="${h.toFixed(2)}" rx="2.2" fill="${fill}" stroke="#5d9e7d" stroke-width=".55"/><text x="${(x+w/2).toFixed(2)}" y="${(y+h/2).toFixed(2)}" text-anchor="middle" dominant-baseline="middle" font-family="Montserrat,sans-serif" font-size="${fs.toFixed(2)}" fill="#102018" font-weight="900">${esc(icon)} ${esc(label)}</text></g>`;
+  }).join('');
+}
 async function navCurrentStoreLabel(){
+
   const p=document.getElementById('storeNavHomeStore');
   if(!p)return;
   let label=(BRANCH&&BRANCH.trim())?BRANCH:'Your current store';
@@ -5868,7 +6138,7 @@ function buildStoreNavRoute(items){
   const unknown=[...groups.values()].filter(s=>!s.loc);
   /* Serpentine aisle sweep: enter each aisle once, move rack-to-rack in the
      direction that keeps the next aisle close, then continue forward. */
-  const aisles=[...new Set(stops.map(s=>s.loc.aisle))].sort((a,b)=>a-b);
+  const aisles=[...new Set(stops.map(s=>s.loc.aisle))].sort((a,b)=>{const aa=navAisleAnchor(a),bb=navAisleAnchor(b);return (Number(aa&&aa.order)||a)-(Number(bb&&bb.order)||b);});
   const ordered=[];
   aisles.forEach((aisle,idx)=>{
     const row=stops.filter(s=>s.loc.aisle===aisle).sort((a,b)=>a.loc.rack-b.loc.rack || a.loc.shelf-b.loc.shelf);
@@ -5876,33 +6146,109 @@ function buildStoreNavRoute(items){
     row.forEach(x=>ordered.push(x));
   });
   unknown.forEach(x=>ordered.push(x));
+  // Every in-store journey ends at the store's configured checkout counter.
+  ordered.push({key:'checkout',isCheckout:true,loc:null,items:[]});
   let minute=0;
   ordered.forEach((s,i)=>{
     const prev=i?ordered[i-1]:null;
     const p=s.loc,pp=prev&&prev.loc;
-    const dist=(!p||!pp)?(i?2:2):Math.max(1,Math.abs(p.aisle-pp.aisle)+Math.abs(p.rack-pp.rack)*0.6);
+    const dist=(s.isCheckout&&prev&&pp)?Math.max(1,Math.abs((navCheckoutPoint()?.x||50)-((navStopPoint(prev)||{}).x||50))/8+Math.abs((navCheckoutPoint()?.y||94)-((navStopPoint(prev)||{}).y||94))/8):(!p||!pp)?2:Math.max(1,Math.abs(p.aisle-pp.aisle)+Math.abs(p.rack-pp.rack)*0.6);
     minute+=dist;
     s.eta=Math.max(1,Math.round(dist*0.7));
   });
   return ordered;
 }
-function storeNavMapSvg(stops,activeIndex){
-  const cols=10, rows=6, W=100,H=170,left=7,right=5,top=14,bottom=16;
-  const gap=2.5, aisleW=(W-left-right-(cols-1)*gap)/cols, rackH=(H-top-bottom-(rows-1)*gap)/rows;
-  const point=(aisle,rack)=>({x:left+(aisle-1)*(aisleW+gap)+aisleW/2,y:top+(Math.max(1,Math.min(rows,rack))-1)*(rackH+gap)+rackH/2});
-  const parsed=stops.map((s,i)=>s.loc?Object.assign({stop:i+1},point(s.loc.aisle,s.loc.rack),s):Object.assign({stop:i+1,x:W/2,y:H/2},s));
-  const pts=[{x:W/2,y:H-bottom+3},...parsed.map(p=>({x:p.x,y:p.y}))];
-  const route=pts.map((p,i)=>`${i?'L':'M'} ${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(' ');
-  const lanes=[];
-  for(let a=1;a<=cols;a++){
-    const x=left+(a-1)*(aisleW+gap);
-    lanes.push(`<rect x="${x.toFixed(1)}" y="${top}" width="${aisleW.toFixed(1)}" height="${(H-top-bottom).toFixed(1)}" rx="2.2" fill="${a<=Math.max(1,...parsed.filter(p=>p.loc).map(p=>p.loc.aisle))?'rgba(61,187,106,.06)':'var(--bg)'}" stroke="var(--bdr)" stroke-width=".35"/>`);
-    lanes.push(`<text x="${(x+aisleW/2).toFixed(1)}" y="8" text-anchor="middle" font-size="3.8" font-family="Montserrat,sans-serif" fill="var(--tx3)" font-weight="800">A${a}</text>`);
+function storeNavHomePreviewSvg(){
+  const cfg=STORE_NAV_MAP_CONFIG||{};
+  const hasDesign=navLayoutEls().length>0, hasMap=!!cfg.mapDataUrl;
+  if(!hasDesign&&!hasMap)return '';
+  const W=100,H=100;
+  const entry=cfg.entry?{x:Number(cfg.entry.x)||50,y:Number(cfg.entry.y)||94}:{x:50,y:94};
+  let demoStops=[];
+  try{const items=cartArr(); if(items.length) demoStops=buildStoreNavRoute(items);}
+  catch(e){demoStops=[]}
+  if(!demoStops.length){
+    const aisles=navLayoutEls().filter(e=>String(e.type||'')==='aisle').sort((a,b)=>(Number(a.z)||0)-(Number(b.z)||0)).slice(0,3);
+    demoStops=aisles.map((e,i)=>({loc:{aisle:Number((String(e.label||'').match(/Aisle\s*(\d+)/i)||[])[1])||i+1,rack:1,shelf:1}}));
+    const co=navCheckoutPoint(); if(co) demoStops.push({isCheckout:true});
   }
-  const marks=parsed.map((p,i)=>`<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="${i===activeIndex?'4.5':'3.0'}" fill="${i===activeIndex?'#3DBB6A':'#fff'}" stroke="#3DBB6A" stroke-width="${i===activeIndex?'1.6':'1.2'}"/><text x="${p.x.toFixed(1)}" y="${(p.y+1.3).toFixed(1)}" text-anchor="middle" font-size="3.0" font-family="Montserrat,sans-serif" fill="${i===activeIndex?'#fff':'#17723f'}" font-weight="900">${i+1}</text>`).join('');
-  return `<svg viewBox="0 0 ${W} ${H}" aria-label="Optimized in-store route"><rect width="${W}" height="${H}" rx="8" fill="var(--card)"/>${lanes.join('')}<path d="${route}" fill="none" stroke="#3DBB6A" stroke-width="1.9" stroke-dasharray="4 2.3" stroke-linecap="round" stroke-linejoin="round" opacity=".95"/><circle cx="${W/2}" cy="${H-bottom+3}" r="4.2" fill="#111"/><text x="${W/2}" y="${H-3}" text-anchor="middle" font-size="3.5" font-family="Montserrat,sans-serif" fill="var(--tx3)" font-weight="900">ENTRY / EXIT</text>${marks}</svg>`;
+  const full=demoStops.length?navBuildPathPoints(demoStops,-1):[entry,navCheckoutPoint()||{x:50,y:94}];
+  const d=full.map((p,i)=>`${i?'L':'M'} ${Number(p.x).toFixed(2)} ${Number(p.y).toFixed(2)}`).join(' ');
+  const img=hasMap&&!hasDesign?`<image href="${esc(cfg.mapDataUrl)}" x="0" y="0" width="100" height="100" preserveAspectRatio="none"/>`:'';
+  const floor=hasDesign?navRenderLayoutElements(cfg):'';
+  const defs='<defs><filter id="homeNavShadow" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy=".7" stdDeviation=".7" flood-opacity=".18"/></filter><linearGradient id="homeNavRoute" x1="0" x2="1"><stop offset="0" stop-color="#47c978"/><stop offset="1" stop-color="#0f9b54"/></linearGradient></defs>';
+  const route=d?`<path d="${d}" fill="none" stroke="rgba(255,255,255,.96)" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round" filter="url(#homeNavShadow)"/><path d="${d}" fill="none" stroke="url(#homeNavRoute)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="3.2 2.2"><animate attributeName="stroke-dashoffset" from="0" to="-10" dur=".8s" repeatCount="indefinite"/></path>${navRouteArrows(full)}`:'';
+  const walker=full.length>1?navHumanSvg(d,4800):'';
+  return `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true">${defs}${img}<rect width="100" height="100" fill="${hasMap?'rgba(255,255,255,.035)':'#edf3ef'}"/>${floor}${route}</svg>`;
 }
-function renderStoreNavigation(){
+function renderStoreNavHomePreview(){
+  const wrap=document.getElementById('storeNavHomePreview'),canvas=document.getElementById('storeNavHomePreviewCanvas'),meta=document.getElementById('storeNavHomePreviewMeta');
+  if(!wrap||!canvas)return;
+  const cfg=STORE_NAV_MAP_CONFIG||{};
+  const ready=!!(cfg.mapDataUrl||navLayoutEls().length);
+  if(!ready){wrap.style.display='none';return;}
+  wrap.style.display='block';
+  if(meta)meta.textContent=cfg.mapName||'Published store layout';
+  const svg=storeNavHomePreviewSvg();
+  canvas.innerHTML=svg||'<div style="height:100%;display:grid;place-items:center;font-size:9px;color:var(--tx3);font-weight:800">Store map preview</div>';
+}
+function navGuideCamera(stops,activeIndex){
+  const base={x:0,y:0,w:100,h:100};
+  if(activeIndex<0||!stops.length)return base;
+  const seg=navGuideSegmentPoints(stops,activeIndex);
+  if(!seg||seg.length<2)return base;
+  const pts=seg.slice();
+  const cur=navStopPoint(stops[activeIndex],activeIndex>0?(navStopPoint(stops[activeIndex-1])||{x:50,y:94}):((STORE_NAV_MAP_CONFIG&&STORE_NAV_MAP_CONFIG.entry)||{x:50,y:94}));
+  if(cur)pts.push(cur);
+  let minX=Math.min(...pts.map(p=>Number(p.x)||0)),maxX=Math.max(...pts.map(p=>Number(p.x)||0),minX+10),minY=Math.min(...pts.map(p=>Number(p.y)||0)),maxY=Math.max(...pts.map(p=>Number(p.y)||0),minY+10);
+  const padX=Math.max(10,(maxX-minX)*0.55),padY=Math.max(9,(maxY-minY)*0.65);
+  minX-=padX;maxX+=padX;minY-=padY;maxY+=padY;
+  const targetAspect=1.95;
+  let w=Math.max(32,maxX-minX),h=Math.max(24,maxY-minY);
+  if(w/h>targetAspect) h=w/targetAspect; else w=h*targetAspect;
+  const cx=(minX+maxX)/2,cy=(minY+maxY)/2;
+  let x=cx-w/2,y=cy-h/2;
+  if(w<=100)x=Math.max(0,Math.min(100-w,x)); else {x=0;w=100}
+  if(h<=100)y=Math.max(0,Math.min(100-h,y)); else {y=0;h=100}
+  return {x:+x.toFixed(2),y:+y.toFixed(2),w:+w.toFixed(2),h:+h.toFixed(2)};
+}
+function storeNavMapSvg(stops,activeIndex,guideMode=false){
+  const cfg=STORE_NAV_MAP_CONFIG||{},entry=cfg&&cfg.entry?{x:Number(cfg.entry.x)||50,y:Number(cfg.entry.y)||94}:{x:50,y:94};
+  const hasMap=!!cfg.mapDataUrl,hasDesign=navLayoutEls().length>0,W=100,H=100;
+  const clamp=(v,a,b)=>Math.max(a,Math.min(b,Number(v)||0));
+  const allPts=[];let from=entry;
+  const pointFor=(s)=>{const p=navStopPoint(s,from);return p?{x:clamp(p.x,2,98),y:clamp(p.y,2,96)}:{x:10+((Number(s.loc&&s.loc.aisle)||1)%9)*10,y:18+((Number(s.loc&&s.loc.rack)||1)%6)*11};};
+  const parsed=stops.map((s,i)=>{const p=pointFor(s);from=p;return Object.assign({stop:i+1},p,s)});
+  const fullPathPoints=navBuildPathPoints(stops,-1);
+  const fullPathD=fullPathPoints.map((p,i)=>`${i?'L':'M'} ${p.x.toFixed(2)} ${p.y.toFixed(2)}`).join(' ');
+  const completedPts=activeIndex>0?navBuildPathPoints(stops,activeIndex-1):(activeIndex===0?[entry]:[]);
+  const completedD=completedPts.map((p,i)=>`${i?'L':'M'} ${p.x.toFixed(2)} ${p.y.toFixed(2)}`).join(' ');
+  const guideSeg=activeIndex>=0?navGuideSegmentPoints(stops,activeIndex):fullPathPoints;
+  const guideD=guideSeg.map((p,i)=>`${i?'L':'M'} ${Number(p.x).toFixed(2)} ${Number(p.y).toFixed(2)}`).join(' ');
+  const view=guideMode&&activeIndex>=0?navGuideCamera(stops,activeIndex):{x:0,y:0,w:100,h:100};
+  const arrowMarkers=`<defs><filter id="navShadow" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy=".7" stdDeviation=".7" flood-opacity=".24"/></filter><filter id="navGlow" x="-80%" y="-80%" width="260%" height="260%"><feDropShadow dx="0" dy="0" stdDeviation="1.15" flood-color="#19b765" flood-opacity=".42"/></filter><linearGradient id="navRouteGrad" x1="0" x2="1"><stop offset="0" stop-color="#42c875"/><stop offset="1" stop-color="#0f9b54"/></linearGradient><marker id="navArrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="4.5" markerHeight="4.5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#12a75b"/></marker></defs>`;
+  const mapImg=hasMap&&!hasDesign?`<image class="store-nav-route-bg" href="${esc(cfg.mapDataUrl)}" x="0" y="0" width="100" height="100" preserveAspectRatio="none"/>`:'';
+  const floorDesign=hasDesign?navRenderLayoutElements(cfg):'';
+  const marks=parsed.map((p,i)=>{
+    const checkout=!!p.isCheckout,done=activeIndex>=0&&i<activeIndex,current=i===activeIndex;
+    const r=current?3.9:done?2.65:2.45;
+    const fill=checkout?(done?'#0f5d3a':'#fff'):(current?'#12a75b':done?'#d8f2e2':'#fff');
+    const txt=checkout||current?'#fff':done?'#0f7f45':'#11723f';
+    return `<g><circle cx="${p.x.toFixed(2)}" cy="${p.y.toFixed(2)}" r="${r}" fill="${fill}" stroke="#0f8b4f" stroke-width="1.05" filter="url(#navShadow)"/>${current?`<circle cx="${p.x.toFixed(2)}" cy="${p.y.toFixed(2)}" r="5.9" fill="none" stroke="#19b765" stroke-width=".65" opacity=".45"><animate attributeName="r" values="4.6;6.6;4.6" dur="1.8s" repeatCount="indefinite"/><animate attributeName="opacity" values=".55;.08;.55" dur="1.8s" repeatCount="indefinite"/></circle>`:''}<text x="${p.x.toFixed(2)}" y="${(p.y+.72).toFixed(2)}" text-anchor="middle" font-size="${checkout?'1.7':'2.05'}" font-family="Montserrat,sans-serif" fill="${txt}" font-weight="900">${checkout?'✓':i+1}</text></g>`;
+  }).join('');
+  const start=activeIndex>=0?(guideSeg[0]||entry):(fullPathPoints[0]||entry);
+  const overviewRoute=`${fullPathD?`<path d="${fullPathD}" fill="none" stroke="rgba(80,95,87,.28)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="1.8 3.2"/>`:''}`;
+  const completedRoute=completedD?`<path d="${completedD}" fill="none" stroke="#0b6f3e" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" opacity=".86"/>`:'';
+  const currentRoute=guideMode&&activeIndex>=0&&guideD?`<path d="${guideD}" fill="none" stroke="rgba(255,255,255,.98)" stroke-width="5.6" stroke-linecap="round" stroke-linejoin="round" filter="url(#navShadow)"/><path d="${guideD}" fill="none" stroke="url(#navRouteGrad)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="5 3" marker-end="url(#navArrow)"><animate attributeName="stroke-dashoffset" from="0" to="-16" dur="1.05s" repeatCount="indefinite"/></path>`:'';
+  const fullRoute=!guideMode?`<path d="${fullPathD}" fill="none" stroke="rgba(255,255,255,.98)" stroke-width="4.4" stroke-linecap="round" stroke-linejoin="round" filter="url(#navShadow)"/><path d="${fullPathD}" fill="none" stroke="url(#navRouteGrad)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="3.2 2.2" marker-end="url(#navArrow)"><animate attributeName="stroke-dashoffset" from="0" to="-10" dur="1s" repeatCount="indefinite"/></path>`:'';
+  const arrowLayer=guideMode&&activeIndex>=0?navRouteArrows(guideSeg):navRouteArrows(fullPathPoints);
+  const walker=guideSeg.length>1?navHumanSvg(guideD||fullPathD,guideMode?Math.max(8500,guideSeg.length*520):7200):'';
+  const startNode=`<g><circle cx="${start.x.toFixed(2)}" cy="${start.y.toFixed(2)}" r="${guideMode?'2.55':'3'}" fill="#111" filter="url(#navShadow)"/><text x="${start.x.toFixed(2)}" y="${(start.y+(guideMode?4.8:5.3)).toFixed(2)}" text-anchor="middle" font-size="${guideMode?'1.9':'2.25'}" font-family="Montserrat,sans-serif" fill="#111" font-weight="900">START</text></g>`;
+  const topBadge=guideMode&&activeIndex>=0?`<g transform="translate(4 5)"><rect width="23" height="7.2" rx="3.6" fill="rgba(255,255,255,.94)" stroke="rgba(14,81,48,.12)"/><circle cx="4.2" cy="3.6" r="1.7" fill="#12a75b"/><text x="7.3" y="4.4" font-size="2.2" font-family="Montserrat,sans-serif" fill="#0f5133" font-weight="900">NEXT STOP</text></g>`:'';
+  const overlay=`<svg class="store-nav-route-overlay" viewBox="${view.x} ${view.y} ${view.w} ${view.h}" preserveAspectRatio="xMidYMid meet" aria-hidden="true">${arrowMarkers}${mapImg}<rect x="0" y="0" width="100" height="100" rx="4" fill="${hasMap&&!hasDesign?'rgba(255,255,255,.02)':'#edf3ef'}"/>${floorDesign}${guideMode?overviewRoute:''}${!guideMode?overviewRoute:''}${completedRoute}${fullRoute}${currentRoute}${guideMode?arrowLayer:arrowLayer}${walker}${startNode}${marks}${topBadge}</svg>`;
+  return `<div class="store-nav-route-map ${hasMap||hasDesign?'has-floor-map':''} ${hasDesign?'has-designed-layout':''} ${guideMode?'guide-focus-map':''}" role="img" aria-label="Customized store floor plan with guided walking route">${overlay}</div>`;
+}
+async function renderStoreNavigation(){
   const body=document.getElementById('storeNavBody');if(!body)return;
   const items=cartArr(); STORE_NAV_ITEMS=items; STORE_NAV_STOPS=buildStoreNavRoute(items);
   const validStops=STORE_NAV_STOPS.length;
@@ -5913,17 +6259,19 @@ function renderStoreNavigation(){
   const est=Math.max(2,Math.round(STORE_NAV_STOPS.reduce((a,s)=>a+(s.eta||1),0)+validStops*0.5));
   const routeMap=storeNavMapSvg(STORE_NAV_STOPS,-1);
   const list=STORE_NAV_STOPS.map((s,i)=>{
+    if(s.isCheckout)return `<div class="store-nav-step store-nav-step-checkout"><span class="store-nav-step-num">✓</span><div class="store-nav-step-copy"><div class="store-nav-step-title">Checkout Counter</div><div class="store-nav-step-sub">Final stop · complete your shopping</div><div class="store-nav-step-items">Head to checkout to finish your basket.</div></div><span class="store-nav-step-eta">~${s.eta||1} min</span></div>`;
     const loc=s.loc?`Aisle ${s.loc.aisle} · Rack ${s.loc.rack} · Shelf ${s.loc.shelf}`:'Location needs store update';
+    const category=s.loc?navCategoryForAisle(s.loc.aisle):'';
     const names=s.items.map(x=>`${esc(x.name)}${x.qty>1?' ×'+x.qty:''}`).join(' · ');
-    return `<div class="store-nav-step"><span class="store-nav-step-num">${i+1}</span><div class="store-nav-step-copy"><div class="store-nav-step-title">${s.loc?'Aisle '+s.loc.aisle+' · Rack '+s.loc.rack:'Store team location'}</div><div class="store-nav-step-sub">${s.loc?'Shelf '+s.loc.shelf+' · follow the green route':'Ask a team member for this item'}</div><div class="store-nav-step-items">${names}</div></div><span class="store-nav-step-eta">~${s.eta||1} min</span></div>`;
+    return `<div class="store-nav-step"><span class="store-nav-step-num">${i+1}</span><div class="store-nav-step-copy"><div class="store-nav-step-title">${s.loc?'Aisle '+s.loc.aisle+' · Rack '+s.loc.rack:'Store team location'}</div><div class="store-nav-step-sub">${s.loc?'Shelf '+s.loc.shelf+(category?' · '+esc(category):'')+' · follow the route':'Ask a team member for this item'}</div><div class="store-nav-step-items">${names}</div></div><span class="store-nav-step-eta">~${s.eta||1} min</span></div>`;
   }).join('');
   body.innerHTML=`<div class="store-nav-top"><button class="store-nav-back" onclick="closeStoreNavigation()" aria-label="Back"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button><div class="store-nav-top-copy"><div class="store-nav-top-title">Smart Store Navigation</div><div class="store-nav-top-sub">Optimized for your complete cart</div></div><div class="store-nav-top-right"><button class="store-nav-store-pill" type="button" onclick="openStorePicker(event)" aria-label="Change store"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg><span class="store-nav-current-store-label">${esc(BRANCH||'Current store')}</span><svg viewBox="0 0 24 24" style="width:11px;height:11px"><polyline points="6 9 12 15 18 9"/></svg></button><button class="store-nav-top-exit" type="button" onclick="closeStoreNavigation()" aria-label="Exit navigation">×</button></div></div>
     <div class="store-nav-hero"><div class="store-nav-hero-row"><div><div class="store-nav-hero-kicker">YOUR ROUTE</div><div class="store-nav-hero-title">Find it. Walk it. Done. ✨</div><div class="store-nav-hero-sub">We've included <b>${items.length} item${items.length===1?'':'s'}</b> from your full cart and grouped them into <b>${validStops} stop${validStops===1?'':'s'}</b> to reduce backtracking.</div></div><div style="font-size:28px">🧭</div></div><div class="store-nav-summary"><div class="store-nav-stat"><b>${items.length}</b><span>Cart items</span></div><div class="store-nav-stat"><b>${validStops}</b><span>Stops</span></div><div class="store-nav-stat"><b>~${est} min</b><span>Walk</span></div></div></div>
-    <div class="store-nav-map-card"><div class="store-nav-map-head"><b>Optimized route</b><span>Entry → every stop → exit</span></div>${routeMap}<div class="store-nav-map-legend"><span><i class="start"></i> Start</span><span><i></i> Route</span><span><i class="stop"></i> Stop</span></div></div>
+    <div class="store-nav-map-card"><div class="store-nav-map-head"><b>${STORE_NAV_MAP_CONFIG&&STORE_NAV_MAP_CONFIG.layoutElements&&STORE_NAV_MAP_CONFIG.layoutElements.length?'Store layout':'Store map'}</b><span>${STORE_NAV_MAP_CONFIG&&STORE_NAV_MAP_CONFIG.mapName?esc(STORE_NAV_MAP_CONFIG.mapName):'Entry → every stop → exit'}</span></div>${routeMap}<div class="store-nav-map-legend"><span><i class="start"></i> Start</span><span><i></i> Route</span><span><i class="stop"></i> Stop</span></div></div>
     <div class="store-nav-route-list">${list}</div>
     <div class="store-nav-bottom"><button class="store-nav-guide-btn" type="button" onclick="startStoreNavGuide()">Start guided navigation →</button><button class="store-nav-exit-btn" type="button" onclick="closeStoreNavigation()">Exit navigation</button></div>`;
 }
-async function openStoreNavigation(mode='route'){renderStoreNavigation();const ov=document.getElementById('drkOverlay');if(ov)ov.classList.add('on');const s=document.getElementById('storeNavSheet');if(s)s.classList.add('on');document.body.style.overflow='hidden';navCurrentStoreLabel();if(mode==='how')renderStoreNavHow()}
+async function openStoreNavigation(mode='route'){await loadStoreNavMap();await renderStoreNavigation();const ov=document.getElementById('drkOverlay');if(ov)ov.classList.add('on');const s=document.getElementById('storeNavSheet');if(s)s.classList.add('on');document.body.style.overflow='hidden';navCurrentStoreLabel();if(mode==='how')renderStoreNavHow()}
 let STORE_NAV_PENDING_BRANCH=BRANCH||'';
 async function loadStorePicker(){
   const el=document.getElementById('storeNavStoreOptions');if(!el)return;el.innerHTML='<div class="store-nav-empty">Loading stores…</div>';
@@ -5965,8 +6313,8 @@ function renderStoreNavGuide(){
   const title=document.getElementById('storeNavGuideTitle'),st=document.getElementById('storeNavGuideStepTitle'),tx=document.getElementById('storeNavGuideStepText'),bar=document.getElementById('storeNavGuideProgress'),map=document.getElementById('storeNavGuideMap'),next=document.getElementById('storeNavGuideNext');
   if(!cur||!title||!st||!tx||!bar||!map||!next)return;
   title.textContent=`Stop ${idx+1} of ${stops.length}`;
-  st.textContent=cur.loc?`Aisle ${cur.loc.aisle} · Rack ${cur.loc.rack} · Shelf ${cur.loc.shelf}`:'Location needs store update';
-  tx.textContent=cur.loc?`Pick ${cur.items.map(x=>`${x.name}${x.qty>1?' ×'+x.qty:''}`).join(', ')}. ${idx<stops.length-1?'Then continue to the next highlighted stop.':'You’ve reached the final stop — head to checkout.'}`:`Pick ${cur.items.map(x=>x.name).join(', ')} and ask the store team for the exact location.`;
+  st.textContent=cur.isCheckout?'Checkout Counter':(cur.loc?`Aisle ${cur.loc.aisle} · Rack ${cur.loc.rack} · Shelf ${cur.loc.shelf}`:'Location needs store update');
+  tx.textContent=cur.isCheckout?'You’ve reached the final stop — complete your shopping at checkout.':cur.loc?`Pick ${cur.items.map(x=>`${x.name}${x.qty>1?' ×'+x.qty:''}`).join(', ')}. ${idx<stops.length-1?'Then continue to the next highlighted stop.':'You’ve reached the final stop — head to checkout.'}`:`Pick ${cur.items.map(x=>x.name).join(', ')} and ask the store team for the exact location.`;
   bar.style.width=`${Math.round((idx+1)/stops.length*100)}%`;
   map.innerHTML=storeNavMapSvg(stops,idx);
   next.textContent=idx<stops.length-1?'Next stop →':'Finish route ✓';
@@ -7379,7 +7727,8 @@ function initEngagementStrip(){
   const phone=MY_PHONE||localStorage.getItem('devx-phone')||'',token=CTOKEN||localStorage.getItem('devx-ctoken')||'';if(phone)MY_PHONE=phone;if(token)CTOKEN=token;
   syncStreakRewardMarketing();
   const sc=document.querySelector('.home-scroll');if(sc&&!sc.dataset.engageScroll){sc.dataset.engageScroll='1';sc.addEventListener('scroll',()=>{const h=document.querySelector('.hdr');if(h)h.classList.toggle('compact',sc.scrollTop>70)},{passive:true})}
-  if(CTOKEN&&MY_PHONE){(async()=>{const ok=await refreshSignedInIdentity();if(!ok){localStorage.removeItem('devx-ctoken');localStorage.removeItem('devx-phone');CTOKEN='';MY_PHONE='';setEngagementVisible(false);return}setEngagementVisible(true);await markStreakActivity('portal_visit');await loadPersonalGoal()})()}else setEngagementVisible(false)
+  loadStoreNavMap().then(()=>renderStoreNavHomePreview()).catch(()=>{});
+  if(CTOKEN&&MY_PHONE){(async()=>{const ok=await refreshSignedInIdentity();if(!ok){localStorage.removeItem('devx-ctoken');localStorage.removeItem('devx-phone');CTOKEN='';MY_PHONE='';setEngagementVisible(false);return}setEngagementVisible(true);await markStreakActivity('portal_visit');await loadPersonalGoal();renderStoreNavHomePreview()})()}else setEngagementVisible(false)
 }
 
 /* ─── INIT ─── */
