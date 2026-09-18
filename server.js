@@ -1714,7 +1714,7 @@ app.post('/api/admin/store-map-builder', need('inventory.edit'), (req,res)=>{
   if(!floors.length)floors.push('Ground Floor');
   const safeEl=Array.isArray(b.elements)?b.elements.slice(0,240).map((e,i)=>({
     id:String(e.id||('mb'+Date.now()+i)).slice(0,80),type:String(e.type||'zone').slice(0,30),label:String(e.label||'Element').slice(0,80),category:String(e.category||'').slice(0,80),
-    x:clamp(e.x,0,96),y:clamp(e.y,0,94),w:clamp(e.w==null?3:e.w,.5,40),h:clamp(e.h==null?3:e.h,.5,40),floor:floors.includes(String(e.floor||''))?String(e.floor):floors[0],rotation:clamp(e.rotation||0,-180,180),color:/^#[0-9a-f]{6}$/i.test(String(e.color||''))?String(e.color):'#e5f5eb',z:Math.max(1,Math.round(Number(e.z)||i+1))
+    x:clamp(e.x,0,96),y:clamp(e.y,0,94),w:clamp(e.w==null?3:e.w,.5,40),h:clamp(e.h==null?3:e.h,.5,40),floor:floors.includes(String(e.floor||''))?String(e.floor):floors[0],rotation:clamp(e.rotation||0,-180,180),color:/^#[0-9a-f]{6}$/i.test(String(e.color||''))?String(e.color):'#e5f5eb',shape:['rounded','square','pill','circle'].includes(String(e.shape||''))?String(e.shape):'rounded',fontSize:Math.max(6,Math.min(40,Number(e.fontSize)||10)),fontColor:/^#[0-9a-f]{6}$/i.test(String(e.fontColor||''))?String(e.fontColor):'#173326',z:Math.max(1,Math.round(Number(e.z)||i+1))
   })):[];
   const all=db['devx-store-map-builder']||{};
   const cur=all[bid]||{};
@@ -1747,7 +1747,7 @@ app.post('/api/admin/store-navigation', need('inventory.edit'), (req, res) => {
   const cur=all[bid]||{};
   const layoutElements=Array.isArray(b.layoutElements)?b.layoutElements.slice(0,240).map((e,i)=>({
     id:String(e.id||('nav-el-'+Date.now()+i)).slice(0,80),type:String(e.type||'zone').slice(0,30),label:String(e.label||'Element').slice(0,80),category:String(e.category||'').slice(0,80),
-    x:clamp(e.x,0,98),y:clamp(e.y,0,96),w:clamp(e.w==null?5:e.w,.5,98),h:clamp(e.h==null?5:e.h,.5,96),rotation:clamp(e.rotation||0,-180,180),z:Math.max(1,Math.round(Number(e.z)||i+1)),floor:String(e.floor||'Ground Floor').slice(0,40)
+    x:clamp(e.x,0,98),y:clamp(e.y,0,96),w:clamp(e.w==null?5:e.w,.5,98),h:clamp(e.h==null?5:e.h,.5,96),rotation:clamp(e.rotation||0,-180,180),color:/^#[0-9a-f]{6}$/i.test(String(e.color||''))?String(e.color):'#e5f5eb',shape:['rounded','square','pill','circle'].includes(String(e.shape||''))?String(e.shape):'rounded',fontSize:Math.max(6,Math.min(40,Number(e.fontSize)||10)),fontColor:/^#[0-9a-f]{6}$/i.test(String(e.fontColor||''))?String(e.fontColor):'#173326',z:Math.max(1,Math.round(Number(e.z)||i+1)),floor:String(e.floor||'Ground Floor').slice(0,40)
   })):(cur.layoutElements||[]);
   const cfg={version:3,branchId:bid,mapName:String(b.mapName||cur.mapName||'Store floor plan').slice(0,100),
     canvasW:Math.max(10,Math.min(200,Number(b.canvasW)||Number(cur.canvasW)||40)),canvasH:Math.max(8,Math.min(200,Number(b.canvasH)||Number(cur.canvasH)||28)),
