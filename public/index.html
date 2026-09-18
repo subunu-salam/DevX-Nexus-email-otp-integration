@@ -261,6 +261,10 @@ body{
 }
 .hero-cta:active{transform:scale(.96);background:var(--GD)}
 .hero-cta svg{width:14px;height:14px;fill:#fff}
+.devx-ai-logo-icon{display:block;object-fit:contain;flex-shrink:0;pointer-events:none}
+.hero-ai-logo{width:18px;height:18px;filter:brightness(0) invert(1)}
+.bottom-ai-logo{width:27px;height:27px;filter:brightness(0) invert(1)}
+
 .dark-toggle{
   display:inline-flex;align-items:center;gap:6px;
   background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);
@@ -4193,6 +4197,192 @@ button,input,textarea,select{font-family:inherit}
 }
 </style>
 
+<style id="devx-2026-home-refresh">
+/* DEVX 2026 HOME EXPERIENCE — presentation only; all existing actions and IDs remain intact. */
+:root{
+  --sun:#FFD93D;
+  --sun-soft:#FFF8CF;
+  --coral:#FF6B4A;
+  --mint:#DDF8E8;
+  --ink:#0E1B14;
+}
+
+/* Calm app canvas and glass navigation chrome */
+body{background:#EAF0EC!important}
+.hdr{
+  height:66px!important;min-height:66px!important;padding:0 12px!important;
+  background:rgba(10,25,17,.92)!important;border-bottom:1px solid rgba(255,255,255,.12)!important;
+  box-shadow:0 10px 34px rgba(6,20,12,.14)!important;backdrop-filter:blur(22px) saturate(1.25)!important;
+}
+.hdr>.logo{transition:transform .35s cubic-bezier(.2,.8,.2,1)!important}
+.hdr>.logo:hover{transform:translateY(-2px)!important}
+.hdr-store-btn{background:linear-gradient(120deg,#29B96A,#5BD08B)!important;border-color:rgba(255,255,255,.16)!important;color:#071B10!important;box-shadow:0 7px 20px rgba(34,190,103,.22)!important}
+.hdr-icon-btn{background:rgba(255,255,255,.09)!important;border-color:rgba(255,255,255,.12)!important;transition:transform .2s ease,background .2s ease!important}
+.hdr-icon-btn:hover{transform:translateY(-2px)!important;background:rgba(255,255,255,.15)!important}
+
+/* Out-of-the-box kinetic hero: moving ribbon grid instead of a light streak or floating orb. */
+.hero{
+  min-height:390px!important;isolation:isolate!important;overflow:hidden!important;
+  background:linear-gradient(145deg,#071A10 0%,#0C2A19 48%,#123721 100%)!important;
+  border-bottom:0!important;
+}
+.hero::before{
+  content:""!important;display:block!important;position:absolute!important;inset:-45% -55%!important;
+  width:auto!important;height:auto!important;border-radius:0!important;opacity:.34!important;filter:none!important;
+  background:
+    repeating-linear-gradient(115deg,transparent 0 36px,rgba(97,229,151,.20) 36px 38px,transparent 38px 76px),
+    repeating-linear-gradient(25deg,transparent 0 48px,rgba(255,217,61,.10) 48px 50px,transparent 50px 96px)!important;
+  transform:rotate(-7deg)!important;animation:retailWeave 18s linear infinite!important;pointer-events:none!important;z-index:0!important;
+}
+.hero::after{
+  content:""!important;display:block!important;position:absolute!important;inset:auto -12% -140px!important;height:260px!important;
+  border-radius:50% 50% 0 0!important;background:rgba(255,255,255,.055)!important;
+  border-top:1px solid rgba(255,255,255,.14)!important;transform:rotate(-4deg)!important;pointer-events:none!important;z-index:0!important;
+}
+@keyframes retailWeave{0%{background-position:0 0,0 0}100%{background-position:180px 0,-190px 0}}
+.hero-content{
+  display:grid!important;grid-template-columns:minmax(0,3fr) minmax(0,2fr)!important;
+  grid-template-areas:"brand tag" "brand copy" "search search"!important;
+  column-gap:14px!important;row-gap:0!important;align-content:start!important;padding:22px 18px 25px!important;text-align:left!important;position:relative!important;z-index:2!important;
+}
+.client-brand-card{
+  grid-area:brand!important;width:100%!important;min-width:0!important;min-height:224px!important;margin:0!important;padding:15px!important;
+  display:flex!important;flex-direction:column!important;align-items:flex-start!important;justify-content:flex-end!important;gap:10px!important;
+  background:rgba(255,255,255,.91)!important;border:1px solid rgba(255,255,255,.68)!important;border-radius:22px!important;box-shadow:0 18px 46px rgba(0,0,0,.16)!important;backdrop-filter:blur(20px)!important;overflow:hidden!important;
+  animation:heroReveal .65s cubic-bezier(.2,.8,.2,1) both!important;
+}
+.client-brand-card::after{display:none!important}
+.client-brand-card .client-brand-logo-wrap{
+  width:100%!important;height:128px!important;flex:0 0 128px!important;padding:10px!important;border-radius:16px!important;
+  background:rgba(255,255,255,.96)!important;border:1px solid rgba(10,63,34,.10)!important;
+  box-shadow:none!important;overflow:hidden!important;
+}
+.client-brand-card .client-brand-logo-wrap img{width:100%!important;height:100%!important;object-fit:contain!important;transform:none!important;animation:none!important}
+.client-brand-copy{width:auto!important;min-width:0!important}
+.client-brand-name{font-size:18px!important;line-height:1.12!important;color:#102019!important;letter-spacing:0!important;font-weight:850!important}
+.client-brand-tagline{margin-top:3px!important;font-size:7.5px!important;color:#577064!important;letter-spacing:.08em!important;white-space:nowrap!important}
+.client-brand-powered{margin-top:5px!important;font-size:6px!important;color:#829087!important;letter-spacing:.06em!important}
+.client-brand-powered strong{font-size:6.5px!important;color:#187D49!important}.client-brand-devx-mark{font-size:8px!important;color:#20A660!important}
+.hero-tag{
+  grid-area:tag!important;position:relative!important;align-self:start!important;justify-self:end!important;margin:7px 0 0!important;
+  background:rgba(255,255,255,.09)!important;border:1px solid rgba(255,255,255,.14)!important;color:#B5F5CE!important;
+  box-shadow:none!important;backdrop-filter:blur(14px)!important;font-size:6.7px!important;padding:7px 10px!important;letter-spacing:.07em!important;
+  animation:heroReveal .65s .08s cubic-bezier(.2,.8,.2,1) both!important;
+}
+.hero-copy-actions{
+  grid-area:copy!important;display:flex!important;flex-direction:column!important;justify-content:flex-end!important;margin:20px 0 0!important;padding:0 0 4px!important;max-width:none!important;min-width:0!important;
+  animation:heroReveal .72s .14s cubic-bezier(.2,.8,.2,1) both!important;
+}
+.hero-copy{max-width:none!important}
+.hero h1{font-size:26px!important;line-height:1.02!important;letter-spacing:0!important;color:#F8FFF9!important;margin:0!important;max-width:none!important;font-weight:900!important}
+.hero h1 em{font-style:normal!important;color:#FFD93D!important;text-shadow:0 0 28px rgba(255,217,61,.20)!important}
+.hero-sub{margin:10px 0 0!important;max-width:180px!important;font-size:10px!important;line-height:1.48!important;color:rgba(238,255,244,.69)!important;letter-spacing:0!important}
+.hero-copy-actions .hero-cta-row{justify-content:flex-start!important;margin-top:16px!important;width:100%!important}
+.hero-copy-actions .hero-cta{
+  width:100%!important;min-height:47px!important;padding:0 12px!important;border-radius:14px!important;
+  background:linear-gradient(110deg,#24B968,#72DC9C 58%,#FFD93D 150%)!important;color:#071B10!important;
+  box-shadow:0 14px 34px rgba(36,185,104,.32),inset 0 1px 0 rgba(255,255,255,.45)!important;
+  font-size:10px!important;font-weight:900!important;transition:transform .28s cubic-bezier(.2,.8,.2,1),box-shadow .28s ease!important;
+}
+.hero-copy-actions .hero-cta:hover{transform:translateY(-4px) scale(1.02)!important;box-shadow:0 20px 42px rgba(36,185,104,.42)!important}
+.hero-copy-actions .hero-cta svg{fill:#071B10!important}
+.hero-search-bar{
+  grid-area:search!important;width:100%!important;min-height:66px!important;margin:38px 0 0!important;padding:0 10px 0 14px!important;
+  border:1px solid rgba(255,255,255,.38)!important;border-radius:18px!important;background:rgba(255,255,255,.94)!important;
+  box-shadow:0 18px 46px rgba(0,0,0,.22)!important;backdrop-filter:blur(18px)!important;
+  animation:heroReveal .72s .28s cubic-bezier(.2,.8,.2,1) both!important;
+}
+.hero-search-icon{background:#E6F8ED!important}.hero-search-scan{background:#112A1C!important;color:#6EE09B!important;border-color:#193D29!important}
+@keyframes heroReveal{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+
+/* Highlights get expressive color; dense content remains flat and readable. */
+#engageStrip{margin:16px!important;border:0!important;background:linear-gradient(115deg,#111F17,#183D27 68%,#665512)!important;box-shadow:0 14px 32px rgba(13,53,30,.16)!important}
+.engage-fire{background:linear-gradient(145deg,#FFF5B2,#FFAB52)!important;box-shadow:0 0 20px rgba(255,190,72,.25)!important}
+.sec-hdr{margin:16px 14px 10px!important;padding:13px 14px!important;border-radius:14px!important;background:linear-gradient(110deg,rgba(255,255,255,.96),rgba(230,249,238,.92))!important;border:1px solid rgba(37,168,93,.12)!important;box-shadow:0 6px 18px rgba(21,55,35,.05)!important}
+.sec-title{font-size:14px!important;letter-spacing:0!important}.sec-link{color:#14824B!important}
+.explore-slide,.offer-card,.sponsored-card{box-shadow:0 10px 28px rgba(17,61,35,.12)!important}
+.offer-badge,.sp-tag,.sponsor-label{box-shadow:0 0 18px rgba(255,217,61,.2)!important}
+.prods-hdr{margin-top:10px!important;padding-left:16px!important;padding-right:16px!important}
+.prods-grid{gap:11px!important}.p-card,.popular-card{border-radius:10px!important;box-shadow:none!important;border-color:#E1E7E3!important;background:#fff!important}
+.p-card:hover,.popular-card:hover{transform:translateY(-2px)!important;box-shadow:0 8px 20px rgba(15,49,29,.07)!important}
+.trust-row{margin-top:18px!important;background:#fff!important;border-top:1px solid #E2E9E4!important;padding:20px 14px 24px!important}
+
+/* One continuous home-page language: calm surfaces, green structure, warm highlights. */
+.home-scroll{scroll-behavior:smooth!important;background:#EAF0EC!important}
+.home-scroll>*{animation:homeSectionIn .58s cubic-bezier(.2,.75,.25,1) both}
+.home-scroll>.hero{animation:none!important}
+.home-scroll>#engageStrip{animation-delay:.06s!important}
+.home-scroll>.sec-hdr{animation-delay:.09s!important}
+@keyframes homeSectionIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.sec-hdr{transition:transform .25s ease,border-color .25s ease,box-shadow .25s ease!important}
+.sec-hdr:hover{transform:translateY(-2px)!important;border-color:rgba(37,168,93,.22)!important;box-shadow:0 10px 24px rgba(21,55,35,.08)!important}
+.sec-title svg{stroke:#1A9958!important}.sec-link{transition:color .2s ease,transform .2s ease!important}.sec-link:hover{color:#0C6338!important;transform:translateX(2px)!important}
+.explore-carousel,.popular-row,.offers-row,.cats-bar{scroll-snap-type:x mandatory!important;scroll-padding:16px!important;overscroll-behavior-inline:contain!important}
+.explore-slide,.popular-card,.offer-card,.cat-btn{scroll-snap-align:start!important}
+.popular-row,.offers-row,.cats-bar{padding-right:46px!important}
+.popular-row::after,.offers-row::after,.cats-bar::after{content:"SWIPE  →";display:grid;place-items:center;flex:0 0 42px;min-height:54px;color:#177A49;font-size:6.5px;font-weight:900;letter-spacing:.08em;writing-mode:vertical-rl;opacity:.72}
+.explore-slide,.offer-card,.sponsored-card,.p-card,.popular-card,.cat-img-circle,.trust-item{transition:transform .28s cubic-bezier(.2,.8,.2,1),box-shadow .28s ease,border-color .28s ease,filter .28s ease!important}
+.explore-slide:hover,.offer-card:hover,.sponsored-card:hover{transform:translateY(-4px)!important;filter:saturate(1.04)!important}
+.cat-btn:hover .cat-img-circle{transform:translateY(-3px) scale(1.03)!important;border-color:rgba(36,185,104,.45)!important}
+.p-card:active,.popular-card:active,.offer-card:active,.sponsored-card:active,.cat-btn:active{transform:scale(.98)!important}
+.sponsored-row{gap:10px!important;overflow-x:auto!important;scroll-snap-type:x mandatory!important;scrollbar-width:none!important;padding-right:42px!important}
+.sponsored-row::-webkit-scrollbar{display:none!important}
+.sponsored-card{flex:0 0 148px!important;scroll-snap-align:start!important;border:1px solid rgba(255,255,255,.20)!important;box-shadow:0 12px 28px rgba(17,61,35,.13)!important}
+.sponsored-card.sp-green{background:linear-gradient(145deg,#147647,#21A762)!important}
+.sponsored-card.sp-navy{background:linear-gradient(145deg,#112D20,#24583B)!important}
+.sponsored-card.sp-purple{background:linear-gradient(145deg,#6A5312,#B58A19)!important}
+.sp-join{color:#244D35!important}
+.trust-item{padding:9px 4px!important;border-radius:10px!important}.trust-item:hover{background:#F1F8F4!important;transform:translateY(-2px)!important}
+.hero-search-bar,.hdr,.bot-nav{transition:box-shadow .3s ease,background .3s ease,border-color .3s ease!important}
+.hero-search-bar:hover{box-shadow:0 22px 52px rgba(0,0,0,.28)!important}
+
+/* Navigation becomes a calm floating dock; the AI action is the glowing exception. */
+.bot-nav{
+  height:78px!important;margin:0 9px 8px!important;padding:0 5px env(safe-area-inset-bottom,0)!important;border:1px solid rgba(255,255,255,.78)!important;
+  border-radius:20px!important;background:rgba(255,255,255,.92)!important;box-shadow:0 16px 42px rgba(12,41,24,.17)!important;backdrop-filter:blur(22px) saturate(1.25)!important;
+}
+.bot-tab{position:relative!important;transition:transform .2s ease!important}.bot-tab:hover{transform:translateY(-2px)!important}
+.bot-tab.on::before{content:"";position:absolute;top:8px;width:22px;height:3px;border-radius:99px;background:linear-gradient(90deg,#1FA85D,#FFD93D)}
+.bot-tab svg,.bot-tab span{transition:color .24s ease,stroke .24s ease,transform .24s ease!important}
+.bot-tab.on svg{transform:translateY(-1px) scale(1.06)!important}
+.bot-tab:active,.bot-ai-orb:active{transform:scale(.92)!important}
+.bot-ai-orb{background:linear-gradient(135deg,#16A65A,#4CD786 64%,#FFD93D 160%)!important;box-shadow:0 10px 28px rgba(25,176,94,.38)!important;animation:aiBreathe 3.6s ease-in-out infinite!important}
+@keyframes aiBreathe{0%,100%{transform:translateY(0);box-shadow:0 10px 28px rgba(25,176,94,.30)}50%{transform:translateY(-4px);box-shadow:0 15px 36px rgba(25,176,94,.48)}}
+
+[data-theme="dark"] .hero{background:linear-gradient(145deg,#06150D 0%,#0B2717 54%,#12351F 100%)!important}
+[data-theme="dark"] .sec-hdr{background:linear-gradient(110deg,#151D18,#17291E)!important;border-color:#263D2F!important}
+[data-theme="dark"] .p-card,[data-theme="dark"] .popular-card,[data-theme="dark"] .trust-row{background:#151B17!important;border-color:#29332D!important}
+[data-theme="dark"] .bot-nav{background:rgba(17,25,20,.94)!important;border-color:rgba(255,255,255,.10)!important}
+
+@media(max-width:430px){
+  .hdr{height:60px!important;min-height:60px!important;padding:0 9px!important}
+  .hdr>.logo{width:68px!important;min-width:68px!important;flex-basis:68px!important}
+  .hero{min-height:366px!important}
+  .hero-content{padding:18px 14px 22px!important}
+  .client-brand-card{min-height:204px!important;padding:12px!important;border-radius:19px!important}
+  .client-brand-card .client-brand-logo-wrap{width:100%!important;height:108px!important;flex-basis:108px!important;border-radius:13px!important}
+  .client-brand-name{font-size:16px!important}.client-brand-tagline{font-size:6.5px!important}.client-brand-powered{font-size:5.5px!important}
+  .hero-tag{font-size:5.8px!important;padding:6px 7px!important;margin-top:5px!important}
+  .hero-copy-actions{margin-top:16px!important}
+  .hero h1{font-size:23px!important;max-width:none!important}
+  .hero-sub{font-size:8.8px!important;max-width:150px!important;margin-top:9px!important}
+  .hero-copy-actions .hero-cta-row{margin-top:14px!important}
+  .hero-copy-actions .hero-cta{min-height:44px!important;font-size:9px!important;padding:0 9px!important}
+  .hero-search-bar{min-height:58px!important;margin-top:20px!important}
+  .sec-hdr{margin-left:12px!important;margin-right:12px!important}
+  .bot-nav{height:74px!important;margin:0 7px 6px!important;border-radius:18px!important}
+}
+@media(max-width:360px){
+  .hero{min-height:348px!important}.hero-content{padding-left:12px!important;padding-right:12px!important;column-gap:9px!important}
+  .client-brand-tagline{display:none!important}.client-brand-powered{margin-top:2px!important}
+  .hero-tag{max-width:112px!important;text-align:center!important}
+  .client-brand-card{min-height:194px!important;padding:10px!important}.client-brand-card .client-brand-logo-wrap{height:98px!important;flex-basis:98px!important}
+  .hero-copy-actions{margin-top:13px!important}.hero h1{font-size:20px!important}.hero-sub{font-size:8px!important}
+  .hero-search-bar{margin-top:18px!important}
+}
+@media(prefers-reduced-motion:reduce){.hero::before,.client-brand-card,.hero-tag,.hero-copy-actions,.hero-search-bar,.bot-ai-orb,.home-scroll>*{animation:none!important}.home-scroll{scroll-behavior:auto!important}*{transition-duration:.01ms!important}}
+
+</style>
 </head>
 <body>
 
@@ -4324,16 +4514,15 @@ button,input,textarea,select{font-family:inherit}
           <div class="client-brand-powered"><span>Powered by</span><strong><span class="client-brand-devx-mark">X</span> DEVX</strong><span>AI Concierge</span></div>
         </div>
       </div>
-      <div class="hero-tag"><span class="pulse-dot"></span><span id="heroTagTxt">Live AI-Powered Shopping</span></div>
+      <div class="hero-tag"><span class="pulse-dot"></span><span id="heroTagTxt">Smart shopping, live</span></div>
       <div class="hero-copy-actions">
         <div class="hero-copy">
-          <h1 id="heroH1">Lower Prices.<br><em>Free Fast Delivery.</em></h1>
-          <p class="hero-sub" id="heroSubTxt">Your retail AI concierge — shop by chat or voice in any language, pay less than delivery apps.</p>
+          <h1 id="heroH1">Shop smarter.<br><em>Pay less.</em></h1>
+          <p class="hero-sub" id="heroSubTxt">Chat or speak. Best prices, fast delivery.</p>
         </div>
         <div class="hero-cta-row">
           <button class="hero-cta" onclick="goChat()">
-            <svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
-            </svg>
+            <img class="devx-ai-logo-icon hero-ai-logo" src="logo.png" alt="" aria-hidden="true">
             <span id="heroCtaTxt">Ask AI Concierge</span>
           </button>
         </div>
@@ -4522,7 +4711,7 @@ button,input,textarea,select{font-family:inherit}
 
   <div class="bot-ai-wrap">
     <button class="bot-ai-orb" onclick="goChat()">
-      <svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+      <img class="devx-ai-logo-icon bottom-ai-logo" src="logo.png" alt="" aria-hidden="true">
     </button>
     <span>AI</span>
   </div>
@@ -7753,8 +7942,8 @@ function dedupePlan(plan){
 /* ══ LANGUAGE (labour-friendly: English / हिंदी / اردو) ══ */
 const I18N={
  en:{home:'Home',search:'Search',ai:'AI',cart:'Cart',orders:'Orders',
-     heroTag:'Live AI-Powered Shopping',hero:'Lower Prices.<br><em>Free Fast Delivery.</em>',
-     heroSub:'Your retail AI concierge — shop by chat or voice in any language, pay less than delivery apps.',
+     heroTag:'Smart shopping, live',hero:'Shop smarter.<br><em>Pay less.</em>',
+     heroSub:'Chat or speak. Best prices, fast delivery.',
      usp1t:'Lower prices',usp1s:'Less than the delivery apps',
      usp2t:'Free fast delivery',usp2s:'No minimum order',
      usp3t:'Chat or speak, any language',usp3s:'Malayalam, Arabic, Hindi & more',
@@ -7762,7 +7951,7 @@ const I18N={
      stripT:'Shopping at the store right now?',stripS:'Enter Store Mode — exact aisle, rack & shelf for every product'},
  hi:{home:'होम',search:'खोजें',ai:'AI',cart:'कार्ट',orders:'ऑर्डर',
      heroTag:'AI स्मार्ट शॉपिंग',hero:'कम दाम.<br><em>फ्री तेज़ डिलीवरी.</em>',
-     heroSub:'DevX Nexus आपका रिटेल AI कंसीयज है — अपनी भाषा में लिखें या बोलें, डिलीवरी ऐप से कम दाम पाएं, और फ्री तेज़ डिलीवरी या स्टोर से पिकअप।',
+     heroSub:'लिखें या बोलें। कम दाम, तेज़ डिलीवरी।',
      usp1t:'कम दाम',usp1s:'डिलीवरी ऐप से सस्ता',
      usp2t:'फ्री तेज़ डिलीवरी',usp2s:'कोई न्यूनतम ऑर्डर नहीं',
      usp3t:'किसी भी भाषा में बात करें',usp3s:'मलयालम, अरबी, हिंदी और भी',
@@ -7770,7 +7959,7 @@ const I18N={
      stripT:'अभी दुकान में हैं?',stripS:'स्टोर मोड चालू करें — हर सामान की सही जगह देखें'},
  ur:{home:'ہوم',search:'تلاش',ai:'AI',cart:'کارٹ',orders:'آرڈر',
      heroTag:'AI اسمارٹ شاپنگ',hero:'کم قیمت.<br><em>مفت تیز ڈیلیوری.</em>',
-     heroSub:'DevX Nexus آپ کا ریٹیل AI کنسیئرج ہے — اپنی زبان میں لکھیں یا بولیں، ڈیلیوری ایپس سے کم قیمت پائیں، اور مفت تیز ڈیلیوری یا اسٹور سے پک اپ۔',
+     heroSub:'لکھیں یا بولیں۔ کم قیمت، تیز ڈیلیوری۔',
      usp1t:'کم قیمت',usp1s:'ڈیلیوری ایپس سے سستا',
      usp2t:'مفت تیز ڈیلیوری',usp2s:'کوئی کم از کم آرڈر نہیں',
      usp3t:'کسی بھی زبان میں بات کریں',usp3s:'ملیالم، عربی، ہندی اور مزید',
