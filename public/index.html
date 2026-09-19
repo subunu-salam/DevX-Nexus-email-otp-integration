@@ -4382,6 +4382,190 @@ body{background:#EAF0EC!important}
 }
 @media(prefers-reduced-motion:reduce){.hero::before,.client-brand-card,.hero-tag,.hero-copy-actions,.hero-search-bar,.bot-ai-orb,.home-scroll>*{animation:none!important}.home-scroll{scroll-behavior:auto!important}*{transition-duration:.01ms!important}}
 
+
+/* Performance guardrails: preserve the premium UI while avoiding continuous
+   large-surface repaints on mobile Safari/Chrome and lower-power laptops. */
+.hero::before{animation:none!important;transform:rotate(-7deg)!important}
+.client-brand-card,.hero-tag,.hero-copy-actions,.hero-search-bar{animation:none!important}
+.home-scroll>*{animation:none!important}
+.hdr,.client-brand-card,.hero-search-bar,.bot-nav{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+.bot-ai-orb{animation:none!important}
+@media (max-width:600px){
+  .hero::before{opacity:.22!important}
+  .hero-search-bar{box-shadow:0 10px 24px rgba(0,0,0,.16)!important}
+  .client-brand-card{box-shadow:0 10px 26px rgba(0,0,0,.12)!important}
+}
+
+
+
+/* FINAL THEME + RESPONSIVE POLISH — UI ONLY
+   Keeps existing features/handlers intact. The storefront is intentionally
+   capped at its existing mobile-app width; the surrounding desktop canvas
+   follows the same light/dark theme instead of remaining white. */
+html{background:var(--bg)!important;color:var(--tx)}
+html,body{min-height:100%;color-scheme:light}
+body{background:var(--bg)!important}
+[data-theme="dark"]{color-scheme:dark}
+[data-theme="dark"],
+[data-theme="dark"] body{background:#0A0A0C!important}
+[data-theme="dark"] .home-scroll{background:#0A0A0C!important}
+
+/* Dark-mode surfaces that were previously hard-coded to light colours. */
+[data-theme="dark"] .client-brand-card{
+  background:#141B17!important;border-color:#2A3A31!important;
+  box-shadow:0 12px 30px rgba(0,0,0,.34)!important;
+}
+[data-theme="dark"] .client-brand-logo-wrap{
+  background:#0F1511!important;border-color:#2A3A31!important;
+}
+[data-theme="dark"] .client-brand-name{color:#F1F6F2!important}
+[data-theme="dark"] .client-brand-tagline{color:#A7B5AC!important}
+[data-theme="dark"] .client-brand-powered{color:#7F8E85!important}
+[data-theme="dark"] .client-brand-powered strong{color:#D8E5DD!important}
+[data-theme="dark"] .hero-tag{
+  background:rgba(61,187,106,.12)!important;border-color:rgba(61,187,106,.28)!important;color:#7BE3A4!important;
+}
+[data-theme="dark"] .hero-search-bar{
+  background:#151D18!important;border-color:rgba(61,187,106,.42)!important;color:#F2F6F3!important;
+  box-shadow:0 12px 28px rgba(0,0,0,.34)!important;
+}
+[data-theme="dark"] .hero-search-copy strong{color:#F2F6F3!important}
+[data-theme="dark"] .hero-search-copy small{color:#9BA9A1!important}
+[data-theme="dark"] .hero-search-icon{background:rgba(61,187,106,.14)!important}
+[data-theme="dark"] .hero-search-scan{background:#0D2117!important;color:#7BE3A4!important;border-color:#244735!important}
+[data-theme="dark"] .sec-hdr{
+  background:linear-gradient(110deg,#141B17,#17271E)!important;
+  border-color:#2A3A31!important;box-shadow:0 7px 20px rgba(0,0,0,.22)!important;
+}
+[data-theme="dark"] .sec-title,[data-theme="dark"] .prods-title{color:#F0F5F2!important}
+[data-theme="dark"] .sec-link{color:#69D99A!important}
+[data-theme="dark"] .popular-row,[data-theme="dark"] .offers-row,[data-theme="dark"] .cats-bar,
+[data-theme="dark"] .prods-hdr{background:#0A0A0C!important}
+[data-theme="dark"] .popular-card{
+  background:#151B17!important;border-color:#29352F!important;box-shadow:0 8px 22px rgba(0,0,0,.22)!important;
+}
+[data-theme="dark"] .popular-card img{background:#101511!important}
+[data-theme="dark"] .popular-card .pop-name,[data-theme="dark"] .popular-card .pop-price{color:#EEF4F0!important}
+[data-theme="dark"] .cat-lbl{color:#9DAAA2!important}
+[data-theme="dark"] .cat-btn.on .cat-lbl{color:#69D99A!important}
+[data-theme="dark"] .trust-row{background:#111713!important;border-top-color:#29352F!important}
+[data-theme="dark"] .trust-item .ti-t{color:#E8F0EB!important}
+[data-theme="dark"] .trust-item .ti-s{color:#7E8D84!important}
+[data-theme="dark"] .trust-item:hover{background:#17221B!important}
+[data-theme="dark"] .explore-dots .explore-dot{background:#36453D!important}
+[data-theme="dark"] .explore-dots .explore-dot.on{background:var(--G)!important}
+
+/* Sponsored row: three equal columns on all storefront widths. */
+.sponsored-row{
+  display:grid!important;
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  gap:10px!important;
+  overflow:visible!important;
+  padding:10px 16px 4px!important;
+  scroll-snap-type:none!important;
+}
+.sponsored-card{
+  width:auto!important;min-width:0!important;max-width:none!important;
+  flex:none!important;height:132px!important;min-height:132px!important;
+  box-sizing:border-box!important;
+  scroll-snap-align:none!important;
+}
+.sponsored-card .sp-brand,.sponsored-card .sp-headline,.sponsored-card .sp-code{
+  max-width:78%!important;overflow-wrap:anywhere!important;
+}
+@media(max-width:430px){
+  .sponsored-row{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:8px!important;padding:9px 12px 3px!important}
+  .sponsored-card{height:136px!important;min-height:136px!important;padding:9px 8px!important;border-radius:13px!important}
+  .sponsored-card .sp-tag{font-size:6.3px!important;padding:2px 5px!important;margin-bottom:4px!important}
+  .sponsored-card .sp-brand{font-size:7.7px!important;line-height:1.15!important;max-width:76%!important}
+  .sponsored-card .sp-headline{font-size:9.7px!important;line-height:1.16!important;max-width:78%!important}
+  .sponsored-card .sp-code{font-size:6.8px!important;line-height:1.15!important;max-width:76%!important}
+  .sponsored-card .sp-join{font-size:7.5px!important;padding:4px 7px!important;max-width:82%!important}
+  .sponsored-card .sp-ic{width:26px!important;height:26px!important;right:5px!important;bottom:5px!important}
+}
+@media(max-width:360px){
+  .sponsored-row{gap:6px!important;padding-left:9px!important;padding-right:9px!important}
+  .sponsored-card{height:132px!important;min-height:132px!important;padding:8px 7px!important}
+  .sponsored-card .sp-brand{font-size:7.1px!important}
+  .sponsored-card .sp-headline{font-size:9px!important}
+  .sponsored-card .sp-code{font-size:6.2px!important}
+  .sponsored-card .sp-join{font-size:7px!important;padding:4px 6px!important}
+}
+
+/* The exact supplied DevX logo is the icon source; preserve its silhouette.
+   The filter is presentation-only so the mark stays white on the green AI orb. */
+.devx-ai-logo-icon{display:block!important;object-fit:contain!important;flex-shrink:0!important;pointer-events:none!important}
+.hero-ai-logo{width:18px!important;height:18px!important;filter:brightness(0) invert(1)!important}
+.bottom-ai-logo{width:29px!important;height:29px!important;filter:brightness(0) invert(1)!important}
+
+/* Keep the premium dock lightweight and consistent in both themes. */
+.bot-nav{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+[data-theme="dark"] .bot-nav{
+  background:#101713!important;border-color:#29352F!important;box-shadow:0 14px 36px rgba(0,0,0,.42)!important;
+}
+[data-theme="dark"] .bot-tab span{color:#8F9D95!important}
+[data-theme="dark"] .bot-tab svg{stroke:#8F9D95!important}
+[data-theme="dark"] .bot-tab.on span{color:#69D99A!important}
+[data-theme="dark"] .bot-tab.on svg{stroke:#69D99A!important}
+
+/* Prevent desktop browser canvas from showing an unrelated white frame. */
+@media(min-width:481px){
+  html{background:var(--bg)!important}
+  body{box-shadow:0 0 0 1px rgba(0,0,0,.025)}
+  [data-theme="dark"] body{box-shadow:0 0 0 1px rgba(255,255,255,.025)}
+}
+
+
+
+/* Branding logo only: fill the existing rounded logo frame edge-to-edge. */
+.client-brand-card .client-brand-logo-wrap{
+  padding:0!important;
+  background:#062d1d!important;
+  border:0!important;
+  overflow:hidden!important;
+  border-radius:inherit!important;
+}
+.client-brand-card .client-brand-logo-wrap img{
+  width:100%!important;
+  height:100%!important;
+  max-width:none!important;
+  max-height:none!important;
+  object-fit:cover!important;
+  object-position:center!important;
+  transform:none!important;
+  border-radius:inherit!important;
+  animation:none!important;
+}
+</style>
+<style id="devx-brand-logo-final-fit">
+/* Final client-logo presentation: no padding/gaps in the branding frame. */
+.client-brand-card .client-brand-logo-wrap{
+  width:100%!important;
+  box-sizing:border-box!important;
+  padding:0!important;
+  border:0!important;
+  background:#062d1d!important;
+  overflow:hidden!important;
+  border-radius:16px!important;
+  display:block!important;
+  position:relative!important;
+}
+.client-brand-card .client-brand-logo-wrap img{
+  width:100%!important;
+  height:100%!important;
+  max-width:none!important;
+  max-height:none!important;
+  display:block!important;
+  object-fit:cover!important;
+  object-position:center!important;
+  border:0!important;
+  border-radius:inherit!important;
+  transform:none!important;
+  animation:none!important;
+}
+@media(max-width:430px){
+  .client-brand-card .client-brand-logo-wrap{width:100%!important;border-radius:14px!important;padding:0!important}
+}
 </style>
 </head>
 <body>
@@ -5162,6 +5346,7 @@ async function nxBoot(){
       const sock=io();
       sock.on('sync',ch=>{
         Object.keys(ch).forEach(k=>{if(k in CACHE||k.startsWith('devx-'))CACHE[k]=ch[k]});
+        if(ch['devx-branding']) loadClientBranding();
         nxOnRemote();
       });
     }catch(e){setInterval(async()=>{try{const r2=await fetch('/api/state?'+stateQS(),{cache:'no-store'});if(r2.ok){Object.assign(CACHE,await r2.json());nxOnRemote()}}catch(e2){}},4000)}
@@ -5186,7 +5371,7 @@ function renderClientBranding(cfg){
   if(name)name.textContent=String((cfg&&cfg.storeName)||'Your Store').trim().slice(0,60);
   if(tag)tag.textContent=String((cfg&&cfg.tagline)||'Smart shopping. Better living.').trim().slice(0,100);
 }
-async function loadClientBranding(){try{const r=await fetch('/api/branding',{cache:'no-store'});if(!r.ok)return;const d=await r.json();CLIENT_BRANDING=d&&d.data?d.data:d;renderClientBranding(CLIENT_BRANDING||{})}catch(e){}}
+async function loadClientBranding(){try{const r=await fetch('/api/branding?'+branchQS(),{cache:'no-store'});if(!r.ok)return;const d=await r.json();CLIENT_BRANDING=d&&d.data?d.data:d;renderClientBranding(CLIENT_BRANDING||{})}catch(e){}}
 
 /* Catalog: seeded once, then owned jointly with the backend platform */
 function withStock(p,i){return Object.assign({},p,{stock:p.stock!=null?p.stock:(18+((i*7)%30))})}
@@ -5271,6 +5456,10 @@ function initCanvas(){
   const canvas=document.getElementById('heroCanvas');
   if(!canvas)return;
   if(canvasAnim)cancelAnimationFrame(canvasAnim);
+  canvasAnim=null;
+  /* The current premium hero intentionally hides the old particle canvas.
+     Do not keep a requestAnimationFrame loop alive for an invisible canvas. */
+  if(getComputedStyle(canvas).display==='none')return;
   const ctx=canvas.getContext('2d');
   function resize(){canvas.width=canvas.offsetWidth;canvas.height=canvas.offsetHeight}
   resize();
