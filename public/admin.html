@@ -271,6 +271,25 @@ tbody tr.click:hover{background:var(--GL)}
 @media(max-width:700px){.sponsored-admin-grid{grid-template-columns:1fr}}
 
 .nav-map-admin{margin-top:14px;border:1px solid var(--bdr);border-radius:14px;background:var(--bg);overflow:hidden}.nav-map-admin-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:13px 14px;border-bottom:1px solid var(--bdr)}.nav-map-admin-title{font-size:12px;font-weight:900;color:var(--tx)}.nav-map-admin-sub{font-size:10px;color:var(--tx3);line-height:1.5;margin-top:3px}.nav-map-admin-body{padding:14px}.nav-map-preview{width:100%;height:220px;border:1px solid var(--bdr);border-radius:13px;background:var(--card);object-fit:contain;display:block}.nav-map-aisles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:10px}.nav-map-aisle-row{padding:9px;border:1px solid var(--bdr);background:var(--card);border-radius:11px}.nav-map-aisle-row b{font-size:10px;color:var(--tx)}@media(max-width:800px){.nav-map-aisles{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:520px){.nav-map-aisles{grid-template-columns:1fr}.nav-map-preview{height:180px}}
+
+.branding-logo-editor-preview{margin-top:9px;width:180px;height:110px;border:1px solid var(--bdr);border-radius:12px;background:#fff;display:grid;place-items:center;overflow:hidden;position:relative}
+.branding-logo-editor-preview img{width:100%;height:100%;display:block;object-fit:contain}
+.branding-logo-controls{margin-top:10px;padding:10px 11px;border:1px solid var(--bdr);border-radius:12px;background:var(--bg)}
+.branding-control-row{display:grid;grid-template-columns:76px minmax(90px,1fr) 46px;align-items:center;gap:8px;margin:7px 0}
+.branding-control-row label{font-size:9px;font-weight:800;color:var(--tx2)}
+.branding-control-row input[type=range]{width:100%;accent-color:var(--GD)}
+.branding-control-row output{font-size:8px;font-weight:800;color:var(--tx3);text-align:right}
+.branding-fit-row{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.branding-fit-row .btn{font-size:9px;padding:7px 9px}
+[data-theme="dark"] .branding-logo-editor-preview{background:#fff}
+</style>
+
+<style id="devx-branding-editor-edge-to-edge">
+/* Branding editor only: preview exactly matches the customer edge-to-edge frame. */
+.branding-logo-editor-preview{padding:0!important;background:#062d1d!important;border:0!important;overflow:hidden!important;border-radius:14px!important}
+.branding-logo-editor-preview img{width:100%!important;height:100%!important;object-fit:cover!important;object-position:center!important;border-radius:inherit!important;display:block!important}
+#brandingPreviewLogo{padding:0!important;background:#062d1d!important;border:0!important;overflow:hidden!important;border-radius:11px!important}
+#brandingPreviewLogo img{width:100%!important;height:100%!important;object-fit:cover!important;object-position:center!important;border-radius:inherit!important;display:block!important}
 </style>
 </head>
 <body>
@@ -357,6 +376,9 @@ tbody tr.click:hover{background:var(--GL)}
       <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Activity Feed
     </button>
     <div class="nav-sec" data-sec="administration">Administration</div>
+    <button class="nav-btn" id="nav-branding" onclick="go('branding')">
+      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>Client Branding
+    </button>
     <button class="nav-btn" id="nav-staff" onclick="go('staff')">
       <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 11l-3 3-2-2"/></svg>Staff &amp; Roles
     </button>
@@ -472,6 +494,48 @@ tbody tr.click:hover{background:var(--GL)}
           <div id="sponsoredList" class="sponsored-admin-grid"></div>
           <div style="display:flex;justify-content:flex-end;margin-top:14px"><button class="btn grn" onclick="saveSponsored()">Save &amp; publish all 4 cards</button></div>
           <p style="font-size:10px;color:var(--tx3);font-weight:600;margin-top:9px;line-height:1.6">Card 1 is the client-managed Special Offer. Cards 2–4 are sponsored monetization placements. Every card supports its own copy, CTA, theme and promotional image. Saving here updates the customer Home Page.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- CLIENT BRANDING -->
+    <div class="view" id="view-branding">
+      <div class="grid-2b">
+        <div class="card">
+          <div class="card-hd"><span class="card-t">Client Branding</span><span class="td-sub">Customer Home Page</span></div>
+          <div class="card-bd">
+            <p class="td-sub" style="line-height:1.6;margin-bottom:14px">Upload the client’s logo and set the store-facing branding text. Changes apply only to the currently selected branch.</p>
+            <div class="fld"><label class="lbl">Client Logo</label>
+              <input class="inp" id="brandingLogoInput" type="file" accept="image/png,image/jpeg,image/webp" onchange="previewBrandingLogo(this)" style="padding:8px 9px">
+              <div id="brandingLogoPreview" class="branding-logo-editor-preview">
+                <span style="font-size:9px;color:var(--tx3);font-weight:700">No logo uploaded</span>
+              </div>
+              <div class="branding-logo-controls" aria-label="Logo crop and positioning controls">
+                <div class="branding-control-row"><label for="brandingZoom">Zoom</label><input id="brandingZoom" type="range" min="0.5" max="3" step="0.05" value="1" oninput="updateBrandingCrop('zoom',this.value)"><output id="brandingZoomValue">100%</output></div>
+                <div class="branding-control-row"><label for="brandingX">Horizontal</label><input id="brandingX" type="range" min="-1" max="1" step="0.01" value="0" oninput="updateBrandingCrop('x',this.value)"><output id="brandingXValue">Center</output></div>
+                <div class="branding-control-row"><label for="brandingY">Vertical</label><input id="brandingY" type="range" min="-1" max="1" step="0.01" value="0" oninput="updateBrandingCrop('y',this.value)"><output id="brandingYValue">Center</output></div>
+                <div class="branding-fit-row"><button type="button" class="btn ghost sm" onclick="setBrandingFit('contain')">Fit</button><button type="button" class="btn ghost sm" onclick="setBrandingFit('cover')">Fill box</button><button type="button" class="btn ghost sm" onclick="setBrandingEdgeToEdge()">Edge-to-edge</button><button type="button" class="btn ghost sm" onclick="resetBrandingCrop()">Reset</button></div>
+              </div>
+              <div style="font-size:9px;color:var(--tx3);margin-top:6px">Adjust how the logo sits inside the customer logo box. Changes are applied only to the logo preview.</div>
+              <div style="font-size:9px;color:var(--tx3);margin-top:3px">PNG, JPG or WebP · max 3 MB · transparent logos supported</div>
+            </div>
+            <div class="fld"><label class="lbl">Store / Client Name</label><input class="inp" id="brandingStoreName" maxlength="60" placeholder="e.g. Madina Supermarket"></div>
+            <div class="fld"><label class="lbl">Branding Tagline</label><input class="inp" id="brandingTagline" maxlength="100" placeholder="e.g. Smart shopping. Better living."></div>
+            <div style="display:flex;justify-content:flex-end;margin-top:14px"><button class="btn grn" onclick="saveBranding()">Save &amp; publish branding</button></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-hd"><span class="card-t">Live Preview</span><span class="td-sub" id="brandingBranchLabel"></span></div>
+          <div class="card-bd">
+            <div style="border:1px solid var(--bdr);border-radius:18px;padding:18px;background:linear-gradient(145deg,#eef8f1,#fff)">
+              <div style="font-size:8px;color:var(--GD);font-weight:900;letter-spacing:.08em;text-transform:uppercase">Customer Home</div>
+              <div style="margin-top:12px;border:1px solid #e5ebe7;border-radius:14px;background:#fff;padding:12px;display:flex;align-items:center;gap:11px">
+                <div id="brandingPreviewLogo" style="width:76px;height:62px;border:1px solid #e5ebe7;border-radius:11px;display:grid;place-items:center;overflow:hidden;background:#fff"><span style="font-size:8px;color:var(--tx3)">Logo</span></div>
+                <div style="min-width:0"><div id="brandingPreviewName" style="font-size:15px;font-weight:900;color:#17211b">Your Store</div><div id="brandingPreviewTag" style="margin-top:4px;font-size:8px;color:#577064">Smart shopping. Better living.</div><div style="margin-top:6px;font-size:6.5px;color:#829087;letter-spacing:.05em">POWERED BY DEVX AI CONCIERGE</div></div>
+              </div>
+            </div>
+            <p class="td-sub" style="margin-top:12px;line-height:1.6">The customer page reads this branding through the existing storefront API. No product, cart, AI, navigation or order functionality is changed.</p>
+          </div>
         </div>
       </div>
     </div>
@@ -991,7 +1055,7 @@ const NAV_PERM={insights:'insights.view',goals:'insights.view',reorder:'insights
   loyal:'loyalty.view',calc:'forecast.view',demand:'forecast.view',optim:'forecast.view',
   fin:'forecast.view',wh:'forecast.view',inv:'inventory.edit',offers:'offers.manage',sponsored:'offers.manage',
   cust:'loyalty.view',staff:'staff.manage',audit:'audit.view',branch:'branch.view',
-  roles:'staff.manage',mapbuilder:'inventory.edit',group:'insights.view',
+  roles:'staff.manage',mapbuilder:'inventory.edit',branding:'inventory.edit',group:'insights.view',
   dash:'orders.view',orders:'orders.view',pkc:'orders.view',scan:'orders.view',act:'orders.view'};
 /* Which section each screen lives under, so a heading with nothing beneath it
    does not sit there implying a missing feature. */
@@ -999,7 +1063,7 @@ const NAV_SEC={group:'overview',dash:'overview',orders:'fulfilment',pkc:'fulfilm
   inv:'merchandising',offers:'merchandising',sponsored:'merchandising',insights:'intelligence',goals:'intelligence',reorder:'intelligence',
   health:'intelligence',calc:'forecastai',demand:'forecastai',optim:'forecastai',fin:'forecastai',
   wh:'forecastai',loyal:'relationships',cust:'relationships',act:'relationships',
-  staff:'administration',audit:'administration',roles:'administration',branch:'administration',mapbuilder:'administration'};
+  staff:'administration',audit:'administration',roles:'administration',branch:'administration',mapbuilder:'administration',branding:'administration'};
 function switchBranch(id){
   BRANCH=id;localStorage.setItem('devx-admin-branch',id);noteRecent(id);
   toast('Switched to '+((BRANCHES.find(b=>b.id===id)||{}).area||id));
@@ -1139,7 +1203,7 @@ function timeAgo(iso){const s=Math.floor((Date.now()-new Date(iso))/1000);if(s<6
 function esc(s){return String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
 
 /* ─── NAV ─── */
-const TITLES={dash:['Dashboard','Live overview of your store'],pkc:['Pickup Counter','Dedicated queue for in-store collection'],orders:['Orders','Every order from the customer app, in real time'],scan:['Pickup Scanner','Verify customer pickup passes'],inv:['Inventory','Shared catalog — edits go live in the customer app'],offers:['Offers & Promotions','Publish deals straight to customers'],sponsored:['Sponsored Content','Manage monetization placements shown in Explore Special Offers'],goals:['Customer Goals & Streaks','Read-only view of personalised goals and engagement'],cust:['Customers','CRM — built automatically from orders'],act:['Activity Feed','Everything that happened, in order'],insights:['AI Insights','Lost sales and demand your POS cannot see'],reorder:['Auto Reorder','Forecast-driven purchase suggestions'],health:['Stock Health','Where your capital is sitting'],staff:['Staff &amp; Roles','Named accounts — who can do what'],audit:['Audit Log','Every consequential action, and who took it'],loyal:['Loyalty &amp; Personal Offers','Loyalty card joined to app account — catch customers before they drift'],calc:['AI Forecast Calculator','DevX ForecastAI — demand, purchase order and profit in one calculation'],demand:['Sales Forecasting','AI demand engine tuned to the UAE retail calendar'],optim:['Inventory Optimization','ABC-XYZ classification with a prioritised AI action plan'],fin:['Financial Forecast','Projected revenue, margin and cash flow'],wh:['Warehouse Planner','Zone utilisation and space planning'],branch:['Branches','Every shop in the group — and how to open the next one'],mapbuilder:['Store Map Builder','Design, customise and publish each store layout'],group:['Group Overview','Every shop in one place — ranked, with what it is costing you'],roles:['Roles &amp; Access','Exactly what each role can see and do, before you hand out a PIN']};
+const TITLES={dash:['Dashboard','Live overview of your store'],pkc:['Pickup Counter','Dedicated queue for in-store collection'],orders:['Orders','Every order from the customer app, in real time'],scan:['Pickup Scanner','Verify customer pickup passes'],inv:['Inventory','Shared catalog — edits go live in the customer app'],offers:['Offers & Promotions','Publish deals straight to customers'],sponsored:['Sponsored Content','Manage monetization placements shown in Explore Special Offers'],goals:['Customer Goals & Streaks','Read-only view of personalised goals and engagement'],cust:['Customers','CRM — built automatically from orders'],act:['Activity Feed','Everything that happened, in order'],insights:['AI Insights','Lost sales and demand your POS cannot see'],reorder:['Auto Reorder','Forecast-driven purchase suggestions'],health:['Stock Health','Where your capital is sitting'],staff:['Staff &amp; Roles','Named accounts — who can do what'],audit:['Audit Log','Every consequential action, and who took it'],loyal:['Loyalty &amp; Personal Offers','Loyalty card joined to app account — catch customers before they drift'],calc:['AI Forecast Calculator','DevX ForecastAI — demand, purchase order and profit in one calculation'],demand:['Sales Forecasting','AI demand engine tuned to the UAE retail calendar'],optim:['Inventory Optimization','ABC-XYZ classification with a prioritised AI action plan'],fin:['Financial Forecast','Projected revenue, margin and cash flow'],wh:['Warehouse Planner','Zone utilisation and space planning'],branch:['Branches','Every shop in the group — and how to open the next one'],mapbuilder:['Store Map Builder','Design, customise and publish each store layout'],group:['Group Overview','Every shop in one place — ranked, with what it is costing you'],roles:['Roles &amp; Access','Exactly what each role can see and do, before you hand out a PIN'],branding:['Client Branding','Logo and customer-facing store identity']};
 function go(v){
   curView=v;
   document.querySelectorAll('.view').forEach(e=>e.classList.remove('on'));
@@ -1241,6 +1305,7 @@ function renderView(){
   else if(curView==='mapbuilder')loadMapBuilder();
   else if(curView==='group')loadGroup();
   else if(curView==='roles')loadRoles();
+  else if(curView==='branding')loadBranding();
   paintSetupBanner();
 }
 
@@ -1409,7 +1474,7 @@ const toggleStaff=(id,on)=>staffPost('/api/staff/'+id,{active:on},on?'Enabled':'
    is the answer in plain words: pick a role, see every screen it
    opens and every one it does not.
    ═══════════════════════════════════════════════════════════════ */
-const SCREEN_LABEL={group:'Group Overview',dash:'Dashboard',orders:'Orders',pkc:'Pickup Counter',
+const SCREEN_LABEL={group:'Group Overview',dash:'Dashboard',orders:'Orders',pkc:'Pickup Counter',branding:'Client Branding',
   scan:'Pickup Scanner',inv:'Inventory',offers:'Offers & Promotions',sponsored:'Sponsored Content',insights:'AI Insights',goals:'Customer Goals & Streaks',
   reorder:'Auto Reorder',health:'Stock Health',calc:'Forecast Calculator',demand:'Sales Forecasting',
   optim:'Optimization',fin:'Financial Forecast',wh:'Warehouse Planner',loyal:'Loyalty & Offers',
@@ -3353,6 +3418,147 @@ async function saveSponsored(){
     CACHE['devx-sponsored']=rows;nxSet('devx-sponsored',rows);logAct('offer','Special Offers / sponsored content updated');nxBump();
     toast('All 4 cards saved · customer Home Page synced');renderSponsored();
   }catch(e){toast(e.message||'Could not save changes to the server','red');}
+}
+
+/* ─── CLIENT BRANDING ─── */
+let BRANDING_CURRENT=null;
+let BRANDING_EDITOR={img:null,src:'',zoom:1,x:0,y:0,fit:'cover'};
+function brandingPreview(data){
+  const d=data||{};
+  const name=String(d.storeName||'Your Store').trim()||'Your Store';
+  const tag=String(d.tagline||'Smart shopping. Better living.').trim()||'Smart shopping. Better living.';
+  const n=document.getElementById('brandingPreviewName'),t=document.getElementById('brandingPreviewTag');
+  if(n)n.textContent=name;if(t)t.textContent=tag;
+  const sn=document.getElementById('brandingStoreName'),st=document.getElementById('brandingTagline');
+  if(sn&&document.activeElement!==sn)sn.value=name;if(st&&document.activeElement!==st)st.value=tag;
+  const bl=document.getElementById('brandingBranchLabel'),b=BRANCHES.find(x=>x.id===BRANCH)||{};if(bl)bl.textContent=b.name||BRANCH||'';
+  if(d.clientLogo && d.clientLogo!==BRANDING_EDITOR.src) setBrandingEditorImage(d.clientLogo);
+  else renderBrandingLogoEditor();
+}
+function updateBrandingCrop(kind,val){
+  if(kind==='zoom') BRANDING_EDITOR.zoom=Math.max(.5,Math.min(3,Number(val)||1));
+  if(kind==='x') BRANDING_EDITOR.x=Math.max(-1,Math.min(1,Number(val)||0));
+  if(kind==='y') BRANDING_EDITOR.y=Math.max(-1,Math.min(1,Number(val)||0));
+  syncBrandingCropControls();renderBrandingLogoEditor();
+}
+function syncBrandingCropControls(){
+  const z=document.getElementById('brandingZoom'),x=document.getElementById('brandingX'),y=document.getElementById('brandingY');
+  if(z)z.value=BRANDING_EDITOR.zoom;
+  if(x)x.value=BRANDING_EDITOR.x;
+  if(y)y.value=BRANDING_EDITOR.y;
+  const zv=document.getElementById('brandingZoomValue'),xv=document.getElementById('brandingXValue'),yv=document.getElementById('brandingYValue');
+  if(zv)zv.textContent=Math.round(BRANDING_EDITOR.zoom*100)+'%';
+  if(xv)xv.textContent=Math.abs(BRANDING_EDITOR.x)<.02?'Center':(BRANDING_EDITOR.x<0?'Left':'Right');
+  if(yv)yv.textContent=Math.abs(BRANDING_EDITOR.y)<.02?'Center':(BRANDING_EDITOR.y<0?'Top':'Bottom');
+}
+function setBrandingFit(mode){
+  BRANDING_EDITOR.fit=mode==='contain'?'contain':'cover';
+  BRANDING_EDITOR.zoom=mode==='contain'?1:1;BRANDING_EDITOR.x=0;BRANDING_EDITOR.y=0;
+  syncBrandingCropControls();renderBrandingLogoEditor();
+}
+function setBrandingEdgeToEdge(){
+  BRANDING_EDITOR.fit='cover';BRANDING_EDITOR.zoom=1;BRANDING_EDITOR.x=0;BRANDING_EDITOR.y=0;
+  syncBrandingCropControls();renderBrandingLogoEditor();
+}
+function resetBrandingCrop(){
+  BRANDING_EDITOR.fit='cover';BRANDING_EDITOR.zoom=1;BRANDING_EDITOR.x=0;BRANDING_EDITOR.y=0;
+  syncBrandingCropControls();renderBrandingLogoEditor();
+}
+function setBrandingEditorImage(src){
+  BRANDING_EDITOR.src=src||'';
+  if(!src){BRANDING_EDITOR.img=null;renderBrandingLogoEditor();return}
+  const img=new Image();
+  img.onload=()=>{BRANDING_EDITOR.img=img;resetBrandingCrop()};
+  img.onerror=()=>{BRANDING_EDITOR.img=null;renderBrandingLogoEditor()};
+  img.src=src;
+}
+
+/* Remove only the blank/near-white border that sits OUTSIDE a client logo.
+   This fixes uploaded banner-style logos that contain their own white canvas,
+   while leaving transparent/coloured artwork untouched. */
+function trimBrandingWhitespace(img){
+  try{
+    const max=1800,scale=Math.min(1,max/Math.max(img.naturalWidth||img.width,img.naturalHeight||img.height));
+    const w=Math.max(1,Math.round((img.naturalWidth||img.width)*scale)),h=Math.max(1,Math.round((img.naturalHeight||img.height)*scale));
+    const c=document.createElement('canvas');c.width=w;c.height=h;const ctx=c.getContext('2d',{willReadFrequently:true});
+    ctx.drawImage(img,0,0,w,h);
+    const d=ctx.getImageData(0,0,w,h).data;let minX=w,minY=h,maxX=-1,maxY=-1;
+    for(let y=0;y<h;y++)for(let x=0;x<w;x++){
+      const i=(y*w+x)*4,a=d[i+3],r=d[i],g=d[i+1],b=d[i+2];
+      const blank=a<12 || (r>247&&g>247&&b>247);
+      if(!blank){if(x<minX)minX=x;if(x>maxX)maxX=x;if(y<minY)minY=y;if(y>maxY)maxY=y;}
+    }
+    if(maxX<0||maxY<0)return img.src;
+    const pad=Math.max(0,Math.round(Math.min(w,h)*0.003));
+    minX=Math.max(0,minX-pad);minY=Math.max(0,minY-pad);maxX=Math.min(w-1,maxX+pad);maxY=Math.min(h-1,maxY+pad);
+    const cw=maxX-minX+1,ch=maxY-minY+1;
+    if(cw/w>.985&&ch/h>.985)return img.src;
+    const out=document.createElement('canvas');out.width=cw;out.height=ch;out.getContext('2d').drawImage(c,minX,minY,cw,ch,0,0,cw,ch);
+    return out.toDataURL('image/png');
+  }catch(e){return img.src}
+}
+function renderBrandingLogoEditor(){
+  const p=document.getElementById('brandingLogoPreview'),pp=document.getElementById('brandingPreviewLogo');
+  if(!p)return;
+  if(!BRANDING_EDITOR.img){
+    p.innerHTML='<span style="font-size:9px;color:var(--tx3);font-weight:700">No logo uploaded</span>';
+    if(pp)pp.innerHTML='<span style="font-size:8px;color:var(--tx3)">Logo</span>';
+    return;
+  }
+  const W=720,H=440,canvas=document.createElement('canvas');canvas.width=W;canvas.height=H;
+  const ctx=canvas.getContext('2d');ctx.clearRect(0,0,W,H);
+  const iw=BRANDING_EDITOR.img.naturalWidth||BRANDING_EDITOR.img.width,ih=BRANDING_EDITOR.img.naturalHeight||BRANDING_EDITOR.img.height;
+  let scale=BRANDING_EDITOR.fit==='contain'?Math.min(W/iw,H/ih):Math.max(W/iw,H/ih);
+  scale*=BRANDING_EDITOR.zoom;
+  const dw=iw*scale,dh=ih*scale;
+  const ox=(W-dw)*((BRANDING_EDITOR.x+1)/2),oy=(H-dh)*((BRANDING_EDITOR.y+1)/2);
+  ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';ctx.drawImage(BRANDING_EDITOR.img,ox,oy,dw,dh);
+  const data=canvas.toDataURL('image/png');
+  p.innerHTML=`<img src="${data}" alt="Client logo preview">`;
+  if(pp)pp.innerHTML=`<img src="${data}" alt="" style="width:100%;height:100%;object-fit:contain">`;
+}
+function previewBrandingLogo(input){
+  const file=input&&input.files&&input.files[0];if(!file)return;
+  if(!/^image\/(png|jpeg|webp)$/.test(file.type)){input.value='';toast('Please select a PNG, JPG or WebP image','red');return}
+  if(file.size>3*1024*1024){input.value='';toast('Logo must be 3 MB or smaller','red');return}
+  const reader=new FileReader();reader.onerror=()=>toast('Could not read the logo','red');reader.onload=()=>{
+    const img=new Image();img.onerror=()=>toast('Could not process the logo','red');img.onload=()=>{
+      const max=1400,s=Math.min(1,max/Math.max(img.width,img.height)),w=Math.max(1,Math.round(img.width*s)),h=Math.max(1,Math.round(img.height*s));
+      const c=document.createElement('canvas');c.width=w;c.height=h;const ctx=c.getContext('2d');ctx.drawImage(img,0,0,w,h);
+      const raw=c.toDataURL('image/png');
+      const normalized=new Image();
+      normalized.onload=()=>{const data=trimBrandingWhitespace(normalized);BRANDING_CURRENT=Object.assign({},BRANDING_CURRENT||{}, {clientLogo:data});setBrandingEditorImage(data)};
+      normalized.src=raw;
+    };img.src=reader.result;
+  };reader.readAsDataURL(file);
+}
+async function loadBranding(){
+  try{
+    let d=null;
+    const r=await fetch('/api/admin/branding?branch='+encodeURIComponent(BRANCH||''),{headers:authHeaders(),cache:'no-store'});
+    if(r.ok){const j=await r.json();d=j.data||null;}
+    BRANDING_CURRENT=d||{clientLogo:'',storeName:'Your Store',tagline:'Smart shopping. Better living.'};
+    brandingPreview(BRANDING_CURRENT);
+  }catch(e){toast('Could not load client branding','red')}
+}
+async function saveBranding(){
+  const storeName=(document.getElementById('brandingStoreName').value||'').trim().slice(0,60);
+  const tagline=(document.getElementById('brandingTagline').value||'').trim().slice(0,100);
+  let logo=BRANDING_CURRENT?.clientLogo||'';
+  if(BRANDING_EDITOR.img){
+    const W=900,H=550,c=document.createElement('canvas');c.width=W;c.height=H;const ctx=c.getContext('2d');
+    const iw=BRANDING_EDITOR.img.naturalWidth||BRANDING_EDITOR.img.width,ih=BRANDING_EDITOR.img.naturalHeight||BRANDING_EDITOR.img.height;
+    let scale=BRANDING_EDITOR.fit==='contain'?Math.min(W/iw,H/ih):Math.max(W/iw,H/ih);scale*=BRANDING_EDITOR.zoom;
+    const dw=iw*scale,dh=ih*scale,ox=(W-dw)*((BRANDING_EDITOR.x+1)/2),oy=(H-dh)*((BRANDING_EDITOR.y+1)/2);
+    ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';ctx.drawImage(BRANDING_EDITOR.img,ox,oy,dw,dh);logo=c.toDataURL('image/png');
+  }
+  const data=Object.assign({},BRANDING_CURRENT||{}, {clientLogo:logo,storeName:storeName||'Your Store',tagline:tagline||'Smart shopping. Better living.'});
+  try{
+    const r=await fetch('/api/admin/branding',{method:'POST',headers:authHeaders({'Content-Type':'application/json'}),body:JSON.stringify(Object.assign(data,{branchId:BRANCH}))});
+    const j=await r.json().catch(()=>({}));if(!r.ok)throw new Error(j.error||'Could not save branding');
+    BRANDING_CURRENT=j.data||data;CACHE['devx-branding']={[BRANCH]:BRANDING_CURRENT};
+    toast('Client branding saved · customer Home Page synced');brandingPreview(BRANDING_CURRENT);
+  }catch(e){toast(e.message||'Could not save branding','red')}
 }
 
 /* ─── OFFERS ─── */
