@@ -88,7 +88,7 @@ const VISION = groq
 
 /* ── storage ── */
 const KEYS = ['devx-catalog', 'devx-orders', 'devx-offers', 'devx-sponsored', 'devx-notifs-customer', 'devx-activity', 'devx-queries',
-  'devx-loyalty', 'devx-personal-offers', 'devx-zones', 'devx-staff', 'devx-audit', 'devx-slots', 'devx-branches', 'devx-catalogs', 'devx-order-additions', 'devx-customer-passwords', 'devx-streaks', 'devx-goal-dismissals', 'devx-streak-config', 'devx-store-navigation', 'devx-store-map-builder'];
+  'devx-loyalty', 'devx-personal-offers', 'devx-zones', 'devx-staff', 'devx-audit', 'devx-slots', 'devx-branches', 'devx-catalogs', 'devx-order-additions', 'devx-customer-passwords', 'devx-streaks', 'devx-goal-dismissals', 'devx-streak-config', 'devx-store-navigation', 'devx-store-map-builder', 'devx-branding'];
 let db = {
   'devx-catalog': null,
   'devx-orders': [],
@@ -126,6 +126,8 @@ let db = {
   'devx-streak-config': GOALS.DEFAULT_STREAK_CONFIG,
   'devx-store-navigation': {},
   'devx-store-map-builder': {},
+  /* Per-branch client branding shown on the customer home page. */
+  'devx-branding': {},
   'devx-order-count': 0
 };
 
@@ -366,6 +368,8 @@ function fullState(branchId) {
   s['devx-activity'] = STORES.scope(db['devx-activity'], bid, def);
   s['devx-queries'] = STORES.scope(db['devx-queries'], bid, def);
   s['devx-personal-offers'] = STORES.scope(db['devx-personal-offers'], bid, def);
+  /* Branding is branch-scoped; keep the admin bootstrap small and private. */
+  s['devx-branding'] = { [bid]: (db['devx-branding'] || {})[bid] || null };
   return s;
 }
 
@@ -403,6 +407,49 @@ app.get('/api/health', (req, res) => {
     integrations: INTEG.status(),
     uptime_s: Math.round(process.uptime())
   });
+});
+
+/* ── CLIENT BRANDING ────────────────────────────────────────────────
+   Public customer read + authenticated branch-scoped admin write. The logo is
+   stored as a compact data URL so no existing storage or upload dependency is
+   required. It is deliberately excluded from public /api/state to keep the
+   normal shopper bootstrap payload small. */
+app.get('/api/branding', (req, res) => {
+  const bid = branchOf(req);
+  const data = (db['devx-branding'] || {})[bid] || null;
+  res.set('Cache-Control', 'public, max-age=30');
+  res.json({ data, branchId: bid });
+});
+
+app.get('/api/admin/branding', need('inventory.edit'), (req, res) => {
+  const bid = branchOf(req);
+  if (!STORES.find(db, bid)) return res.status(404).json({ error: 'Unknown branch' });
+  if (!ownsBranch(req, bid)) return res.status(403).json({ error: 'You can only view your own shop' });
+  res.json({ data: (db['devx-branding'] || {})[bid] || null, branchId: bid });
+});
+
+app.post('/api/admin/branding', need('inventory.edit'), (req, res) => {
+  const b = req.body || {};
+  const bid = String(b.branchId || branchOf(req)).trim();
+  if (!STORES.find(db, bid)) return res.status(404).json({ error: 'Unknown branch' });
+  if (!ownsBranch(req, bid)) return res.status(403).json({ error: 'You can only change your own shop' });
+  const logo = b.clientLogo == null ? '' : String(b.clientLogo);
+  if (logo && !/^data:image\/(png|jpe?g|webp);base64,[A-Za-z0-9+/=]+$/i.test(logo))
+    return res.status(400).json({ error: 'Logo must be a PNG, JPG or WebP image' });
+  if (logo.length > 4_500_000)
+    return res.status(413).json({ error: 'Logo is too large. Please upload an image under about 3 MB.' });
+  const clean = {
+    clientLogo: logo,
+    storeName: String(b.storeName || 'Your Store').trim().slice(0,60),
+    tagline: String(b.tagline || 'Smart shopping. Better living.').trim().slice(0,100),
+    updatedAt: new Date().toISOString()
+  };
+  if (!db['devx-branding']) db['devx-branding'] = {};
+  db['devx-branding'][bid] = clean;
+  save('devx-branding');
+  audit(req, 'branding.update', `updated client branding for ${((STORES.find(db,bid)||{}).name||bid)}`);
+  broadcast({ 'devx-branding': { [bid]: clean } });
+  res.json({ data: clean, branchId: bid });
 });
 
 app.get('/api/state', (req, res) => {
