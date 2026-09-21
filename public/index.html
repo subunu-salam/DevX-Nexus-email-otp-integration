@@ -8293,6 +8293,177 @@ function initEngagementStrip(){
   if(CTOKEN&&MY_PHONE){(async()=>{const ok=await refreshSignedInIdentity();if(!ok){localStorage.removeItem('devx-ctoken');localStorage.removeItem('devx-phone');CTOKEN='';MY_PHONE='';setEngagementVisible(false);return}setEngagementVisible(true);await markStreakActivity('portal_visit');await loadPersonalGoal();renderStoreNavHomePreview()})()}else setEngagementVisible(false)
 }
 
+
+/* ─────────────────────────────────────────────────────────────────────
+   21st-inspired GLASS STACK for Explore Special Offers.
+   Adapted to the existing vanilla HTML/JS storefront — no React, GSAP,
+   Tailwind or component architecture changes. Existing offer data,
+   auto-rotation and manual dot navigation remain intact.
+   ───────────────────────────────────────────────────────────────────── */
+(function(){
+  const css=document.createElement('style');
+  css.id='devx-21st-glass-offers';
+  css.textContent=`
+    #exploreWrap.devx-glass-wrap{padding:0 16px 5px;position:relative;overflow:visible}
+    #exploreCarousel.devx-glass-stack{
+      position:relative;width:100%;height:184px;display:block;overflow:visible;
+      touch-action:pan-y;user-select:none;-webkit-user-select:none;
+      perspective:1100px;isolation:isolate;
+    }
+    #exploreCarousel.devx-glass-stack .sponsored-explore-slide{
+      position:absolute!important;inset:0!important;width:100%!important;min-width:100%!important;max-width:100%!important;
+      height:100%!important;min-height:0!important;aspect-ratio:auto!important;margin:0!important;
+      opacity:0;pointer-events:none;transform:translate3d(0,18px,0) scale(.94);
+      transform-origin:center top;
+      transition:transform .48s cubic-bezier(.2,.8,.2,1),opacity .32s ease,filter .4s ease,box-shadow .4s ease!important;
+      will-change:transform,opacity;overflow:hidden!important;
+      border:1px solid rgba(255,255,255,.24)!important;
+      box-shadow:0 18px 38px rgba(7,35,19,.18),0 2px 8px rgba(0,0,0,.08),inset 0 1px 0 rgba(255,255,255,.28)!important;
+      backdrop-filter:blur(18px) saturate(135%);
+    }
+    #exploreCarousel.devx-glass-stack .sponsored-explore-slide::before{
+      content:'';position:absolute;inset:0;z-index:0;pointer-events:none;
+      background:linear-gradient(135deg,rgba(255,255,255,.20),rgba(255,255,255,.04) 42%,transparent 68%);
+      mix-blend-mode:screen;opacity:.8;
+    }
+    #exploreCarousel.devx-glass-stack .sponsored-explore-slide::after{
+      content:'';position:absolute;inset:1px;border-radius:inherit;z-index:3;pointer-events:none;
+      background:linear-gradient(110deg,rgba(255,255,255,.18),transparent 24%,transparent 72%,rgba(255,255,255,.06));
+      opacity:.7;
+    }
+    #exploreCarousel.devx-glass-stack .sponsored-explore-slide.devx-stack-active{
+      opacity:1;pointer-events:auto;transform:translate3d(0,0,40px) scale(1);z-index:5;
+      cursor:grab;filter:saturate(1.02);
+    }
+    #exploreCarousel.devx-glass-stack .sponsored-explore-slide.devx-stack-active:active{cursor:grabbing}
+    #exploreCarousel.devx-glass-stack .sponsored-explore-slide.devx-stack-next-1{
+      opacity:.82;pointer-events:none;transform:translate3d(0,9px,0) scale(.965);z-index:4;filter:saturate(.92) brightness(.96)
+    }
+    #exploreCarousel.devx-glass-stack .sponsored-explore-slide.devx-stack-next-2{
+      opacity:.58;pointer-events:none;transform:translate3d(0,17px,-25px) scale(.93);z-index:3;filter:saturate(.84) brightness(.91)
+    }
+    #exploreCarousel.devx-glass-stack .sponsored-explore-slide.devx-stack-prev-1{
+      opacity:0;pointer-events:none;transform:translate3d(-18px,3px,0) scale(.98);z-index:2
+    }
+    #exploreCarousel.devx-glass-stack.devx-dragging .sponsored-explore-slide{transition:none!important}
+    #exploreCarousel.devx-glass-stack.devx-dragging .sponsored-explore-slide.devx-stack-active{cursor:grabbing}
+    #exploreCarousel.devx-glass-stack .sponsor-image{transition:transform .65s cubic-bezier(.2,.8,.2,1),opacity .4s ease}
+    #exploreCarousel.devx-glass-stack .devx-stack-active .sponsor-image{transform:scale(1.035)}
+    #exploreCarousel.devx-glass-stack .sponsor-label{box-shadow:0 5px 15px rgba(0,0,0,.12),inset 0 1px 0 rgba(255,255,255,.2)}
+    #exploreCarousel.devx-glass-stack .sponsor-code{box-shadow:0 6px 14px rgba(0,0,0,.12),inset 0 1px 0 rgba(255,255,255,.5)}
+    #exploreCarousel.devx-glass-stack .sponsor-content,
+    #exploreCarousel.devx-glass-stack .sponsor-top{z-index:4!important}
+    #exploreDots.devx-glass-dots{margin:9px 0 3px;position:relative;z-index:8}
+    #exploreDots.devx-glass-dots .explore-dot{cursor:pointer;transition:width .28s ease,background .28s ease,transform .28s ease}
+    #exploreDots.devx-glass-dots .explore-dot:hover{transform:scale(1.2)}
+    @media(max-width:430px){
+      #exploreWrap.devx-glass-wrap{padding:0 12px 4px}
+      #exploreCarousel.devx-glass-stack{height:176px}
+      #exploreCarousel.devx-glass-stack .sponsored-explore-slide{padding:12px 14px!important}
+      #exploreCarousel.devx-glass-stack .sponsor-headline{font-size:15px!important}
+    }
+    @media(max-width:360px){#exploreCarousel.devx-glass-stack{height:168px}}
+    @media(prefers-reduced-motion:reduce){
+      #exploreCarousel.devx-glass-stack .sponsored-explore-slide{transition:opacity .15s ease!important}
+      #exploreCarousel.devx-glass-stack .sponsor-image{transition:none!important}
+    }
+  `;
+  document.head.appendChild(css);
+})();
+
+/* Replace only the Explore Special Offers presentation layer.
+   Data source, sponsored settings, card click behavior and dot semantics
+   are preserved from the existing implementation. */
+function renderExplore(){
+  const wrap=document.getElementById('exploreWrap');
+  const dots=document.getElementById('exploreDots');
+  const car=document.getElementById('exploreCarousel');
+  if(!wrap||!dots||!car)return;
+
+  const defaults=[
+    {brand:'RideGo',headline:'20% off your first ride',sub:'A featured partner message',code:'USE RIDE20',tone:'sponsor-green',mark:'PARTNER',active:true},
+    {brand:'DevX Rewards',headline:'Save up to 15% on your next order',sub:'Exclusive partner benefit',code:'USE SAVE15',tone:'sponsor-navy',mark:'CARD',active:true},
+    {brand:'DevX Plus',headline:'Free delivery for everyday shopping',sub:'Featured membership placement',code:'LEARN MORE',tone:'sponsor-purple',mark:'MEMBERSHIP',active:true}
+  ];
+  const sponsored=nxRead(NXK.sponsored,defaults).filter(a=>a&&a.active!==false).slice(0,3);
+  wrap.style.display='';dots.style.display='';
+  clearInterval(exploreTimer);
+  exploreIndex=0;
+  car.classList.add('devx-glass-stack');
+  wrap.classList.add('devx-glass-wrap');
+  dots.classList.add('devx-glass-dots');
+  car.innerHTML=sponsored.map((a,i)=>`<div class="explore-slide sponsored-explore-slide ${a.tone}" data-stack-index="${i}" onclick="showToast('Example sponsored placement — not a live offer','green')">
+    ${a.image?`<div class="sponsor-media"><img class="sponsor-image" src="${esc(a.image)}" alt="" loading="lazy"></div>`:''}
+    <div class="sponsor-image-overlay"></div>
+    <div class="sponsor-top"><span class="sponsor-label">Sponsored</span><span class="sponsor-mark">${esc(a.mark||'PARTNER')}</span></div>
+    <div class="sponsor-content"><div class="sponsor-brand">${esc(a.brand)}</div><div class="sponsor-headline">${esc(a.headline)}</div><div class="sponsor-sub">${esc(a.sub)}</div><div class="sponsor-code">${esc(a.code)}</div></div>
+    <div class="sponsor-art">✦</div>
+  </div>`).join('');
+  dots.innerHTML=sponsored.map((_,i)=>`<span class="explore-dot ${i===0?'on':''}" data-dot-index="${i}" role="button" tabindex="0" aria-label="Show offer ${i+1}"></span>`).join('');
+
+  const cards=[...car.children];
+  const count=cards.length;
+  const applyStack=()=>{
+    cards.forEach((card,i)=>{
+      card.classList.remove('devx-stack-active','devx-stack-next-1','devx-stack-next-2','devx-stack-prev-1');
+      if(i===exploreIndex)card.classList.add('devx-stack-active');
+      else if(i===(exploreIndex+1)%count)card.classList.add('devx-stack-next-1');
+      else if(i===(exploreIndex+2)%count)card.classList.add('devx-stack-next-2');
+      else card.classList.add('devx-stack-prev-1');
+    });
+    [...dots.children].forEach((d,i)=>d.classList.toggle('on',i===exploreIndex));
+  };
+  const goTo=(next,resetTimer=true)=>{
+    if(!count)return;
+    exploreIndex=(next+count)%count;
+    applyStack();
+    if(resetTimer)restartExploreTimer();
+  };
+  const restartExploreTimer=()=>{
+    clearInterval(exploreTimer);
+    if(count>1)exploreTimer=setInterval(()=>goTo(exploreIndex+1,false),4000);
+  };
+  window.__devxExploreGoTo=goTo;
+  dots.querySelectorAll('.explore-dot').forEach((d,i)=>{
+    d.addEventListener('click',e=>{e.stopPropagation();goTo(i,true)});
+    d.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();goTo(i,true)}});
+  });
+
+  let dragging=false,startX=0,lastX=0,moved=false;
+  const setDrag=(dx)=>{
+    if(!dragging)return;
+    cards.forEach((card,i)=>{
+      if(i===exploreIndex){
+        card.style.transform=`translate3d(${dx}px,0,40px) scale(1)`;
+        card.style.opacity='1';
+      } else if(i===(exploreIndex+1)%count){
+        const reveal=Math.min(1,Math.abs(dx)/150);
+        card.style.transform=`translate3d(0,${9-3*reveal}px,0) scale(${.965+.035*reveal})`;
+      }
+    });
+  };
+  const finishDrag=(clientX)=>{
+    if(!dragging)return;
+    const dx=clientX-startX;
+    dragging=false;car.classList.remove('devx-dragging');
+    cards.forEach(c=>c.style.transform='');
+    if(Math.abs(dx)>48){goTo(exploreIndex+(dx<0?1:-1),true);moved=true}
+    else {applyStack();restartExploreTimer()}
+  };
+  car.onpointerdown=(e)=>{
+    if(e.pointerType==='mouse'&&e.button!==0)return;
+    dragging=true;moved=false;startX=e.clientX;lastX=e.clientX;car.classList.add('devx-dragging');
+    try{car.setPointerCapture(e.pointerId)}catch(_){ }
+  };
+  car.onpointermove=(e)=>{if(!dragging)return;lastX=e.clientX;setDrag(lastX-startX)};
+  car.onpointerup=(e)=>finishDrag(e.clientX);
+  car.onpointercancel=()=>{if(dragging){dragging=false;car.classList.remove('devx-dragging');cards.forEach(c=>c.style.transform='');applyStack();restartExploreTimer()}};
+  car.onclick=(e)=>{if(moved){e.preventDefault();e.stopPropagation();moved=false}};
+  car.ondragstart=()=>false;
+  applyStack();
+  restartExploreTimer();
+}
+
 /* ─── INIT ─── */
 (async function(){
   await nxBoot();
