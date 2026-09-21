@@ -2917,7 +2917,21 @@ app.post('/api/customer/forgot-pin/reset', GUARD.limit('write'), (req,res)=>{
   row.pin=pin;row.pinUpdatedAt=new Date().toISOString();save('devx-customer-passwords');CUSTOMER_PIN_RESETS.delete(phone);res.json({ok:true});
 });
 app.get('/api/customer/accounts', need('loyalty.view'), (req,res)=>{
-  const rows=(db['devx-customer-passwords']||[]).map(x=>{const phone=LOY.normalisePhone(x.phone);const orders=(db['devx-orders']||[]).filter(o=>LOY.normalisePhone(o.customer&&o.customer.phone)===phone&&!['cancelled'].includes(o.status));return {phone,name:x.name||'',createdAt:x.createdAt||null,orders:orders.length,spent:orders.reduce((n,o)=>n+Number(o.total||0),0),last:orders.reduce((v,o)=>!v||o.date>v?o.date:v,'')};});
+  const rows=(db['devx-customer-passwords']||[]).map(x=>{
+    const phone=LOY.normalisePhone(x.phone);
+    const orders=(db['devx-orders']||[]).filter(o=>LOY.normalisePhone(o.customer&&o.customer.phone)===phone&&!['cancelled'].includes(o.status));
+    const latest=orders.reduce((v,o)=>!v||o.date>v.date?o:v,null);
+    return {
+      phone,
+      name:x.name||'',
+      email:x.email||'',
+      address:(latest&&latest.customer&&(latest.customer.addr||latest.customer.address))||'',
+      createdAt:x.createdAt||null,
+      orders:orders.length,
+      spent:orders.reduce((n,o)=>n+Number(o.total||0),0),
+      last:orders.reduce((v,o)=>!v||o.date>v?o.date:v,'')
+    };
+  });
   res.json({data:rows});
 });
 app.post('/api/customer/otp', GUARD.limit('write'), async (req, res) => {
