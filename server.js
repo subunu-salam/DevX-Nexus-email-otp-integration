@@ -77,8 +77,10 @@ console.log('[nexus] LLM provider:', LLM ? LLM.name : 'NONE (keyword fallback on
 // Vision layer for the unified product scanner. Keep this separate from the
 // concierge model so an image-capable model is always selected when a provider
 // key is available. Groq is preferred for speed; OpenAI is the fallback.
-const VISION_GROQ_MODEL = 'qwen/qwen3.6-27b';
-const VISION_OPENAI_MODEL = 'gpt-4o-mini';
+// Current Groq multimodal model. qwen/qwen3.6-27b was deprecated on 14 Sep 2026.
+// Keep this configurable so a future provider/model change does not require code edits.
+const VISION_GROQ_MODEL = process.env.VISION_GROQ_MODEL || 'qwen/qwen3.8-27b';
+const VISION_OPENAI_MODEL = process.env.VISION_OPENAI_MODEL || 'gpt-4o-mini';
 const VISION = groq
   ? { client: groq, model: VISION_GROQ_MODEL, name: 'Groq ' + VISION_GROQ_MODEL }
   : openai
@@ -904,7 +906,12 @@ function compactVisionImageData(value) {
 app.post('/api/scan/product-image', GUARD.limit('write'), async (req, res) => {
   const image = compactVisionImageData(req.body?.image);
   if (!image) return res.status(400).json({ error: 'invalid or oversized image' });
-  if (!VISION) return res.status(503).json({ error: 'no vision provider configured', provider: null });
+  if (!VISION) return res.status(503).json({
+    error: 'Vision is not configured',
+    code: 'VISION_PROVIDER_MISSING',
+    provider: null,
+    message: 'Add GROQ_API_KEY (recommended) or OPENAI_API_KEY to the server .env and restart the app.'
+  });
 
   const catalog = catalogOf(branchOf(req));
   const prompt = [
