@@ -134,7 +134,7 @@ body{
 .cart-badge.visible{opacity:1;transform:scale(1)}
 /* Customer cart indicator — intentionally small, red and always tied to the real cart count. */
 .bottom-cart-wrap{position:relative;display:flex;align-items:center;justify-content:center}
-.bot-badge{position:absolute;top:-4px;left:calc(50% + 4px);min-width:18px;height:18px;padding:0 4px;border-radius:10px;background:#E53935;color:#fff;font:900 9px/18px 'Montserrat',sans-serif;text-align:center;border:2px solid var(--card);display:none;z-index:6;box-sizing:border-box}
+.bot-badge{position:absolute;top:-10px;left:50%;transform:translateX(-50%);min-width:19px;height:19px;padding:0 5px;border-radius:999px;background:#E53935;color:#fff;font:900 9px/19px 'Montserrat',sans-serif;text-align:center;border:2px solid var(--card);box-shadow:0 4px 10px rgba(229,57,53,.28);display:none;z-index:6;box-sizing:border-box;white-space:nowrap}
 .bot-badge.visible{display:block}
 
 /* ─── VIEWS ─── */
@@ -3651,6 +3651,9 @@ button,input,textarea,select{font-family:inherit}
 </style>
 
 <style id="final-mobile-header-sponsored-ocr-fix">
+/* Exact supplied DevX logo is used in the top header; no substitute SVG. */
+.hdr > .logo > .logo-mark{background:transparent!important;border-radius:0!important;object-fit:contain!important;padding:0!important;}
+
 /* FINAL MOBILE-ONLY POLISH: prevent header and sponsored-card text collisions. */
 @media (max-width:430px){
   .hdr{
@@ -4532,8 +4535,8 @@ body{background:var(--bg)!important}
 /* The exact supplied DevX logo is the icon source; preserve its silhouette.
    The filter is presentation-only so the mark stays white on the green AI orb. */
 .devx-ai-logo-icon{display:block!important;object-fit:contain!important;flex-shrink:0!important;pointer-events:none!important}
-.hero-ai-logo{width:18px!important;height:18px!important;filter:brightness(0) invert(1)!important}
-.bottom-ai-logo{width:29px!important;height:29px!important;filter:brightness(0) invert(1)!important}
+.hero-ai-logo{width:18px!important;height:18px!important;filter:none!important;background:transparent!important;border-radius:0!important;padding:0!important;box-sizing:border-box}
+.bottom-ai-logo{width:29px!important;height:29px!important;filter:none!important;background:transparent!important;border-radius:0!important;padding:0!important;box-sizing:border-box}
 
 /* Keep the premium dock lightweight and consistent in both themes. */
 .bot-nav{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
@@ -4858,13 +4861,7 @@ html[data-store="on"] .home-store-nav-3d{display:block}
 <!-- HEADER -->
 <header class="hdr">
   <a class="logo" href="#" onclick="return false">
-    <img src="logo.png" alt="DevX logo" style="width:34px;height:34px;object-fit:contain;flex-shrink:0;background:#fff;border-radius:7px" onerror="this.remove()" onload="this.nextElementSibling.style.display='none'"><svg class="logo-mark" viewBox="0 0 34 34" fill="none">
-      <path d="M5 10L13 17L5 24" stroke="white" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
-      <path d="M16 11L27 11L21 18L27 25L16 25" stroke="#3DBB6A" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-      <line x1="23" y1="6" x2="30" y2="6" stroke="#3DBB6A" stroke-width="3" stroke-linecap="round"/>
-      <line x1="30" y1="6" x2="30" y2="13" stroke="#3DBB6A" stroke-width="3" stroke-linecap="round"/>
-      <line x1="22" y1="14" x2="30" y2="6" stroke="#3DBB6A" stroke-width="2.5" stroke-linecap="round"/>
-    </svg>
+    <img class="logo-mark" src="logo.png" alt="DevX logo" style="object-fit:contain;flex-shrink:0;background:transparent;border-radius:0;padding:0">
     <div class="logo-text">
       <div class="logo-name">DEV<span>X</span></div>
       <div class="logo-sub" style="font-weight:900;color:#B8F3CE">AI Concierge</div>
@@ -4884,13 +4881,6 @@ html[data-store="on"] .home-store-nav-3d{display:block}
         <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
       </button>
       <span class="notif-badge" id="notifBadge"></span>
-    </div>
-    <!-- Customer cart indicator: existing cart state only; no cart logic changed. -->
-    <div class="cart-wrap">
-      <button class="hdr-icon-btn" id="headerCartBtn" type="button" onclick="openCart()" title="Cart" aria-label="Open cart">
-        <svg viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/></svg>
-      </button>
-      <span class="cart-badge" id="cartBadge" aria-live="polite"></span>
     </div>
     <!-- Account. Sign-in was previously reachable only from a small card
          further down the home screen, so shoppers never found it. -->
@@ -6732,12 +6722,12 @@ function lmConfirm(){
 }
 function syncCartBadge(){
   const n=cartCnt();
-  const badges=[document.getElementById('cartBadge'),document.getElementById('bottomCartBadge')];
-  badges.forEach(b=>{
-    if(!b)return;
-    b.textContent=n>99?'99+':(n||'');
-    b.classList.toggle('visible',n>0);
-  });
+  // Cart count is intentionally shown only above the primary bottom Cart navigation.
+  const badge=document.getElementById('bottomCartBadge');
+  if(badge){
+    badge.textContent=n>99?'99+':(n||'');
+    badge.classList.toggle('visible',n>0);
+  }
   if(document.getElementById('accountOverlay')?.classList.contains('on'))updateAccountMenu();
   if(storeMode)renderHomeStoreNav3D();
 }
