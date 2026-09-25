@@ -1596,6 +1596,8 @@ app.post('/api/orders', GUARD.limit('write'), (req, res) => {
       it.loose = true; it.grams = grams; it.perKg = perKg;
       it.name = p.name; it.loc = p.loc; it.unit = (grams >= 1000 ? (grams / 1000) + ' kg' : grams + ' g');
       it.price = Math.round(perKg * grams / 1000 * 100) / 100;   // line price
+      it.estimatedGrams = grams;
+      it.estimatedPrice = it.price;
       it.qty = 1;
       sub += it.price;
     } else {
@@ -1654,7 +1656,7 @@ app.post('/api/orders', GUARD.limit('write'), (req, res) => {
   }
   o.needsWeighing = PAY.hasLooseItems(o);
   o.weighed = false;
-  o.payStatus = o.payMethod === 'online'
+  o.payStatus = (o.payMethod === 'online' || o.payMethod === 'card_machine')
     ? (o.needsWeighing ? 'awaiting_weight' : 'awaiting_payment')
     : 'due_on_delivery';
 
@@ -2291,8 +2293,9 @@ app.post('/api/orders/:id/weigh', need('orders.weigh'), (req, res) => {
   o.weighedBy = req.actor ? req.actor.name : 'Shared PIN';
   o.history.push({ s: 'weighed', at: o.weighedAt });
 
-  if (o.payMethod === 'online') {
-    // money moves before the customer sees the goods, so a big swing needs
+  if (o.payMethod === 'online' || o.payMethod === 'card_machine') {
+    // card/online payments for weighted items stay pending until the actual
+    // weight and revised price are visible to the customer; a big swing needs
     // their explicit approval first; inside tolerance they just pay.
     o.needsApproval = totals.needsApproval;
     o.payStatus = totals.needsApproval ? 'awaiting_approval' : 'awaiting_payment';
@@ -2310,7 +2313,7 @@ app.post('/api/orders/:id/weigh', need('orders.weigh'), (req, res) => {
   notify('order', 'Your items have been weighed — ' + o.id,
     `Actual weight recorded. Final total AED ${o.total}` +
     (diff ? ` (${diff > 0 ? '+' : ''}AED ${diff} vs your estimate)` : ' — exactly as estimated') +
-    (o.payMethod === 'online'
+    ((o.payMethod === 'online' || o.payMethod === 'card_machine')
       ? (totals.needsApproval ? '. Please review and approve the new total.' : '. Tap to pay now.')
       : '. Pay on delivery.'),
     o.cid);
@@ -2331,7 +2334,7 @@ app.post('/api/orders/:id/confirm', (req, res) => {
   o.needsApproval = false;
   o.approvedAt = new Date().toISOString();
   o.history.push({ s: 'approved', at: o.approvedAt });
-  o.payStatus = o.payMethod === 'online' ? 'awaiting_payment' : 'due_on_delivery';
+  o.payStatus = (o.payMethod === 'online' || o.payMethod === 'card_machine') ? 'awaiting_payment' : 'due_on_delivery';
   activity('order', `${o.id} weight approved by customer — AED ${o.total} (${PAY.PAYMENT_METHODS[o.payMethod].label})`, o.branchId);
   save(); broadcast({ 'devx-orders': db['devx-orders'], 'devx-activity': db['devx-activity'] });
   res.json({ order: o, nextAction: PAY.nextAction(o) });
