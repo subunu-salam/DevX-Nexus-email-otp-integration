@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <meta name="theme-color" content="#111111">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="manifest" href="/manifest.json">
+<link rel="apple-touch-icon" href="/pwa-icon-192.png">
+<meta name="mobile-web-app-capable" content="yes">
 <title>DevX NeXus — AI Concierge</title>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -95,7 +98,7 @@ body{
 .logo{display:flex;align-items:center;gap:9px;text-decoration:none;flex-shrink:0}
 .logo-mark{width:34px;height:34px;flex-shrink:0}
 .logo-text{display:flex;flex-direction:column;line-height:1}
-.logo-name{font-size:15px;font-weight:900;letter-spacing:-.04em;color:#fff}
+.logo-name{font-size:15px;font-family:'Montserrat',system-ui,sans-serif;font-weight:900;letter-spacing:-.04em;color:#fff}
 .logo-name span{color:var(--G)}
 .logo-sub{font-size:8px;font-weight:400;color:rgba(255,255,255,.45);letter-spacing:.1em;text-transform:uppercase;margin-top:1px}
 .hdr-search-btn{
@@ -119,9 +122,9 @@ body{
 .hdr-icon-btn svg{width:17px;height:17px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .cart-wrap{position:relative}
 .cart-badge{
-  position:absolute;top:-4px;right:-4px;
-  min-width:17px;height:17px;border-radius:50%;
-  background:var(--G);color:#fff;
+  position:absolute;top:-5px;right:-5px;
+  min-width:18px;height:18px;border-radius:50%;
+  background:#E53935;color:#fff;
   font-size:9px;font-weight:800;
   display:flex;align-items:center;justify-content:center;
   padding:0 3px;border:2px solid var(--hbg);
@@ -129,6 +132,10 @@ body{
   opacity:0;transform:scale(0);transition:.2s;
 }
 .cart-badge.visible{opacity:1;transform:scale(1)}
+/* Customer cart indicator — intentionally small, red and always tied to the real cart count. */
+.bottom-cart-wrap{position:relative;display:flex;align-items:center;justify-content:center}
+.bot-badge{position:absolute;top:-4px;left:calc(50% + 4px);min-width:18px;height:18px;padding:0 4px;border-radius:10px;background:#E53935;color:#fff;font:900 9px/18px 'Montserrat',sans-serif;text-align:center;border:2px solid var(--card);display:none;z-index:6;box-sizing:border-box}
+.bot-badge.visible{display:block}
 
 /* ─── VIEWS ─── */
 .view{flex:1;overflow:hidden;display:none;flex-direction:column}
@@ -662,7 +669,7 @@ body{
 .wb-w{white-space:nowrap;color:var(--tx2)}
 .wb-w b{color:var(--tx);font-weight:800}
 .wb-w em{font-style:normal;font-weight:800;font-size:10px;margin-left:3px}
-.wb-w em.up{color:#B5761A}.wb-w em.dn{color:var(--GD)}
+.wb-w em.up,.wb-w em.dn{color:#D62828}.wb-price-change{color:#D62828;font-weight:900}.wb-price-old{color:var(--tx3);text-decoration:line-through;margin-right:4px}
 .wb-p{font-weight:800;color:var(--tx);white-space:nowrap}
 .wb-est{color:var(--tx3);font-weight:700}
 .wb-tot{display:flex;justify-content:space-between;align-items:center;margin-top:7px;padding-top:7px;border-top:1px dashed var(--bdr);font-size:12px;font-weight:700;color:var(--tx2)}
@@ -4802,13 +4809,56 @@ body{background:var(--bg)!important}
 }
 @media(prefers-reduced-motion:reduce){.hero-wave,.hero-spark{animation:none!important}}
 </style>
+<style id="devx-additive-prompts-3d">
+/* ── Additive customer install + notification prompts ── */
+.devx-prompt-backdrop{position:fixed;inset:0;background:rgba(4,8,6,.46);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);z-index:1200;display:none;align-items:flex-end;justify-content:center;padding:14px;animation:devxFadeIn .2s ease}
+.devx-prompt-backdrop.on{display:flex}
+.devx-prompt-card{width:min(100%,460px);border:1px solid rgba(61,187,106,.20);border-radius:24px;background:linear-gradient(145deg,rgba(255,255,255,.98),rgba(245,251,247,.98));box-shadow:0 24px 70px rgba(0,0,0,.24);padding:18px;position:relative;overflow:hidden;animation:devxPromptUp .34s cubic-bezier(.16,1,.3,1)}
+[data-theme="dark"] .devx-prompt-card{background:linear-gradient(145deg,rgba(22,29,25,.99),rgba(12,18,15,.99));border-color:rgba(61,187,106,.24)}
+.devx-prompt-card:after{content:"";position:absolute;width:190px;height:190px;right:-90px;top:-100px;border-radius:50%;background:radial-gradient(circle,rgba(61,187,106,.22),transparent 68%);pointer-events:none}
+.devx-prompt-close{position:absolute;right:12px;top:12px;width:32px;height:32px;border-radius:50%;border:1px solid var(--bdr);background:rgba(255,255,255,.72);color:#20251f;cursor:pointer;font-size:20px;line-height:1;z-index:2}
+[data-theme="dark"] .devx-prompt-close{background:rgba(255,255,255,.07);color:#fff}
+.devx-prompt-icon{width:48px;height:48px;border-radius:16px;background:var(--G);color:#fff;display:flex;align-items:center;justify-content:center;font-size:23px;box-shadow:0 9px 22px rgba(61,187,106,.24);margin-bottom:12px;position:relative;z-index:1}
+.devx-prompt-title{font-size:18px;font-weight:900;letter-spacing:-.035em;color:var(--tx);position:relative;z-index:1}
+.devx-prompt-sub{font-size:10.5px;line-height:1.55;color:var(--tx2);margin-top:6px;max-width:390px;position:relative;z-index:1}
+.devx-prompt-actions{display:flex;gap:8px;margin-top:15px;position:relative;z-index:1}
+.devx-prompt-btn{flex:1;min-height:42px;border-radius:13px;border:1px solid var(--bdr);background:var(--card);color:var(--tx);font:800 10.5px 'Montserrat',sans-serif;cursor:pointer}
+.devx-prompt-btn.primary{background:var(--G);border-color:var(--G);color:#fff;box-shadow:0 7px 18px rgba(61,187,106,.18)}
+.devx-prompt-hint{font-size:8.5px;line-height:1.45;color:var(--tx3);margin-top:9px;position:relative;z-index:1}
+@keyframes devxFadeIn{from{opacity:0}to{opacity:1}}
+@keyframes devxPromptUp{from{opacity:0;transform:translateY(24px) scale(.98)}to{opacity:1;transform:none}}
+
+/* ── Customer Home 3D Store Navigation — uses the same Admin-published map data ── */
+.home-store-nav-3d{display:none;margin:10px 14px 12px;border:1px solid rgba(61,187,106,.20);border-radius:20px;background:#0c1713;overflow:hidden;box-shadow:0 14px 34px rgba(9,25,16,.15)}
+html[data-store="on"] .home-store-nav-3d{display:block}
+.home-store-nav-3d-head{display:flex;align-items:center;gap:8px;padding:11px 12px;background:linear-gradient(180deg,rgba(16,34,24,.98),rgba(12,23,18,.98));color:#fff}
+.home-store-nav-3d-head>div:first-child{min-width:0;flex:1}
+.home-store-nav-3d-kicker{font-size:7.5px;font-weight:900;letter-spacing:.11em;color:#7CFFA8;text-transform:uppercase}
+.home-store-nav-3d-title{font-size:12.5px;font-weight:900;margin-top:2px}
+.home-store-nav-3d-sub{font-size:8px;color:rgba(255,255,255,.58);margin-top:2px;line-height:1.4}
+.home-store-nav-3d-actions{display:flex;gap:5px;flex-shrink:0}
+.home-store-nav-3d-actions button{border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.07);color:#fff;border-radius:9px;padding:6px 8px;font:800 8px 'Montserrat',sans-serif;cursor:pointer}
+.home-store-nav-3d-actions button.active{background:#27954e;border-color:#27954e}
+.home-store-nav-3d-wrap{position:relative;height:330px;background:#0c1713}
+.home-store-nav-3d-footer{padding:8px 10px;background:rgba(61,187,106,.08);color:rgba(255,255,255,.66);font-size:8px;font-weight:700;text-align:center}
+.home-store-nav-3d-footer button{border:0;background:none;color:#7CFFA8;font:900 8px 'Montserrat',sans-serif;cursor:pointer;padding:0}
+@media(max-width:430px){.home-store-nav-3d{margin:8px 12px 10px;border-radius:17px}.home-store-nav-3d-wrap{height:295px}.home-store-nav-3d-title{font-size:11.5px}}
+
+/* ── Customer 3D Store Navigation: additive layer, existing 2D map stays intact ── */
+.store-nav-3d-card{margin:0 0 12px;border:1px solid rgba(61,187,106,.18);border-radius:18px;background:#0c1713;overflow:hidden;box-shadow:0 12px 28px rgba(9,25,16,.16)}
+.store-nav-3d-head{display:flex;align-items:center;gap:8px;padding:10px 11px;background:linear-gradient(180deg,rgba(16,34,24,.98),rgba(12,23,18,.98));color:#fff}
+.store-nav-3d-head-copy{min-width:0;flex:1}.store-nav-3d-kicker{font-size:8px;font-weight:900;letter-spacing:.1em;color:#7CFFA8;text-transform:uppercase}.store-nav-3d-title{font-size:12px;font-weight:900;margin-top:2px}.store-nav-3d-sub{font-size:8px;color:rgba(255,255,255,.56);margin-top:2px}
+.store-nav-3d-actions{display:flex;gap:5px}.store-nav-3d-actions button{border:1px solid rgba(255,255,255,.13);background:rgba(255,255,255,.07);color:#fff;border-radius:9px;padding:6px 8px;font:800 8px 'Montserrat',sans-serif;cursor:pointer}.store-nav-3d-actions button.active{background:#27954e;border-color:#27954e}
+.store-nav-3d-wrap{position:relative;height:330px;background:#0c1713}.store-nav-3d-canvas{display:block;width:100%;height:100%;touch-action:none;cursor:grab}.store-nav-3d-canvas:active{cursor:grabbing}.store-nav-3d-loading{position:absolute;inset:0;display:grid;place-items:center;text-align:center;color:#dff7e8;font-size:10px;font-weight:800;background:radial-gradient(circle at 50% 30%,rgba(61,187,106,.14),transparent 45%),#0c1713;z-index:2}.store-nav-3d-loading small{display:block;color:rgba(255,255,255,.55);font-size:8px;margin-top:5px}.store-nav-3d-hud{position:absolute;left:9px;bottom:9px;background:rgba(9,20,16,.80);border:1px solid rgba(124,255,168,.22);color:#eafff0;padding:7px 9px;border-radius:9px;font-size:8px;font-weight:800;line-height:1.45;backdrop-filter:blur(7px);pointer-events:none}.store-nav-3d-hud b{color:#7CFFA8}.store-nav-3d-note{padding:7px 10px;background:rgba(61,187,106,.08);color:rgba(255,255,255,.64);font-size:8px;font-weight:700;text-align:center}
+@media(max-width:430px){.devx-prompt-backdrop{padding:10px}.devx-prompt-card{padding:16px;border-radius:21px}.store-nav-3d-wrap{height:300px}.store-nav-3d-actions button{padding:6px 7px}}
+</style>
 </head>
 <body>
 
 <!-- HEADER -->
 <header class="hdr">
   <a class="logo" href="#" onclick="return false">
-    <img src="logo.png" alt="" style="width:30px;height:30px;object-fit:contain;flex-shrink:0" onerror="this.remove()" onload="this.nextElementSibling.style.display='none'"><svg class="logo-mark" viewBox="0 0 34 34" fill="none">
+    <img src="logo.png" alt="DevX logo" style="width:34px;height:34px;object-fit:contain;flex-shrink:0;background:#fff;border-radius:7px" onerror="this.remove()" onload="this.nextElementSibling.style.display='none'"><svg class="logo-mark" viewBox="0 0 34 34" fill="none">
       <path d="M5 10L13 17L5 24" stroke="white" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
       <path d="M16 11L27 11L21 18L27 25L16 25" stroke="#3DBB6A" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
       <line x1="23" y1="6" x2="30" y2="6" stroke="#3DBB6A" stroke-width="3" stroke-linecap="round"/>
@@ -4817,7 +4867,7 @@ body{background:var(--bg)!important}
     </svg>
     <div class="logo-text">
       <div class="logo-name">DEV<span>X</span></div>
-      <div class="logo-sub">AI Concierge</div>
+      <div class="logo-sub" style="font-weight:900;color:#B8F3CE">AI Concierge</div>
     </div>
   </a>
   <div class="hdr-actions">
@@ -4835,16 +4885,40 @@ body{background:var(--bg)!important}
       </button>
       <span class="notif-badge" id="notifBadge"></span>
     </div>
-    <!-- Cart icon removed from header per request — cart is still reachable
-         via the bottom nav "Cart" tab and the post-add-to-cart "View Cart"
-         prompts. cartBadge kept off-DOM but referenced defensively in
-         syncCartBadge() below so nothing else breaks. -->
+    <!-- Customer cart indicator: existing cart state only; no cart logic changed. -->
+    <div class="cart-wrap">
+      <button class="hdr-icon-btn" id="headerCartBtn" type="button" onclick="openCart()" title="Cart" aria-label="Open cart">
+        <svg viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/></svg>
+      </button>
+      <span class="cart-badge" id="cartBadge" aria-live="polite"></span>
+    </div>
     <!-- Account. Sign-in was previously reachable only from a small card
          further down the home screen, so shoppers never found it. -->
     <!-- Account/sign-in is intentionally kept out of the top header for mobile fit;
          the existing Account bottom navigation remains unchanged. -->
   </div>
 </header>
+
+<!-- CUSTOMER STORE MODE — same published Admin 3D layout, shown directly on Home -->
+<div class="home-store-nav-3d" id="homeStoreNav3d" aria-label="In-store 3D navigation">
+  <div class="home-store-nav-3d-head">
+    <div>
+      <div class="home-store-nav-3d-kicker">IN-STORE MODE · 3D NAVIGATION</div>
+      <div class="home-store-nav-3d-title">Your cart route, in the same 3D store</div>
+      <div class="home-store-nav-3d-sub" id="homeStoreNav3dMeta">Using the exact published Admin Store Map</div>
+    </div>
+    <div class="home-store-nav-3d-actions">
+      <button type="button" id="homeStoreNav3dIsoBtn" class="active" onclick="homeStoreNav3dIso()">3D</button>
+      <button type="button" id="homeStoreNav3dTopBtn" onclick="homeStoreNav3dTop()">Top</button>
+    </div>
+  </div>
+  <div class="home-store-nav-3d-wrap">
+    <canvas id="homeStoreNav3dCanvas" class="store-nav-3d-canvas" aria-label="3D cart navigation path"></canvas>
+    <div id="homeStoreNav3dLoading" class="store-nav-3d-loading">Loading the same Admin 3D store layout…<div><small>Your cart route will be highlighted here.</small></div></div>
+    <div class="store-nav-3d-hud" id="homeStoreNav3dHud"><b>FULL CART ROUTE</b> · Entry → products → checkout</div>
+  </div>
+  <div class="home-store-nav-3d-footer">Drag to look around · <button type="button" onclick="startStoreNavGuide()">Start guided navigation →</button></div>
+</div>
 
 <!-- STORE MODE BANNER -->
 <div class="store-banner" id="storeBanner">
@@ -4854,6 +4928,30 @@ body{background:var(--bg)!important}
     <div class="sb-s"><span class="sb-dot"></span>Madina Supermarket — Deira (Branch 3) · Aisle navigation on</div>
   </div>
   <button class="sb-exit" onclick="setStoreMode(false)">Exit</button>
+</div>
+
+<!-- ADDITIVE PWA INSTALL PROMPT -->
+<div class="devx-prompt-backdrop" id="devxInstallPrompt" role="dialog" aria-modal="true" aria-labelledby="devxInstallTitle">
+  <div class="devx-prompt-card">
+    <button class="devx-prompt-close" type="button" onclick="closeDevXInstallPrompt()" aria-label="Close">×</button>
+    <div class="devx-prompt-icon">⌂</div>
+    <div class="devx-prompt-title" id="devxInstallTitle">Take DevX NeXus with you</div>
+    <div class="devx-prompt-sub">Install the DevX web app on your phone or laptop for a cleaner, faster home-screen experience — no app-store download required.</div>
+    <div class="devx-prompt-actions"><button class="devx-prompt-btn" type="button" onclick="closeDevXInstallPrompt()">Not now</button><button class="devx-prompt-btn primary" id="devxInstallBtn" type="button" onclick="installDevXApp()">Add to Home Screen</button></div>
+    <div class="devx-prompt-hint" id="devxInstallHint">Works on supported Chrome, Edge and Android browsers. On iPhone/iPad Safari, use Share → Add to Home Screen.</div>
+  </div>
+</div>
+
+<!-- ADDITIVE BROWSER NOTIFICATION PERMISSION PROMPT -->
+<div class="devx-prompt-backdrop" id="devxNotificationPrompt" role="dialog" aria-modal="true" aria-labelledby="devxNotificationTitle">
+  <div class="devx-prompt-card">
+    <button class="devx-prompt-close" type="button" onclick="declineDevXNotifications()" aria-label="Close">×</button>
+    <div class="devx-prompt-icon">♢</div>
+    <div class="devx-prompt-title" id="devxNotificationTitle">Stay in the loop</div>
+    <div class="devx-prompt-sub">Allow browser notifications for important DevX updates such as offers, order updates and store activity. You can decline and continue using the app normally.</div>
+    <div class="devx-prompt-actions"><button class="devx-prompt-btn" type="button" onclick="declineDevXNotifications()">Not now</button><button class="devx-prompt-btn primary" type="button" onclick="allowDevXNotifications()">Allow notifications</button></div>
+    <div class="devx-prompt-hint">Your browser controls the final permission. DevX cannot show browser notifications unless you allow them.</div>
+  </div>
 </div>
 
 <!-- NOTIFICATION PANEL -->
@@ -6175,15 +6273,23 @@ function exploreScroll(dir){
    No real popularity/sales metric exists yet, so this surfaces a set
    of real catalog products as a placeholder — swap for actual
    best-seller data whenever that's tracked. */
+function addPopularProduct(id){
+  const p=findProduct(id);
+  if(!p){showToast('Product is still loading — please try again','');return;}
+  const before=cartCnt();
+  addOne(p.id);
+  if(cartCnt()>before)showToast(p.name+' added to cart','green');
+}
 function renderPopular(){
-  const picks=DB.slice(0,10);
-  document.getElementById('popularRow').innerHTML=picks.map(p=>`
-    <div class="popular-card" onclick="addOne(${p.id});showToast(${JSON.stringify(p.name+' added!')},'green')">
+  const row=document.getElementById('popularRow');if(!row)return;
+  const picks=(DB||[]).filter(Boolean).slice(0,10);
+  row.innerHTML=picks.map(p=>`
+    <div class="popular-card">
       <img src="${esc(p.img||'')}" alt="${esc(p.name)}" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1542838132-92c53300491e?w=200&h=200&fit=crop'">
       <div class="pop-body">
         <div class="pop-name">${esc(p.name)}</div>
         <div class="pop-price">AED ${p.price}</div>
-        <button class="pop-add" onclick="event.stopPropagation();addOne(${p.id});showToast(${JSON.stringify(p.name+' added!')},'green')">
+        <button type="button" class="pop-add" data-popular-id="${Number(p.id)}" onclick="event.preventDefault();event.stopPropagation();addPopularProduct(${Number(p.id)})">
           <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add
         </button>
       </div>
@@ -6625,12 +6731,15 @@ function lmConfirm(){
   closeLoose();
 }
 function syncCartBadge(){
-  const n=cartCnt(),b=document.getElementById('cartBadge');
-  if(b){
-    b.textContent=n||'';
-    n>0?b.classList.add('visible'):b.classList.remove('visible');
-  }
+  const n=cartCnt();
+  const badges=[document.getElementById('cartBadge'),document.getElementById('bottomCartBadge')];
+  badges.forEach(b=>{
+    if(!b)return;
+    b.textContent=n>99?'99+':(n||'');
+    b.classList.toggle('visible',n>0);
+  });
   if(document.getElementById('accountOverlay')?.classList.contains('on'))updateAccountMenu();
+  if(storeMode)renderHomeStoreNav3D();
 }
 
 function openCart(){
@@ -6671,17 +6780,23 @@ function weighBlock(o){
     </div>`;
   }
   const needs=o.needsApproval;
+  const anyChanged=loose.some(i=>i.actualGrams!=null && (Number(i.actualGrams)!==Number(i.estimatedGrams||i.grams||0) || Math.abs(Number(i.price||0)-Number(i.estimatedPrice!=null?i.estimatedPrice:(i.perKg||0)*(i.estimatedGrams||i.grams||0)/1000))>0.005));
   return `<div class="wb ${needs?'warn':'done'}">
     <div class="wb-h">${needs?'⚖ Weight changed — please confirm':'⚖ Weighed at the store'}</div>
     ${loose.map(i=>{
-      const d=i.actualGrams!=null?i.actualGrams-(i.grams||0):0;
+      const orderedG=i.estimatedGrams||i.grams||0;
+      const actualG=i.actualGrams!=null?i.actualGrams:orderedG;
+      const d=actualG-orderedG;
       const sign=d>0?'+':'';
-      return `<div class="wb-row">
+      const oldPrice=Number(i.estimatedPrice!=null?i.estimatedPrice:(i.perKg||0)*orderedG/1000);
+      const newPrice=Number(i.price||0);
+      const priceChanged=Math.abs(newPrice-oldPrice)>0.005;
+      return `<div class="wb-row" style="align-items:flex-start">
         <span>${esc(i.name)}</span>
-        <span class="wb-w">${g(i.grams||0)} → <b>${g(i.actualGrams||0)}</b>${d?` <em class="${d>0?'up':'dn'}">${sign}${d}g</em>`:''}</span>
-        <span class="wb-p">AED ${i.price}</span>
+        <span class="wb-w">${g(orderedG)} → <b>${g(actualG)}</b>${d?` <em class="${d>0?'up':'dn'}">${sign}${d}g</em>`:''}${d?`<small style="display:block;color:#D62828;font-weight:900">Weight changed</small>`:''}</span>
+        <span class="wb-p">${priceChanged?`<span class="wb-price-old">AED ${oldPrice.toFixed(2)}</span><span class="wb-price-change">AED ${newPrice.toFixed(2)}</span><small style="display:block;color:#D62828;font-weight:900">Price changed</small>`:`AED ${newPrice.toFixed(2)}`}</span>
       </div>`;}).join('')}
-    <div class="wb-tot"><span>Revised total</span><b>AED ${o.total}</b></div>
+    <div class="wb-tot"><span>Revised total</span><b class="${anyChanged?'wb-price-change':''}">AED ${Number(o.total||0).toFixed(2)}</b></div>
     ${needs?`<button class="wb-btn" onclick="approveWeight('${o.id}')">Approve new total</button>
       <div class="wb-note">Nothing is charged until you approve.</div>`:''}
   </div>`;
@@ -6696,12 +6811,13 @@ function payBlock(o){
      never be shown a "Pay now" button for money they will hand over at the
      door. Anything that is not an unpaid online order settles on delivery. */
   const method=o.payMethod||'cash';
-  if(method!=='online'){
+  const weighted=(o.items||[]).some(i=>i.loose);
+  if(method!=='online' && method!=='card_machine'){
     if(o.payStatus==='paid')
       return `<div class="wb done"><div class="wb-h">✓ Paid — AED ${o.total}</div>
         <div class="wb-note">Settled by ${PMN[method]}.</div></div>`;
     return `<div class="wb pending"><div class="wb-h">💵 ${PMN[method]}</div>
-      <div class="wb-note">Pay <b>AED ${o.total}</b> when your order arrives${(o.items||[]).some(i=>i.loose)?' — this is the actual weighed price':''}. Nothing is charged now.</div></div>`;
+      <div class="wb-note">Pay <b>AED ${o.total}</b> when your order arrives${weighted?' — this is the actual weighed price':''}. Nothing is charged now.</div></div>`;
   }
   switch(o.payStatus){
     case 'awaiting_weight':
@@ -6711,7 +6827,7 @@ function payBlock(o){
       return `<div class="wb warn"><div class="wb-h">💳 Approve before paying</div>
         <div class="wb-note">The weight moved more than 10% from your order. Approve the revised total above and the pay button will appear.</div></div>`;
     case 'awaiting_payment':
-      return `<div class="wb done"><div class="wb-h">💳 Ready to pay</div>
+      return `<div class="wb done"><div class="wb-h">💳 Ready to pay ${method==='card_machine'?'by card':'online'}</div>
         <div class="wb-note">${(o.items||[]).some(i=>i.actualGrams!=null)?'This is the final price for the weight actually put on the scale.':'Your order is confirmed and ready for payment.'}</div>
         <button class="wb-btn" onclick="payNow('${o.id}')">Pay AED ${o.total} now</button></div>`;
     case 'paid':
@@ -6821,7 +6937,13 @@ function openOrderDetails(id){
     const key=`${i.id}|${i.name}|${i.qty||1}|${i.grams||''}`;
     if(!baseIds.has(key)&&['approved_awaiting_payment','approved_cod_merged','paid_merged','approved'].includes(String(a.status||'').toLowerCase()))merged.push(i);
   }));
-  const items=merged.map(i=>`<div style="display:flex;justify-content:space-between;align-items:center;gap:14px;padding:12px 0;border-bottom:1px solid var(--bdr)"><div><div style="font-weight:800;color:var(--tx)">${esc(i.name)}</div><div style="font-size:11px;color:var(--tx3);margin-top:3px">${i.loose?`${i.actualGrams||i.grams||0} g`:`Qty ${i.qty||1}`}</div></div><b style="white-space:nowrap">AED ${Number(i.loose?i.price:(i.price||0)*(i.qty||1)).toFixed(2)}</b></div>`).join('');
+  const items=merged.map(i=>{
+    if(!i.loose)return `<div style="display:flex;justify-content:space-between;align-items:center;gap:14px;padding:12px 0;border-bottom:1px solid var(--bdr)"><div><div style="font-weight:800;color:var(--tx)">${esc(i.name)}</div><div style="font-size:11px;color:var(--tx3);margin-top:3px">Qty ${i.qty||1}</div></div><b style="white-space:nowrap">AED ${Number((i.price||0)*(i.qty||1)).toFixed(2)}</b></div>`;
+    const eg=Number(i.estimatedGrams||i.grams||0), ag=Number(i.actualGrams||eg);
+    const ep=Number(i.estimatedPrice!=null?i.estimatedPrice:(i.perKg||0)*eg/1000), ap=Number(i.price||0);
+    const wc=ag!==eg, pc=Math.abs(ap-ep)>0.005;
+    return `<div style="padding:12px 0;border-bottom:1px solid var(--bdr)"><div style="display:flex;justify-content:space-between;align-items:flex-start;gap:14px"><div><div style="font-weight:800;color:var(--tx)">${esc(i.name)}</div><div style="font-size:11px;color:var(--tx3);margin-top:3px">${eg} g → <b style="${wc?'color:#D62828':''}">${ag} g</b>${wc?'<span style="color:#D62828;font-weight:900;margin-left:5px">Weight changed</span>':''}</div></div><b style="white-space:nowrap;${pc?'color:#D62828':''}">${pc?`<span style="color:var(--tx3);text-decoration:line-through;margin-right:4px">AED ${ep.toFixed(2)}</span>`:''}AED ${ap.toFixed(2)}</b></div>${pc?'<div style="margin-top:4px;color:#D62828;font-size:10px;font-weight:900;text-align:right">Price changed after weighing</div>':''}</div>`;
+  }).join('');
   const addInfo=activeAdds.length?`<div style="margin-top:14px;padding:14px 15px;border:1px solid #bfe5cc;background:var(--GL);border-radius:15px"><div style="font-size:11px;text-transform:uppercase;letter-spacing:.08em;font-weight:900;color:var(--GD)">Additional products</div>${activeAdds.map(a=>`<div style="margin-top:8px;font-size:12px;color:var(--tx2)">${a.status==='pending_admin_approval'?'Pending admin approval':a.status==='approved_awaiting_payment'?'Approved — awaiting additional payment':a.status==='approved_cod_merged'?'Approved — added to order':'Added to order'} · AED ${Number(a.total||0).toFixed(2)}${(a.items||[]).length?`<div style="margin-top:6px">${a.items.map(i=>`<div style="padding:4px 0">${esc(i.name||'Product')} · ${i.loose?`Weight: ${Number(i.actualGrams||i.grams||0)} g`:`Qty: ${Number(i.qty||1)}`}</div>`).join('')}</div>`:''}</div>`).join('')}</div>`:'';
   const canAdd=poEligible(o);
   const addButton=canAdd?`<button class="wb-btn" style="margin-top:14px" onclick="closeSheets(true);openAddProducts('${o.id}')">+ Add products</button><div class="wb-note" style="margin-top:6px">Additional products must total more than AED 15 and require approval.</div>`:`<div style="margin-top:14px;padding:11px 13px;border-radius:12px;background:#fff2f2;color:#c62828;font-weight:800">🔒 Additional products are locked after dispatch.</div>`;
@@ -7162,10 +7284,43 @@ function renderStoreNavGuide(){
   st.textContent=cur.isCheckout?'Checkout Counter':(cur.loc?`Aisle ${cur.loc.aisle} · Rack ${cur.loc.rack} · Shelf ${cur.loc.shelf}`:'Location needs store update');
   tx.textContent=cur.isCheckout?'You’ve reached the final stop — complete your shopping at checkout.':cur.loc?`Pick ${cur.items.map(x=>`${x.name}${x.qty>1?' ×'+x.qty:''}`).join(', ')}. ${idx<stops.length-1?'Then continue to the next highlighted stop.':'You’ve reached the final stop — head to checkout.'}`:`Pick ${cur.items.map(x=>x.name).join(', ')} and ask the store team for the exact location.`;
   bar.style.width=`${Math.round((idx+1)/stops.length*100)}%`;
-  map.innerHTML=storeNavMapSvg(stops,idx);
+  map.innerHTML=`<div class="store-nav-3d-card" id="storeNav3dCard">
+    <div class="store-nav-3d-head"><div class="store-nav-3d-head-copy"><div class="store-nav-3d-kicker">LIVE 3D STORE PATH</div><div class="store-nav-3d-title">Walk the same store layout</div><div class="store-nav-3d-sub">Same published Admin map · current cart route highlighted</div></div><div class="store-nav-3d-actions"><button type="button" id="storeNav3dIsoBtn" class="active" onclick="storeNav3dIso()">3D</button><button type="button" id="storeNav3dTopBtn" onclick="storeNav3dTop()">Top</button></div></div>
+    <div class="store-nav-3d-wrap"><canvas id="storeNav3dCanvas" class="store-nav-3d-canvas" aria-label="3D store navigation path"></canvas><div id="storeNav3dLoading" class="store-nav-3d-loading">Loading your 3D store path…<div><small>Using the same published Admin store layout.</small></div></div><div class="store-nav-3d-hud"><b>STOP ${idx+1}</b> · ${cur.isCheckout?'Checkout':(cur.loc?`Aisle ${cur.loc.aisle} · Rack ${cur.loc.rack} · Shelf ${cur.loc.shelf}`:'Store location')}</div></div><div class="store-nav-3d-note">Drag to look around · use the 3D / Top buttons to change the view</div>
+  </div><div style="margin-top:10px">${storeNavMapSvg(stops,idx)}</div>`;
   next.textContent=idx<stops.length-1?'Next stop →':'Finish route ✓';
+  setTimeout(()=>mountStoreNav3D(idx),20);
 }
 function advanceStoreNavGuide(){if(STORE_NAV_GUIDE_INDEX<STORE_NAV_STOPS.length-1){STORE_NAV_GUIDE_INDEX++;renderStoreNavGuide()}else{showToast('Route complete — head to checkout ✓','green');closeStoreNavGuide()}}
+/* ── Customer 3D navigation — mirrors the Admin Store Studio from the same published map ── */
+const STORE_NAV_3D={THREE:null,OrbitControls:null,loaded:false,scene:null,camera:null,renderer:null,controls:null,canvas:null,frame:0,root:null,objects:[],route:null,routeDots:[],walkers:[],view:'iso'};
+async function storeNav3dEnsure(){
+  if(STORE_NAV_3D.loaded)return true;
+  try{const THREE=await import('https://esm.sh/three@0.179.1');const mod=await import('https://esm.sh/three@0.179.1/examples/jsm/controls/OrbitControls.js');STORE_NAV_3D.THREE=THREE;STORE_NAV_3D.OrbitControls=mod.OrbitControls;STORE_NAV_3D.loaded=true;return true}catch(e){console.error('[Customer Store 3D] load failed',e);const l=document.getElementById('storeNav3dLoading');if(l)l.innerHTML='3D store path could not load.<div><small>Check your network connection and reload.</small></div>';return false}
+}
+function storeNav3dMaterial(color,rough=.72,metal=.08){const T=STORE_NAV_3D.THREE;return new T.MeshStandardMaterial({color:new T.Color(color||'#d9f3e2'),roughness:rough,metalness:metal})}
+function storeNav3dClear(){const S=STORE_NAV_3D;if(!S.scene)return;S.objects.forEach(o=>S.scene.remove(o));S.routeDots.forEach(o=>S.scene.remove(o));S.walkers.forEach(o=>S.scene.remove(o));S.objects=[];S.routeDots=[];S.walkers=[];S.route=null}
+function storeNav3dPerson(){const T=STORE_NAV_3D.THREE,p=new T.Group(),skin=storeNav3dMaterial('#f4b38b',.75,.02),shirt=storeNav3dMaterial('#27954e',.7,.02),pants=storeNav3dMaterial('#20352b',.8,.05),shoe=storeNav3dMaterial('#111318',.7,.05);const add=(g,m,n,x,y,z)=>{const q=new T.Mesh(g,m);q.name=n;q.position.set(x,y,z);q.castShadow=true;p.add(q);return q};add(new T.SphereGeometry(.22,16,12),skin,'head',0,1.72,0);add(new T.BoxGeometry(.38,.62,.25),shirt,'torso',0,1.12,0);add(new T.CylinderGeometry(.07,.08,.58,12),skin,'left-arm',-.3,1.1,0);add(new T.CylinderGeometry(.07,.08,.58,12),skin,'right-arm',.3,1.1,0);add(new T.CylinderGeometry(.09,.1,.62,12),pants,'left-leg',-.11,.5,0);add(new T.CylinderGeometry(.09,.1,.62,12),pants,'right-leg',.11,.5,0);add(new T.BoxGeometry(.18,.08,.34),shoe,'left-shoe',-.11,.17,-.05);add(new T.BoxGeometry(.18,.08,.34),shoe,'right-shoe',.11,.17,-.05);return p}
+function storeNav3dLabel(text,color='#eafff0'){const T=STORE_NAV_3D.THREE,c=document.createElement('canvas');c.width=512;c.height=96;const x=c.getContext('2d');x.clearRect(0,0,c.width,c.height);x.font='700 28px Montserrat,Arial';x.textAlign='center';x.textBaseline='middle';x.fillStyle='rgba(5,18,12,.78)';x.roundRect(8,8,496,80,18);x.fill();x.fillStyle=color;x.fillText(String(text||'').slice(0,28),256,48);const tex=new T.CanvasTexture(c);tex.colorSpace=T.SRGBColorSpace;const mat=new T.SpriteMaterial({map:tex,transparent:true,depthTest:false});const sp=new T.Sprite(mat);sp.scale.set(5.2,1,1);return sp}
+function storeNav3dDims(){const cfg=STORE_NAV_MAP_CONFIG||{};return {W:Math.max(10,Number(cfg.canvasW)||40),D:Math.max(8,Number(cfg.canvasH)||28)}}
+function storeNav3dPoint(p){const {W,D}=storeNav3dDims();return {x:(Number(p?.x)||50)/100*W,z:(Number(p?.y)||94)/100*D}}
+function storeNav3dBuild(idx){
+  const S=STORE_NAV_3D,T=S.THREE,cfg=STORE_NAV_MAP_CONFIG||{},els=navLayoutEls(),{W,D}=storeNav3dDims();storeNav3dClear();
+  const floor=new T.Mesh(new T.BoxGeometry(W,.18,D),new T.MeshStandardMaterial({color:0xe7eee9,roughness:.9}));floor.position.set(W/2,-.09,D/2);floor.receiveShadow=true;S.scene.add(floor);S.objects.push(floor);
+  const grid=new T.GridHelper(Math.max(W,D),Math.max(W,D),0x9eb5a7,0xd7e2dc);grid.position.set(W/2,.02,D/2);S.scene.add(grid);S.objects.push(grid);
+  const wallMat=storeNav3dMaterial('#173326',.86);[[W/2,.9,0,W,.9],[W/2,.9,D,W,.9],[0,.9,D/2,.9,D],[W,.9,D/2,.9,D]].forEach(a=>{const[x,y,z,sx,sz]=a,m=new T.Mesh(new T.BoxGeometry(sx,1,sz),wallMat);m.position.set(x,y,z);m.castShadow=true;S.scene.add(m);S.objects.push(m)});
+  const ambient=new T.HemisphereLight(0xdff8e9,0x20352b,1.35);S.scene.add(ambient);S.objects.push(ambient);const sun=new T.DirectionalLight(0xffffff,2.1);sun.position.set(W*.35,Math.max(20,D),D*.25);sun.castShadow=true;sun.shadow.mapSize.set(1024,1024);S.scene.add(sun);S.objects.push(sun);
+  els.slice().sort((a,b)=>(Number(a.z)||0)-(Number(b.z)||0)).forEach(e=>{const x=Number(e.x||0)/100*W,y=Number(e.y||0)/100*D,w=Math.max(.5,Number(e.w||1)/100*W),d=Math.max(.5,Number(e.h||1)/100*D);let height={aisle:2.8,rack:2.5,shelf:.8,zone:.08,entry:2,exit:2,checkout:1.1,restroom:2.4,service:1.2,stairs:2,text:.08}[e.type]||1.1;if(e.type==='zone'||e.type==='text')height=.08;const mat=storeNav3dMaterial(/^#[0-9a-f]{6}$/i.test(e.color||'')?e.color:'#d9f3e2',e.type==='aisle'||e.type==='rack'?.6:.8,.05),g=new T.Group();g.position.set(x+w/2,height/2,y+d/2);g.rotation.y=(Number(e.rotation)||0)*Math.PI/180;const body=new T.Mesh(new T.BoxGeometry(w,height,d),mat);body.castShadow=true;body.receiveShadow=true;g.add(body);if(e.type==='aisle'||e.type==='rack'){for(let i=1;i<4;i++){const sh=new T.Mesh(new T.BoxGeometry(w*.92,.08,d*.92),storeNav3dMaterial('#f7fff9',.48,.02));sh.position.y=(-height/2)+(height/4)*i;g.add(sh)}const top=new T.Mesh(new T.BoxGeometry(w*1.02,.12,d*1.02),storeNav3dMaterial('#b9dcca',.55,.02));top.position.y=height/2-.08;g.add(top)}if(e.type==='entry'||e.type==='exit')body.material.color.set(e.type==='entry'?0x27954e:0x8b5cf6);if(e.type==='checkout'){const c=new T.Mesh(new T.BoxGeometry(w*.92,.35,d*.75),storeNav3dMaterial('#f7fff9',.45,.02));c.position.y=height/2+.22;g.add(c)}const label=storeNav3dLabel(e.label||e.type,e.type==='entry'?'#7CFFA8':'#eafff0');label.position.set(0,height+.7,0);g.add(label);S.scene.add(g);S.objects.push(g)});
+  const points=navBuildPathPoints(STORE_NAV_STOPS,idx);const routePts=points.map(storeNav3dPoint);if(routePts.length>1){const vecs=routePts.map(p=>new T.Vector3(p.x,.24,p.z));const geo=new T.BufferGeometry().setFromPoints(vecs);const mat=new T.LineBasicMaterial({color:0x18b765,transparent:true,opacity:.95,depthTest:false});const line=new T.Line(geo,mat);line.renderOrder=50;S.scene.add(line);S.objects.push(line);S.route=vecs;}
+  const allRoute=navBuildPathPoints(STORE_NAV_STOPS,-1);const completed=idx>0?navBuildPathPoints(STORE_NAV_STOPS,idx-1):[];const markPoints=STORE_NAV_STOPS.map((stop,i)=>{const p=navStopPoint(stop,i?navStopPoint(STORE_NAV_STOPS[i-1])||{x:50,y:94}:((cfg.entry)||{x:50,y:94}));return p?storeNav3dPoint(p):null}).filter(Boolean);markPoints.forEach((p,i)=>{const geo=new T.CylinderGeometry(i===idx?.34:.24,i===idx?.34:.24,.08,24),m=new T.MeshStandardMaterial({color:i===idx?0x12a75b:i<idx?0x9adab7:0xffffff,emissive:i===idx?0x0c5c31:0,emissiveIntensity:i===idx?.6:0});const o=new T.Mesh(geo,m);o.position.set(p.x,.18,p.z);S.scene.add(o);S.routeDots.push(o)});
+  const target=routePts.length?routePts[routePts.length-1]:new T.Vector3(W/2,.2,D*.86);const person=storeNav3dPerson();person.position.set(target.x,.02,target.z);S.scene.add(person);S.walkers.push(person);
+  S.controls.target.set(W/2,0,D/2);if(S.view==='top'){S.camera.position.set(W/2,Math.max(W,D)*1.25,D/2)}else{S.camera.position.set(W*1.05,Math.max(15,D*.9),D*1.05)}S.controls.update();
+}
+async function mountStoreNav3D(idx,canvasId='storeNav3dCanvas',loadingId='storeNav3dLoading'){const ok=await storeNav3dEnsure();if(!ok)return;const canvas=document.getElementById(canvasId);if(!canvas)return;const S=STORE_NAV_3D,T=S.THREE;const host=canvas.parentElement,w=Math.max(300,host.clientWidth),h=Math.max(260,host.clientHeight);if(S.renderer&&S.canvas!==canvas){cancelAnimationFrame(S.frame);try{S.controls?.dispose?.();S.renderer.dispose();}catch(e){}S.renderer=null;S.scene=null;S.camera=null;S.controls=null;S.objects=[];S.routeDots=[];S.walkers=[];}S.canvas=canvas;S.root=canvas;if(!S.renderer){S.scene=new T.Scene();S.scene.background=new T.Color(0x0b1712);S.camera=new T.PerspectiveCamera(45,w/h,.1,1000);S.renderer=new T.WebGLRenderer({canvas,antialias:true,alpha:false});S.renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,1.75));S.renderer.shadowMap.enabled=true;S.renderer.shadowMap.type=T.PCFSoftShadowMap;S.renderer.outputColorSpace=T.SRGBColorSpace;S.controls=new S.OrbitControls(S.camera,canvas);S.controls.enableDamping=true;S.controls.dampingFactor=.07;S.controls.maxPolarAngle=Math.PI*.48;S.controls.minDistance=8;S.controls.maxDistance=180;const animate=()=>{S.frame=requestAnimationFrame(animate);if(S.controls)S.controls.update();if(S.renderer&&S.scene&&S.camera)S.renderer.render(S.scene,S.camera)};animate()}resizeStoreNav3D();storeNav3dBuild(idx);const l=document.getElementById(loadingId);if(l)l.style.display='none'}
+function resizeStoreNav3D(){const S=STORE_NAV_3D,c=S.canvas;if(!c||!S.renderer||!S.camera)return;const host=c.parentElement,w=Math.max(300,host.clientWidth),h=Math.max(260,host.clientHeight);S.renderer.setSize(w,h,false);S.camera.aspect=w/h;S.camera.updateProjectionMatrix()}
+function storeNav3dIso(isoId='storeNav3dIsoBtn',topId='storeNav3dTopBtn'){STORE_NAV_3D.view='iso';const a=document.getElementById(isoId),b=document.getElementById(topId);if(a)a.classList.add('active');if(b)b.classList.remove('active');if(STORE_NAV_3D.camera&&STORE_NAV_3D.controls){const{W,D}=storeNav3dDims();STORE_NAV_3D.camera.position.set(W*1.05,Math.max(15,D*.9),D*1.05);STORE_NAV_3D.controls.target.set(W/2,0,D/2);STORE_NAV_3D.controls.update()}}
+function storeNav3dTop(isoId='storeNav3dIsoBtn',topId='storeNav3dTopBtn'){STORE_NAV_3D.view='top';const a=document.getElementById(isoId),b=document.getElementById(topId);if(a)a.classList.remove('active');if(b)b.classList.add('active');if(STORE_NAV_3D.camera&&STORE_NAV_3D.controls){const{W,D}=storeNav3dDims();STORE_NAV_3D.camera.position.set(W/2,Math.max(W,D)*1.25,D/2);STORE_NAV_3D.controls.target.set(W/2,0,D/2);STORE_NAV_3D.controls.update()}}
+
 function closeStoreNavGuide(){document.getElementById('storeNavGuide')?.classList.remove('on')}
 
 /* ─── PRODUCT LOCATOR — premium in-store showcase ─── */
@@ -7231,6 +7386,36 @@ function locMapSVG(cat){
   </svg>`;
 }
 
+/* ─── CUSTOMER HOME 3D NAVIGATION ─────────────────────────────────── */
+async function renderHomeStoreNav3D(){
+  const wrap=document.getElementById('homeStoreNav3d');
+  if(!wrap||!storeMode)return;
+  const items=cartArr();
+  try{await loadStoreNavMap();}catch(e){}
+  const cfg=STORE_NAV_MAP_CONFIG||{};
+  const ready=!!(cfg.mapDataUrl||navLayoutEls().length);
+  if(!ready){wrap.style.display='none';return;}
+  wrap.style.display='block';
+  const meta=document.getElementById('homeStoreNav3dMeta');
+  const hud=document.getElementById('homeStoreNav3dHud');
+  if(meta)meta.textContent=items.length?`${cfg.mapName||'Published Admin store layout'} · ${items.length} cart item${items.length===1?'':'s'} · same aisle/rack/shelf route`:`${cfg.mapName||'Published Admin store layout'} · Add products to build your route`;
+  if(hud)hud.innerHTML=items.length?`<b>FULL CART ROUTE</b> · Entry → ${items.length} item${items.length===1?'':'s'} → checkout`:`<b>STORE LAYOUT</b> · Add products to see your cart path`;
+  const loading=document.getElementById('homeStoreNav3dLoading');if(loading)loading.style.display='grid';
+  if(items.length){STORE_NAV_ITEMS=items;STORE_NAV_STOPS=buildStoreNavRoute(items);}
+  else {
+    const aisles=navLayoutEls().filter(e=>String(e.type||'')==='aisle').sort((a,b)=>(Number(a.z)||0)-(Number(b.z)||0)).slice(0,3);
+    STORE_NAV_STOPS=aisles.map((e,i)=>({loc:{aisle:Number((String(e.label||'').match(/Aisle\s*(\d+)/i)||[])[1])||i+1,rack:1,shelf:1}}));
+    const co=navCheckoutPoint();if(co)STORE_NAV_STOPS.push({isCheckout:true});
+  }
+  setTimeout(()=>mountStoreNav3D(-1,'homeStoreNav3dCanvas','homeStoreNav3dLoading'),20);
+}
+function homeStoreNav3dIso(){
+  storeNav3dIso('homeStoreNav3dIsoBtn','homeStoreNav3dTopBtn');
+}
+function homeStoreNav3dTop(){
+  storeNav3dTop('homeStoreNav3dIsoBtn','homeStoreNav3dTopBtn');
+}
+
 /* ─── STORE MODE ─── */
 let storeMode=false;
 function openStoreEntry(){
@@ -7248,7 +7433,8 @@ function setStoreMode(on){
   const headerStore=document.getElementById('headerStoreBtn');
   if(headerStore)headerStore.classList.toggle('on',on);
   renderProds();
-  if(on){showToast('Store Mode on — tap any location pill to navigate','green');switchView('home')}
+  if(on){showToast('Store Mode on — your Admin-matching 3D store route is ready','green');switchView('home');renderHomeStoreNav3D();}
+  else {const wrap=document.getElementById('homeStoreNav3d');if(wrap)wrap.style.display='none';}
 }
 
 /* ─── NOTIFICATIONS (customer side) ─── */
@@ -7289,8 +7475,28 @@ let nxNotifAudio=null;
 function notificationChime(){try{const C=window.AudioContext||window.webkitAudioContext;if(!C)return;if(!nxNotifAudio)nxNotifAudio=new C();if(nxNotifAudio.state==='suspended')nxNotifAudio.resume();const t=nxNotifAudio.currentTime,o=nxNotifAudio.createOscillator(),g=nxNotifAudio.createGain();o.type='sine';o.frequency.setValueAtTime(880,t);o.frequency.exponentialRampToValueAtTime(660,t+0.12);g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.08,t+.01);g.gain.exponentialRampToValueAtTime(.0001,t+.24);o.connect(g);g.connect(nxNotifAudio.destination);o.start(t);o.stop(t+.25)}catch(e){}}
 function maybeToastNewNotif(){
   const n=visibleNotifs();
-  if(n.length&&!READS.has(n[0].id)&&n[0].id!==nxLastNotifId){nxLastNotifId=n[0].id;showToast('🔔 '+n[0].title,'green');notificationChime()}
+  if(n.length&&!READS.has(n[0].id)&&n[0].id!==nxLastNotifId){nxLastNotifId=n[0].id;showToast('🔔 '+n[0].title,'green');notificationChime();if('Notification' in window&&Notification.permission==='granted'){try{new Notification(n[0].title||'DevX NeXus',{body:n[0].msg||'You have a new DevX update.',icon:'/pwa-icon-192.png',tag:String(n[0].id||'devx-update')})}catch(e){}}}
 }
+
+/* ── Additive PWA install + browser notification permission ── */
+let DEVX_INSTALL_DEFERRED=null;
+function devxIsStandalone(){return window.matchMedia?.('(display-mode: standalone)').matches||window.navigator.standalone===true}
+function showDevXInstallPrompt(){const el=document.getElementById('devxInstallPrompt');if(!el||devxIsStandalone())return;el.classList.add('on');const btn=document.getElementById('devxInstallBtn'),hint=document.getElementById('devxInstallHint');if(btn)btn.textContent=DEVX_INSTALL_DEFERRED?'Add to Home Screen':'Install web app';if(hint&&!DEVX_INSTALL_DEFERRED&&/iphone|ipad|ipod/i.test(navigator.userAgent))hint.textContent='On iPhone/iPad Safari: tap Share → Add to Home Screen.'}
+function closeDevXInstallPrompt(){document.getElementById('devxInstallPrompt')?.classList.remove('on');localStorage.setItem('devx-install-prompt-dismissed',String(Date.now()));setTimeout(()=>{if('Notification' in window&&Notification.permission==='default'&&localStorage.getItem('devx-notification-prompt-dismissed')!=='1')document.getElementById('devxNotificationPrompt')?.classList.add('on')},450)}
+async function installDevXApp(){
+  if(DEVX_INSTALL_DEFERRED){try{DEVX_INSTALL_DEFERRED.prompt();const choice=await DEVX_INSTALL_DEFERRED.userChoice;if(choice?.outcome==='accepted')localStorage.setItem('devx-install-complete','1');DEVX_INSTALL_DEFERRED=null;closeDevXInstallPrompt();return}catch(e){DEVX_INSTALL_DEFERRED=null}}
+  const hint=document.getElementById('devxInstallHint');if(/iphone|ipad|ipod/i.test(navigator.userAgent)){if(hint)hint.textContent='Safari: tap the Share button, then choose “Add to Home Screen”.';return}
+  if(hint)hint.textContent='If your browser supports installation, use its install icon in the address bar or browser menu. This page is already configured as an installable web app.';
+}
+function maybeShowDevXInstallPrompt(){if(devxIsStandalone()||localStorage.getItem('devx-install-complete')==='1')return;const last=Number(localStorage.getItem('devx-install-prompt-dismissed')||0);if(last&&Date.now()-last<86400000)return;setTimeout(showDevXInstallPrompt,1200)}
+function maybeShowDevXNotificationPrompt(){if(!('Notification' in window)||Notification.permission!=='default'||localStorage.getItem('devx-notification-prompt-dismissed')==='1')return;setTimeout(()=>{const install=document.getElementById('devxInstallPrompt');if(!install?.classList.contains('on'))document.getElementById('devxNotificationPrompt')?.classList.add('on')},3000)}
+function declineDevXNotifications(){document.getElementById('devxNotificationPrompt')?.classList.remove('on');localStorage.setItem('devx-notification-prompt-dismissed','1')}
+async function allowDevXNotifications(){if(!('Notification' in window)){declineDevXNotifications();return}try{const permission=await Notification.requestPermission();document.getElementById('devxNotificationPrompt')?.classList.remove('on');if(permission==='granted'){localStorage.setItem('devx-notification-enabled','1');showToast('Browser notifications enabled ✓','green')}else localStorage.setItem('devx-notification-prompt-dismissed','1')}catch(e){localStorage.setItem('devx-notification-prompt-dismissed','1');document.getElementById('devxNotificationPrompt')?.classList.remove('on')}}
+function registerDevXWebApp(){if(!('serviceWorker' in navigator))return;navigator.serviceWorker.register('/sw.js',{scope:'/'}).catch(e=>console.warn('[DevX PWA] service worker registration failed',e))}
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();DEVX_INSTALL_DEFERRED=e;setTimeout(showDevXInstallPrompt,350)})
+window.addEventListener('appinstalled',()=>{localStorage.setItem('devx-install-complete','1');DEVX_INSTALL_DEFERRED=null;document.getElementById('devxInstallPrompt')?.classList.remove('on')})
+window.addEventListener('load',()=>{registerDevXWebApp();maybeShowDevXInstallPrompt();maybeShowDevXNotificationPrompt()});
+
 
 /* ─── LIVE SYNC WATCHER ─── */
 function nxRefresh(){
@@ -7634,7 +7840,7 @@ function renderCk(){
           <span><b>Cash</b><small>Pay the driver on delivery</small></span></label>
         <label class="pay-opt ${ckPay==='card_machine'?'on':''}"><input type="radio" name="paym" value="card_machine" ${ckPay==='card_machine'?'checked':''} onchange="setPay(this.value)">
           <span class="pay-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="9" y1="7" x2="15" y2="7"/><line x1="9" y1="11" x2="15" y2="11"/></svg></span>
-          <span><b>Card machine</b><small>Tap or insert on delivery</small></span></label>
+          <span><b>Card machine</b><small>${hasLoose(items)?'Pay by card after weighing':'Tap or insert on delivery'}</small></span></label>
         <label class="pay-opt ${ckPay==='online'?'on':''}"><input type="radio" name="paym" value="online" ${ckPay==='online'?'checked':''} onchange="setPay(this.value)">
           <span class="pay-ic"><svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></span>
           <span><b>Online payment</b><small>Pay by card in the app</small></span></label>
@@ -8943,7 +9149,7 @@ function renderExplore(){
   syncNotifBadge();
   applyLang();
   buildMicLangMenu();
-  initCatalogMode().then(()=>{renderCats();renderProds()});
+  initCatalogMode().then(()=>{renderPopular();renderCats();renderProds();if(storeMode)renderHomeStoreNav3D()});
   /* Deep link: opened by scanning the store-entrance QR → ?mode=store */
   if(new URLSearchParams(location.search).get('mode')==='store'){setStoreMode(true)}
 })();
