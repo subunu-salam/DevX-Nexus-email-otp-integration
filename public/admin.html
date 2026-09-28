@@ -314,6 +314,20 @@ tbody tr.click:hover{background:var(--GL)}
 @media(max-width:760px){.map3d-canvas{height:440px}.map3d-view{min-height:440px}.map3d-help{display:none}.map3d-actions{right:8px;top:8px}.map3d-overlay{left:8px;top:8px}}
 
 </style>
+<style id="devx-branding-hero-editor">
+.bh-sec{margin-top:14px;padding:12px;border:1px solid var(--bdr);border-radius:12px;background:var(--bg)}
+.bh-sec-t{font-size:10px;font-weight:900;letter-spacing:.06em;text-transform:uppercase;color:var(--GD);margin-bottom:10px}
+.bh-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:560px){.bh-row{grid-template-columns:1fr}}
+.bh-grad{display:flex;align-items:center;gap:6px}
+.bh-grad input[type=color]{width:38px;height:32px;padding:2px;border:1px solid var(--bdr);border-radius:8px;background:transparent;cursor:pointer;flex:0 0 38px}
+.bh-swatch{flex:1;height:14px;border-radius:99px;border:1px solid var(--bdr)}
+.bh-prev{margin-top:12px;border-radius:14px;padding:14px;background:radial-gradient(circle at 80% 10%,rgba(124,255,168,.18),transparent 50%),linear-gradient(135deg,#0f3d26,#1d6b43);color:#fff;overflow:hidden}
+.bh-prev-h{font-family:Montserrat,system-ui,sans-serif;font-size:20px;line-height:1.1;font-weight:900;letter-spacing:-.02em}
+.bh-prev-h span,.bh-prev-h em,.bh-prev-name{-webkit-background-clip:text;background-clip:text;color:transparent;font-style:normal}
+.bh-prev-sub{margin-top:6px;font-size:10px;font-family:Montserrat,system-ui,sans-serif}
+.bh-prev-name{margin-top:10px;font-size:18px;font-weight:900;text-align:right;font-family:Montserrat,system-ui,sans-serif}
+</style>
 </head>
 <body>
 <!-- SIDEBAR -->
@@ -544,6 +558,29 @@ tbody tr.click:hover{background:var(--GL)}
             </div>
             <div class="fld"><label class="lbl">Store / Client Name</label><input class="inp" id="brandingStoreName" maxlength="60" placeholder="e.g. Madina Supermarket"></div>
             <div class="fld"><label class="lbl">Branding Tagline</label><input class="inp" id="brandingTagline" maxlength="100" placeholder="e.g. Smart shopping. Better living."></div>
+            <div class="bh-sec">
+              <div class="bh-sec-t">Store name style</div>
+              <div class="bh-row">
+                <div class="fld"><label class="lbl">Name colour gradient</label><div class="bh-grad"><input type="color" id="bhNameFrom" value="#ffffff" oninput="brandingHeroLive()"><span class="bh-swatch" id="bhNameSwatch"></span><input type="color" id="bhNameTo" value="#ffffff" oninput="brandingHeroLive()"></div></div>
+                <div class="fld"><label class="lbl">Name font</label><select class="inp" id="bhNameFont" onchange="brandingHeroLive()"><option value="">Default (Montserrat)</option><option value="Montserrat">Montserrat</option><option value="Poppins">Poppins</option><option value="Inter">Inter</option><option value="Outfit">Outfit</option><option value="DM Sans">DM Sans</option><option value="Nunito">Nunito</option><option value="Raleway">Raleway</option><option value="Lato">Lato</option><option value="Roboto">Roboto</option><option value="Oswald">Oswald</option><option value="Playfair Display">Playfair Display</option><option value="Merriweather">Merriweather</option><option value="Pacifico">Pacifico</option><option value="Lobster">Lobster</option></select></div>
+              </div>
+            </div>
+            <div class="bh-sec">
+              <div class="bh-sec-t">Home hero headline</div>
+              <p class="td-sub" style="line-height:1.5;margin:0 0 10px">Leave a text box empty to keep the default wording (which also auto-translates to Hindi / Urdu). Custom text is shown as typed in every language.</p>
+              <div class="fld"><label class="lbl">Headline line 1</label><input class="inp" id="bhLine1" maxlength="40" placeholder="Shop smarter." oninput="brandingHeroLive()"></div>
+              <div class="fld"><label class="lbl">Headline line 2 (highlight)</label><input class="inp" id="bhLine2" maxlength="40" placeholder="Pay less." oninput="brandingHeroLive()"></div>
+              <div class="fld"><label class="lbl">Sub-line</label><input class="inp" id="bhSub" maxlength="90" placeholder="Chat or speak. Best prices, fast delivery." oninput="brandingHeroLive()"></div>
+              <div class="bh-row">
+                <div class="fld"><label class="lbl">Line 1 gradient</label><div class="bh-grad"><input type="color" id="bhLine1From" value="#ffffff" oninput="brandingHeroLive()"><span class="bh-swatch" id="bhLine1Swatch"></span><input type="color" id="bhLine1To" value="#ffffff" oninput="brandingHeroLive()"></div></div>
+                <div class="fld"><label class="lbl">Line 2 gradient</label><div class="bh-grad"><input type="color" id="bhLine2From" value="#eafbe9" oninput="brandingHeroLive()"><span class="bh-swatch" id="bhLine2Swatch"></span><input type="color" id="bhLine2To" value="#7be39a" oninput="brandingHeroLive()"></div></div>
+              </div>
+              <div class="bh-row">
+                <div class="fld"><label class="lbl">Sub-line colour</label><div class="bh-grad"><input type="color" id="bhSubColor" value="#dcefe3" oninput="brandingHeroLive()"></div></div>
+                <div class="fld"><label class="lbl">Headline font</label><select class="inp" id="bhHeroFont" onchange="brandingHeroLive()"><option value="">Default (Montserrat)</option><option value="Montserrat">Montserrat</option><option value="Poppins">Poppins</option><option value="Inter">Inter</option><option value="Outfit">Outfit</option><option value="DM Sans">DM Sans</option><option value="Nunito">Nunito</option><option value="Raleway">Raleway</option><option value="Lato">Lato</option><option value="Roboto">Roboto</option><option value="Oswald">Oswald</option><option value="Playfair Display">Playfair Display</option><option value="Merriweather">Merriweather</option><option value="Pacifico">Pacifico</option><option value="Lobster">Lobster</option></select></div>
+              </div>
+              <div style="display:flex;gap:6px;flex-wrap:wrap"><button type="button" class="btn ghost sm" onclick="resetBrandingHero()">Reset text &amp; style to default</button></div>
+            </div>
             <div style="display:flex;justify-content:flex-end;margin-top:14px"><button class="btn grn" onclick="saveBranding()">Save &amp; publish branding</button></div>
           </div>
         </div>
@@ -552,6 +589,11 @@ tbody tr.click:hover{background:var(--GL)}
           <div class="card-bd">
             <div style="border:1px solid var(--bdr);border-radius:18px;padding:18px;background:linear-gradient(145deg,#eef8f1,#fff)">
               <div style="font-size:8px;color:var(--GD);font-weight:900;letter-spacing:.08em;text-transform:uppercase">Customer Home</div>
+              <div class="bh-prev" id="bhPrev">
+                <div class="bh-prev-h" id="bhPrevH"><span id="bhPrevL1">Shop smarter.</span><br><em id="bhPrevL2">Pay less.</em></div>
+                <div class="bh-prev-sub" id="bhPrevSub">Chat or speak. Best prices, fast delivery.</div>
+                <div class="bh-prev-name" id="bhPrevName">Your Store</div>
+              </div>
               <div style="margin-top:12px;border:1px solid #e5ebe7;border-radius:14px;background:#fff;padding:12px;display:flex;align-items:center;gap:11px">
                 <div id="brandingPreviewLogo" style="width:76px;height:62px;border:1px solid #e5ebe7;border-radius:11px;display:grid;place-items:center;overflow:hidden;background:#fff"><span style="font-size:8px;color:var(--tx3)">Logo</span></div>
                 <div style="min-width:0"><div id="brandingPreviewName" style="font-size:15px;font-weight:900;color:#17211b">Your Store</div><div id="brandingPreviewTag" style="margin-top:4px;font-size:8px;color:#577064">Smart shopping. Better living.</div><div style="margin-top:6px;font-size:6.5px;color:#829087;letter-spacing:.05em">POWERED BY DEVX AI CONCIERGE</div></div>
@@ -3042,6 +3084,7 @@ function openDrawer(id,keep){
     <div class="dw-sec">Payment</div>
     <div class="dw-kv"><span>Method</span><b>${PM_LBL[o.payMethod]||'Cash'}</b></div>
     <div class="dw-kv"><span>Status</span><b style="color:${PS[o.payStatus]?.c||'var(--tx3)'}">${PS[o.payStatus]?.l||'Unpaid'}</b></div>
+    ${Number(o.approvedAdditionTotal||0)>0?`<div class="dw-kv"><span>Original order items</span><b>${money(o.originalItemsTotal??((o.sub??0)-o.approvedAdditionTotal))}</b></div><div class="dw-kv"><span>Additional products (approved)</span><b>+ ${money(o.approvedAdditionTotal)}</b></div>`:''}
     <div class="dw-kv"><span>Subtotal</span><b>${money(o.sub??(o.total-(o.fee||0)))}</b></div>
     ${o.fee?`<div class="dw-kv"><span>Delivery fee</span><b>${money(o.fee)}</b></div>`:''}
     <div class="dw-kv" style="font-size:13.5px"><span style="font-weight:800;color:var(--tx)">Total</span><b style="color:var(--GD)">${money(o.total)}</b></div>
@@ -3155,7 +3198,7 @@ function printPosDocket(id){
   <div class="l">
     <table>${o.items.map(i=>`<tr><td>${esc(i.name)}<div class="sm">${esc(i.loc||'')}</div></td><td class="r">${qtyLabel(i)}</td><td class="r">${money(i.price*(i.loose?1:i.qty))}</td></tr>`).join('')}</table>
     <div class="tot"><span>TOTAL</span><span>${money(o.total)}</span></div>
-    <div class="sm" style="margin-top:6px">Subtotal ${money(o.sub??(o.total-(o.fee||0)))}${o.fee?' · Delivery '+money(o.fee):''}</div>
+    <div class="sm" style="margin-top:6px">Subtotal ${money(o.sub??(o.total-(o.fee||0)))}${Number(o.approvedAdditionTotal||0)>0?' (incl. additional products '+money(o.approvedAdditionTotal)+')':''}${o.fee?' · Delivery '+money(o.fee):''}</div>
     <div class="sm">${esc(o.customer?.name||'Guest')} · ${esc(o.customer?.phone||'—')} · ${o.mode==='delivery'?'Delivery':'Pickup'}</div>
   </div>
   <div class="sm" style="margin-top:10px">Scan the barcode at the POS to pull up this order,<br>or key in ref ${o.id}. Cashier issues the final tax invoice.</div>
@@ -3466,6 +3509,7 @@ function brandingPreview(data){
   const sn=document.getElementById('brandingStoreName'),st=document.getElementById('brandingTagline');
   if(sn&&document.activeElement!==sn)sn.value=name;if(st&&document.activeElement!==st)st.value=tag;
   const bl=document.getElementById('brandingBranchLabel'),b=BRANCHES.find(x=>x.id===BRANCH)||{};if(bl)bl.textContent=b.name||BRANCH||'';
+  fillBrandingHero(d.heroStyle);
   if(d.clientLogo && d.clientLogo!==BRANDING_EDITOR.src) setBrandingEditorImage(d.clientLogo);
   else renderBrandingLogoEditor();
 }
@@ -3566,6 +3610,42 @@ function previewBrandingLogo(input){
     };img.src=reader.result;
   };reader.readAsDataURL(file);
 }
+
+/* ─── Hero copy / gradients / fonts (Client Branding) ─── */
+const BH_DEF={line1From:'#ffffff',line1To:'#ffffff',line2From:'#eafbe9',line2To:'#7be39a',subColor:'#dcefe3',nameFrom:'#ffffff',nameTo:'#ffffff'};
+const BH_FONTS_LOADED=new Set(['Montserrat']);
+function bhLoadFont(f){if(!f||BH_FONTS_LOADED.has(f))return;BH_FONTS_LOADED.add(f);const l=document.createElement('link');l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family='+encodeURIComponent(f).replace(/%20/g,'+')+':wght@400;600;700;800;900&display=swap';document.head.appendChild(l)}
+function bhVal(id){const e=document.getElementById(id);return e?e.value:''}
+function bhSet(id,v){const e=document.getElementById(id);if(e&&document.activeElement!==e)e.value=v}
+function collectBrandingHero(){
+  return {line1:bhVal('bhLine1').trim(),line2:bhVal('bhLine2').trim(),sub:bhVal('bhSub').trim(),
+    line1From:bhVal('bhLine1From'),line1To:bhVal('bhLine1To'),line2From:bhVal('bhLine2From'),line2To:bhVal('bhLine2To'),
+    subColor:bhVal('bhSubColor'),heroFont:bhVal('bhHeroFont'),nameFrom:bhVal('bhNameFrom'),nameTo:bhVal('bhNameTo'),nameFont:bhVal('bhNameFont')};
+}
+function fillBrandingHero(h){
+  h=Object.assign({},BH_DEF,Object.fromEntries(Object.entries(h||{}).filter(([k,v])=>v)));
+  ['line1','line2','sub'].forEach(k=>bhSet('bh'+k[0].toUpperCase()+k.slice(1),h[k]||''));
+  ['line1From','line1To','line2From','line2To','nameFrom','nameTo'].forEach(k=>bhSet('bh'+k[0].toUpperCase()+k.slice(1),h[k]));
+  bhSet('bhSubColor',h.subColor);bhSet('bhHeroFont',h.heroFont||'');bhSet('bhNameFont',h.nameFont||'');
+  brandingHeroLive();
+}
+function brandingHeroLive(){
+  const h=collectBrandingHero(),g=(a,b)=>`linear-gradient(95deg,${a},${b})`;
+  const paint=(id,a,b)=>{const e=document.getElementById(id);if(e)e.style.backgroundImage=g(a,b)};
+  paint('bhPrevL1',h.line1From,h.line1To);paint('bhPrevL2',h.line2From,h.line2To);paint('bhPrevName',h.nameFrom,h.nameTo);
+  paint('bhNameSwatch',h.nameFrom,h.nameTo);paint('bhLine1Swatch',h.line1From,h.line1To);paint('bhLine2Swatch',h.line2From,h.line2To);
+  const t=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v};
+  t('bhPrevL1',h.line1||'Shop smarter.');t('bhPrevL2',h.line2||'Pay less.');t('bhPrevSub',h.sub||'Chat or speak. Best prices, fast delivery.');
+  t('bhPrevName',(bhVal('brandingStoreName')||'Your Store').trim()||'Your Store');
+  const sub=document.getElementById('bhPrevSub');if(sub)sub.style.color=h.subColor;
+  bhLoadFont(h.heroFont);bhLoadFont(h.nameFont);
+  const ff=f=>f?`'${f}',Montserrat,system-ui,sans-serif`:'';
+  const hh=document.getElementById('bhPrevH');if(hh)hh.style.fontFamily=ff(h.heroFont);if(sub)sub.style.fontFamily=ff(h.heroFont);
+  const nm=document.getElementById('bhPrevName');if(nm)nm.style.fontFamily=ff(h.nameFont);
+}
+function resetBrandingHero(){['bhLine1','bhLine2','bhSub'].forEach(id=>{const e=document.getElementById(id);if(e)e.value=''});['bhHeroFont','bhNameFont'].forEach(id=>{const e=document.getElementById(id);if(e)e.value=''});
+  Object.entries(BH_DEF).forEach(([k,v])=>{const e=document.getElementById('bh'+k[0].toUpperCase()+k.slice(1));if(e)e.value=v});brandingHeroLive();}
+document.addEventListener('input',e=>{if(e.target&&e.target.id==='brandingStoreName')brandingHeroLive()});
 async function loadBranding(){
   try{
     let d=null;
@@ -3586,7 +3666,7 @@ async function saveBranding(){
     const dw=iw*scale,dh=ih*scale,ox=(W-dw)*((BRANDING_EDITOR.x+1)/2),oy=(H-dh)*((BRANDING_EDITOR.y+1)/2);
     ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';ctx.drawImage(BRANDING_EDITOR.img,ox,oy,dw,dh);logo=c.toDataURL('image/png');
   }
-  const data=Object.assign({},BRANDING_CURRENT||{}, {clientLogo:logo,storeName:storeName||'Your Store',tagline:tagline||'Smart shopping. Better living.'});
+  const data=Object.assign({},BRANDING_CURRENT||{}, {clientLogo:logo,storeName:storeName||'Your Store',tagline:tagline||'Smart shopping. Better living.',heroStyle:collectBrandingHero()});
   try{
     const r=await fetch('/api/admin/branding',{method:'POST',headers:authHeaders({'Content-Type':'application/json'}),body:JSON.stringify(Object.assign(data,{branchId:BRANCH}))});
     const j=await r.json().catch(()=>({}));if(!r.ok)throw new Error(j.error||'Could not save branding');

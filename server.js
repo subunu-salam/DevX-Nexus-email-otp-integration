@@ -335,8 +335,7 @@ function fullState(branchId) {
   /* A picker at one shop must not see another shop's queue. Owners switch
      branches explicitly, which branchOf() already resolves. */
   for (const ord of db['devx-orders']) {
-    const adds=(db['devx-order-additions']||[]).filter(a=>a.orderId===ord.id&&['paid_merged','approved_cod_merged'].includes(a.status));
-    if(adds.length){const known=new Set((ord.items||[]).map(i=>String(i.id)+'|'+String(i.qty||1)+'|'+String(i.name||'')));for(const a of adds)for(const it of (a.items||[])){const k=String(it.id)+'|'+String(it.qty||1)+'|'+String(it.name||'');if(!known.has(k)){ord.items=ord.items||[];ord.items.push(it);known.add(k)}}}
+    if((db['devx-order-additions']||[]).some(a=>a.orderId===ord.id&&['approved_awaiting_payment','paid_merged','approved_cod_merged'].includes(a.status))) recomputeApprovedAdditionTotal(ord);
   }
   s['devx-orders'] = STORES.scope(db['devx-orders'], bid, def);
   s['branch-meta'] = { branchId: bid, branch: STORES.find(db, bid) || null,
@@ -416,6 +415,24 @@ app.get('/api/health', (req, res) => {
    stored as a compact data URL so no existing storage or upload dependency is
    required. It is deliberately excluded from public /api/state to keep the
    normal shopper bootstrap payload small. */
+/* Hero copy + typography editable from Admin → Client Branding.
+   Colours are strict hex, fonts come from a fixed allow-list so nothing
+   arbitrary is ever injected into the customer page. */
+const BRAND_FONTS = ['Montserrat','Poppins','Inter','Outfit','DM Sans','Nunito','Raleway','Lato','Roboto','Oswald','Playfair Display','Merriweather','Pacifico','Lobster'];
+function cleanHeroStyle(h) {
+  h = h && typeof h === 'object' ? h : {};
+  const txt = (v, n) => String(v == null ? '' : v).replace(/[<>]/g, '').trim().slice(0, n);
+  const col = v => (/^#[0-9a-f]{6}$/i.test(String(v || '')) ? String(v).toLowerCase() : '');
+  const font = v => (BRAND_FONTS.includes(String(v || '')) ? String(v) : '');
+  return {
+    line1: txt(h.line1, 40), line2: txt(h.line2, 40), sub: txt(h.sub, 90),
+    line1From: col(h.line1From), line1To: col(h.line1To),
+    line2From: col(h.line2From), line2To: col(h.line2To),
+    subColor: col(h.subColor), heroFont: font(h.heroFont),
+    nameFrom: col(h.nameFrom), nameTo: col(h.nameTo), nameFont: font(h.nameFont)
+  };
+}
+
 app.get('/api/branding', (req, res) => {
   const bid = branchOf(req);
   const data = (db['devx-branding'] || {})[bid] || null;
@@ -444,6 +461,7 @@ app.post('/api/admin/branding', need('inventory.edit'), (req, res) => {
     clientLogo: logo,
     storeName: String(b.storeName || 'Your Store').trim().slice(0,60),
     tagline: String(b.tagline || 'Smart shopping. Better living.').trim().slice(0,100),
+    heroStyle: cleanHeroStyle(b.heroStyle),
     updatedAt: new Date().toISOString()
   };
   if (!db['devx-branding']) db['devx-branding'] = {};
@@ -960,6 +978,49 @@ app.post('/api/scan/product-image', GUARD.limit('write'), async (req, res) => {
   } catch (e) {
     console.error('[nexus] product image scan error:', e.message);
     res.status(502).json({ error: 'product image recognition failed', provider: VISION.name });
+  }
+});
+
+/* ── Grocery-list image reader (printed + handwritten; EN/HI/ML/AR/UR) ──
+   Used by the unified scanner as the automatic fallback when on-device
+   Tesseract OCR returns little or unmatched text (typical for handwriting). */
+app.post('/api/scan/list-image', GUARD.limit('write'), async (req, res) => {
+  const image = compactVisionImageData(req.body?.image);
+  if (!image) return res.status(400).json({ error: 'invalid or oversized image' });
+  if (!VISION) return res.status(503).json({
+    error: 'Vision is not configured', code: 'VISION_PROVIDER_MISSING', provider: null,
+    message: 'Add GROQ_API_KEY (recommended) or OPENAI_API_KEY to the server .env and restart the app.'
+  });
+  const hint = String(req.body?.lang || '').replace(/[^a-z]/gi, '').slice(0, 8);
+  const prompt = [
+    'This photo is a grocery shopping list. It may be printed or handwritten, and may be in English, Hindi, Malayalam, Arabic or Urdu (or mixed).',
+    hint ? `The shopper selected language code "${hint}" as a hint.` : '',
+    'Read every list item. Return JSON only with this exact shape:',
+    '{"language":"","items":[{"original":"","english":"","qty":1}]}',
+    '"original" is the item exactly as written, "english" is the common English grocery name for catalogue search (translate/transliterate, e.g. "അരി" -> "rice", "दूध" -> "milk"),',
+    '"qty" is the number written next to the item (default 1). Ignore headings, dates, prices and crossed-out items. Do not invent items.'
+  ].filter(Boolean).join(' ');
+  try {
+    const r = await VISION.client.chat.completions.create({
+      model: VISION.model,
+      messages: [{ role: 'user', content: [
+        { type: 'text', text: prompt },
+        { type: 'image_url', image_url: { url: image, detail: 'high' } }
+      ]}],
+      temperature: 0,
+      max_completion_tokens: 900,
+      response_format: { type: 'json_object' }
+    }, { timeout: 30000 });
+    const parsed = parseVisionJson(r?.choices?.[0]?.message?.content || '') || {};
+    const items = (Array.isArray(parsed.items) ? parsed.items : []).slice(0, 60).map(it => ({
+      original: String(it?.original || '').trim().slice(0, 80),
+      english: String(it?.english || it?.original || '').trim().slice(0, 80),
+      qty: Math.max(1, Math.min(20, Math.round(Number(it?.qty) || 1)))
+    })).filter(it => it.english || it.original);
+    res.json({ provider: VISION.name, language: String(parsed.language || ''), items });
+  } catch (e) {
+    console.error('[nexus] list image scan error:', e.message);
+    res.status(502).json({ error: 'list image reading failed', provider: VISION.name });
   }
 });
 
@@ -1987,10 +2048,8 @@ function reconcileApprovedCodAdditions() {
     o.items=Array.isArray(o.items)?o.items:[];
     const cat=catalogOf(o.branchId);
     for(const it of (a.items||[])){
-      const key=`${it.id}|${it.name}|${it.qty||1}|${it.grams||''}`;
-      if(!existing.has(key)){
-        o.items.push(it);
-        existing.add(key);
+      if(!o.items.some(x => x.additionId === a.id && additionItemKey(x) === additionItemKey(it))){
+        o.items.push(Object.assign({}, it, { additionId: a.id }));
         const p=cat.find(x=>String(x.id)===String(it.id));
         if(p && !it.loose && p.stock!=null)p.stock=Math.max(0,p.stock-it.qty);
       }
@@ -2006,25 +2065,52 @@ function reconcileApprovedCodAdditions() {
   return changed;
 }
 
+/* One source of truth for an order's bill once additions exist.
+   Every approved/merged addition's items live in o.items, and sub/total are
+   recalculated from o.items (so weighed prices + additions + delivery fee
+   + discount are always combined). Online additions that are approved but
+   not yet paid are not in the basket yet, so their amount is added on top. */
+function additionItemKey(i){ return `${i.id}|${i.name}|${i.qty||1}|${i.grams||''}`; }
+function mergeAdditionItemsIntoOrder(o) {
+  if (!o) return false;
+  o.items = Array.isArray(o.items) ? o.items : [];
+  const merged = (db['devx-order-additions'] || []).filter(a =>
+    a.orderId === o.id && ['approved_cod_merged', 'paid_merged'].includes(a.status));
+  let changed = false;
+  for (const a of merged) {
+    const tagged = o.items.some(i => i.additionId === a.id);
+    if (tagged) continue;
+    /* Older merges pushed items without a tag — match those by key once. */
+    const pool = o.items.filter(i => !i.additionId && !i._claimed);
+    for (const it of (a.items || [])) {
+      const k = additionItemKey(it);
+      /* search from the end: merged additions were always appended */
+      let hit = null;
+      for (let n = pool.length - 1; n >= 0; n--) if (!pool[n]._claimed && additionItemKey(pool[n]) === k) { hit = pool[n]; break; }
+      if (hit) { hit._claimed = true; hit.additionId = a.id; }
+      else { o.items.push(Object.assign({}, it, { additionId: a.id })); changed = true; }
+    }
+  }
+  o.items.forEach(i => { delete i._claimed; });
+  return changed;
+}
 function recomputeApprovedAdditionTotal(o) {
   if (!o) return 0;
-  if (o.baseTotalBeforeAdditions == null) {
-    o.baseTotalBeforeAdditions = Number(o.total || 0);
-    o.baseSubtotalBeforeAdditions = Number(o.sub || 0);
-  }
-  const additions = (db['devx-order-additions'] || []).filter(a =>
-    a.orderId === o.id &&
-    ['approved_awaiting_payment', 'paid_merged'].includes(a.status)
-  );
-  const approvedExtra = Math.round(
-    additions.reduce((sum, a) => sum + Number(a.total || 0), 0) * 100
-  ) / 100;
-
-  o.approvedAdditionTotal = approvedExtra;
-  o.total = Math.round((Number(o.baseTotalBeforeAdditions || 0) + approvedExtra) * 100) / 100;
-  o.sub = Math.round((Number(o.baseSubtotalBeforeAdditions || 0) + approvedExtra) * 100) / 100;
-  o.updatedAt = new Date().toISOString();
-  return approvedExtra;
+  mergeAdditionItemsIntoOrder(o);
+  const adds = (db['devx-order-additions'] || []).filter(a => a.orderId === o.id);
+  const sumOf = list => Math.round(list.reduce((t, a) => t + Number(a.total || 0), 0) * 100) / 100;
+  const pendingPay = sumOf(adds.filter(a => a.status === 'approved_awaiting_payment'));
+  const approvedAll = sumOf(adds.filter(a => ['approved_awaiting_payment', 'approved_cod_merged', 'paid_merged'].includes(a.status)));
+  const t = PAY.recalcOrder(o);
+  const sub = Math.round((t.sub + pendingPay) * 100) / 100;
+  const total = Math.round((t.total + pendingPay) * 100) / 100;
+  const changed = o.sub !== sub || o.total !== total || o.approvedAdditionTotal !== approvedAll;
+  o.approvedAdditionTotal = approvedAll;
+  o.originalItemsTotal = Math.round(Math.max(0, sub - approvedAll) * 100) / 100;
+  o.sub = sub;
+  o.total = total;
+  if (changed) o.updatedAt = new Date().toISOString();
+  return approvedAll;
 }
 
 /* ── POST-ORDER PRODUCT ADDITIONS ─────────────────────────────
@@ -2120,11 +2206,8 @@ app.post('/api/order-additions/:id/approve', need('orders.refund'), (req, res) =
     const existing=new Set((o.items||[]).map(i=>`${i.id}|${i.name}|${i.qty||1}|${i.grams||''}`));
     o.items=Array.isArray(o.items)?o.items:[];
     for (const it of a.items) {
-      const key=`${it.id}|${it.name}|${it.qty||1}|${it.grams||''}`;
-      if (!existing.has(key)) {
-        o.items.push(it);
-        existing.add(key);
-      }
+      if (!o.items.some(x => x.additionId === a.id && additionItemKey(x) === additionItemKey(it)))
+        o.items.push(Object.assign({}, it, { additionId: a.id }));
       const p=cat.find(x=>String(x.id)===String(it.id));
       if (p && !it.loose && p.stock!=null) p.stock=Math.max(0,p.stock-it.qty);
     }
@@ -2198,7 +2281,7 @@ app.post('/api/order-additions/:id/pay', GUARD.limit('write'), (req,res) => {
 
   // Avoid adding the amount a second time: the revised total was already
   // calculated when the admin approved this addition.
-  o.items.push(...a.items);
+  o.items.push(...a.items.map(it => Object.assign({}, it, { additionId: a.id })));
   recomputeApprovedAdditionTotal(o);
   o.history.push({s:'products_added',at:now,additionId:a.id});
   notify('order','Products added to order — '+o.id,`Additional payment of AED ${a.total} received. The new products are now part of your order.`,o.cid,LOY.normalisePhone(o.customer&&o.customer.phone));
@@ -2284,6 +2367,8 @@ app.post('/api/orders/:id/weigh', need('orders.weigh'), (req, res) => {
   const prevTotal = o.total;
   const totals = PAY.recalcOrder(o);
   Object.assign(o, totals);
+  /* Keep post-order additions in the bill after the scale entry. */
+  recomputeApprovedAdditionTotal(o);
   /* `status` is the FULFILMENT track (new → preparing → out → done) and the
      admin board is driven by it. Weighing and paying are a parallel track,
      so they must not overwrite it — doing so used to drop the order out of

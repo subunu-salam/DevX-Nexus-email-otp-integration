@@ -4855,17 +4855,78 @@ html[data-store="on"] .home-store-nav-3d{display:block}
 .store-nav-3d-wrap{position:relative;height:330px;background:#0c1713}.store-nav-3d-canvas{display:block;width:100%;height:100%;touch-action:none;cursor:grab}.store-nav-3d-canvas:active{cursor:grabbing}.store-nav-3d-loading{position:absolute;inset:0;display:grid;place-items:center;text-align:center;color:#dff7e8;font-size:10px;font-weight:800;background:radial-gradient(circle at 50% 30%,rgba(61,187,106,.14),transparent 45%),#0c1713;z-index:2}.store-nav-3d-loading small{display:block;color:rgba(255,255,255,.55);font-size:8px;margin-top:5px}.store-nav-3d-hud{position:absolute;left:9px;bottom:9px;background:rgba(9,20,16,.80);border:1px solid rgba(124,255,168,.22);color:#eafff0;padding:7px 9px;border-radius:9px;font-size:8px;font-weight:800;line-height:1.45;backdrop-filter:blur(7px);pointer-events:none}.store-nav-3d-hud b{color:#7CFFA8}.store-nav-3d-note{padding:7px 10px;background:rgba(61,187,106,.08);color:rgba(255,255,255,.64);font-size:8px;font-weight:700;text-align:center}
 @media(max-width:430px){.devx-prompt-backdrop{padding:10px}.devx-prompt-card{padding:16px;border-radius:21px}.store-nav-3d-wrap{height:300px}.store-nav-3d-actions button{padding:6px 7px}}
 </style>
+<style id="devx-new-brand-assets">
+/* ===== New DEVX brand assets (header, powered-by, AI Concierge button) ===== */
+.devx-wm{display:inline-flex;align-items:center;gap:8px;min-width:0}
+.devx-wm-img{height:30px;width:auto;display:block;object-fit:contain}
+.devx-wm-div{width:1px;height:22px;background:currentColor;opacity:.25}
+.devx-wm-sub{font-family:Montserrat,system-ui,sans-serif;font-size:7.5px;line-height:1.15;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:#B8F3CE;white-space:nowrap}
+/* The header bar is dark in both themes, so it always uses the light-text wordmark.
+   If a light header is ever introduced, add .hdr-light to .hdr and the dark-text version swaps in. */
+.hdr .devx-wm{color:#fff}
+.hdr .devx-wm .on-light{display:none}
+.hdr.hdr-light .devx-wm .on-dark{display:none}.hdr.hdr-light .devx-wm .on-light{display:block}
+.hdr.hdr-light .devx-wm{color:#101a14}.hdr.hdr-light .devx-wm-sub{color:#187D49}
+@media(max-width:430px){.devx-wm-img{height:26px}.devx-wm{gap:6px}.devx-wm-sub{font-size:6.6px}}
+@media(max-width:360px){.devx-wm-div,.devx-wm-sub{display:none}}
+
+/* Inline DEVX word in "Powered by" strips */
+.devx-word-inline{display:inline-flex!important;align-items:center!important;gap:0!important;line-height:1!important}
+.devx-word-inline img{height:11px;width:auto;display:block;transform:translateY(-.5px)}
+.hero-powered-strip .devx-word-inline img{height:12px}
+/* Hero strip sits on the green hero in both themes → light-text version */
+.hero-powered-strip .devx-word-inline .on-light{display:none}
+/* Store card: light card in light theme, follows theme otherwise */
+.client-brand-powered .devx-word-inline .on-dark{display:none}
+[data-theme="dark"] .client-brand-powered .devx-word-inline .on-dark{display:block}
+[data-theme="dark"] .client-brand-powered .devx-word-inline .on-light{display:none}
+
+/* AI Concierge button: dark-chevron mark on the bright light-theme button,
+   white-chevron mark on a deep-green button in dark theme */
+.hero-cta .devx-ai-dual{display:inline-grid!important;place-items:center;flex:0 0 auto;width:22px!important;height:22px!important}
+.devx-ai-dual img{grid-area:1/1;width:100%!important;height:100%!important;object-fit:contain}
+.devx-ai-dual .for-dark{display:none!important}
+[data-theme="dark"] .devx-ai-dual .for-light{display:none!important}
+[data-theme="dark"] .devx-ai-dual .for-dark{display:block!important}
+[data-theme="dark"] .hero-cta-row .hero-cta{background:linear-gradient(100deg,#0f2a1c,#16432c 60%,#1d5a3a)!important;color:#EAFBE9!important;border:1px solid rgba(124,255,168,.35)!important;box-shadow:0 10px 26px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.06)!important}
+[data-theme="dark"] .hero-cta-row .hero-cta svg{fill:#7CFFA8!important;stroke:#7CFFA8!important}
+@media(max-width:430px){.hero-cta .devx-ai-dual{width:19px!important;height:19px!important}}
+
+/* ===== Admin-controlled hero copy styling ===== */
+.hero h1 .hb-l1.hb-grad,.hero h1 em.hb-grad,.client-brand-name.hb-grad{-webkit-background-clip:text!important;background-clip:text!important;color:transparent!important;-webkit-text-fill-color:transparent}
+.hero h1 em.hb-grad{animation:none!important;background-size:100% 100%!important}
+
+/* beat older ".logo img{width:31px;height:31px}" rules */
+.hdr .logo .devx-wm-img,.hdr>.logo>.devx-wm .devx-wm-img{width:auto!important;height:30px!important;max-width:none!important;flex:0 0 auto!important;margin:0!important;object-fit:contain!important}
+.hdr .logo .devx-wm .on-light{display:none!important}
+.hdr.hdr-light .logo .devx-wm .on-dark{display:none!important}.hdr.hdr-light .logo .devx-wm .on-light{display:block!important}
+@media(max-width:430px){.hdr .logo .devx-wm-img,.hdr>.logo>.devx-wm .devx-wm-img{height:26px!important}}
+@media(max-width:360px){.hdr .logo .devx-wm-img,.hdr>.logo>.devx-wm .devx-wm-img{height:23px!important}}
+.devx-word-inline img{max-width:none!important;flex:0 0 auto}
+.hdr>.logo,.hdr > .logo{width:auto!important;min-width:0!important;max-width:none!important;flex:0 1 auto!important;overflow:visible!important}
+.hdr .devx-wm-sub{display:block}
+</style>
+<style>/* Customer nav is 3D-only: 2D walking-view label removed */.store-nav-live-map:after{content:none!important;display:none!important}</style>
+<style id="gls-unified-tabs">
+.gls-tabs{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:4px 0 10px;padding:4px;border-radius:13px;background:var(--bg);border:1px solid var(--bdr)}
+.gls-tabs button{border:0;border-radius:10px;padding:9px 6px;background:transparent;color:var(--tx2);font-family:inherit;font-size:11px;font-weight:800;cursor:pointer}
+.gls-tabs button.on{background:var(--card,#fff);color:var(--tx);box-shadow:0 2px 8px rgba(0,0,0,.08)}
+#glsProductPane[hidden],#glsListPane[hidden]{display:none!important}
+.gls-add-one{flex:0 0 auto;padding:8px 11px!important;font-size:10px!important;white-space:nowrap}
+.gls-add-one[disabled]{opacity:.5;cursor:not-allowed}
+</style>
 </head>
 <body>
 
 <!-- HEADER -->
 <header class="hdr">
   <a class="logo" href="#" onclick="return false">
-    <img class="logo-mark" src="logo.png" alt="DevX logo" style="object-fit:contain;flex-shrink:0;background:transparent;border-radius:0;padding:0">
-    <div class="logo-text">
-      <div class="logo-name">DEV<span>X</span></div>
-      <div class="logo-sub" style="font-weight:900;color:#B8F3CE">AI Concierge</div>
-    </div>
+    <span class="devx-wm" aria-label="DEVX Technologies · AI Concierge">
+      <img class="devx-wm-img on-dark" src="brand/devx-wordmark-on-dark.png" alt="DEVX Technologies">
+      <img class="devx-wm-img on-light" src="brand/devx-wordmark-on-light.png" alt="" aria-hidden="true">
+      <span class="devx-wm-div" aria-hidden="true"></span>
+      <span class="devx-wm-sub">AI<br>Concierge</span>
+    </span>
   </a>
   <div class="hdr-actions">
     <button class="hdr-store-btn" id="headerStoreBtn" type="button" onclick="openStoreEntry()" title="Shop at Store" aria-label="Shop at Store">
@@ -4982,9 +5043,11 @@ html[data-store="on"] .home-store-nav-3d{display:block}
 <div class="gls-modal" id="groceryScanner" onclick="if(event.target===this)closeGroceryScanner()">
   <div class="gls-sheet" role="dialog" aria-modal="true" aria-label="Scan grocery list">
     <div class="gls-hd">
-      <div class="gls-title">Scan grocery list</div>
+      <div class="gls-title" id="glsTitle">Scan grocery list</div>
       <button class="gls-close" type="button" onclick="closeGroceryScanner()" aria-label="Close">×</button>
     </div>
+    <div class="gls-tabs" role="tablist"><button type="button" id="glsTabList" class="on" onclick="setScannerTab('list')">📝 Grocery list</button><button type="button" id="glsTabProduct" onclick="setScannerTab('product')">📦 Find a product</button></div>
+    <div id="glsListPane">
     <div class="gls-sub">Capture a handwritten or printed grocery list with your camera, or choose a photo from your gallery. We’ll read the list and match recognised items to your catalogue.</div>
     <div class="gls-actions">
       <button class="gls-action" type="button" onclick="document.getElementById('groceryCameraInput').click()">
@@ -4998,10 +5061,23 @@ html[data-store="on"] .home-store-nav-3d{display:block}
     </div>
     <input id="groceryCameraInput" type="file" accept="image/*" capture="environment" style="display:none" onchange="handleGroceryImage(this)">
     <input id="groceryGalleryInput" type="file" accept="image/*" style="display:none" onchange="handleGroceryImage(this)">
-    <div class="gls-lang"><span>List language</span><select id="groceryOcrLang"><option value="eng">English</option><option value="ara">Arabic</option><option value="hin">Hindi</option><option value="urd">Urdu</option></select></div>
+    <div class="gls-lang"><span>List language</span><select id="groceryOcrLang"><option value="eng">English</option><option value="ara">Arabic</option><option value="hin">Hindi</option><option value="urd">Urdu</option><option value="mal">Malayalam</option></select></div>
     <div class="gls-status" id="groceryScanStatus"></div>
     <div class="gls-preview" id="groceryScanPreview"><img id="groceryScanImage" alt="Grocery list preview"></div>
     <div class="gls-results" id="groceryScanResults"></div>
+    </div>
+    <div id="glsProductPane" hidden>
+      <div class="gls-sub">Snap a product (front label works best) and we’ll find it in this store so you can add it straight to your cart.</div>
+      <div class="gls-actions">
+        <button class="gls-action" type="button" onclick="document.getElementById('productCameraInput').click()"><svg viewBox="0 0 24 24"><path d="M4 7h3l2-2h6l2 2h3a2 2 0 012 2v9a2 2 0 01-2 2H4a2 2 0 01-2-2V9a2 2 0 012-2z"/><circle cx="12" cy="13" r="3.5"/></svg>Capture product</button>
+        <button class="gls-action" type="button" onclick="document.getElementById('productGalleryInput').click()"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8" cy="9" r="1.5"/><path d="M21 15l-5-5L5 19"/></svg>Choose from gallery</button>
+      </div>
+      <input id="productCameraInput" type="file" accept="image/*" capture="environment" style="display:none" onchange="handleProductImage(this)">
+      <input id="productGalleryInput" type="file" accept="image/*" style="display:none" onchange="handleProductImage(this)">
+      <div class="gls-status" id="productScanStatus"></div>
+      <div class="gls-preview" id="productScanPreview"><img id="productScanImage" alt="Product preview"></div>
+      <div class="gls-results" id="productScanResults"></div>
+    </div>
   </div>
 </div>
 
@@ -5027,7 +5103,7 @@ html[data-store="on"] .home-store-nav-3d{display:block}
         <p class="hero-sub" id="heroSubTxt">Chat or speak. Best prices, fast delivery.</p>
         <div class="hero-powered-strip">
           <span class="hp-line"></span>
-          <span class="hp-text"><span>Powered by</span> <strong><span class="client-brand-devx-mark">X</span> DEVX</strong><span>AI Concierge</span></span>
+          <span class="hp-text"><span>Powered by</span> <strong class="devx-word-inline"><img class="on-dark" src="brand/devx-word-on-dark.png" alt="DEVX"><img class="on-light" src="brand/devx-word-on-light.png" alt="" aria-hidden="true"></strong><span>AI Concierge</span></span>
           <span class="hp-line"></span>
         </div>
       </div>
@@ -5038,12 +5114,12 @@ html[data-store="on"] .home-store-nav-3d{display:block}
           <div class="client-brand-copy">
             <div class="client-brand-name" id="clientBrandName">Your Store</div>
             <div class="client-brand-tagline" id="clientBrandTagline">Smart shopping. Better living.</div>
-            <div class="client-brand-powered"><span>Powered by</span><strong><span class="client-brand-devx-mark">X</span> DEVX</strong><span>AI Concierge</span></div>
+            <div class="client-brand-powered"><span>Powered by</span><strong class="devx-word-inline"><img class="on-dark" src="brand/devx-word-on-dark.png" alt="DEVX"><img class="on-light" src="brand/devx-word-on-light.png" alt="" aria-hidden="true"></strong><span>AI Concierge</span></div>
           </div>
         </div>
         <div class="hero-cta-row">
           <button class="hero-cta" onclick="goChat()">
-            <img class="devx-ai-logo-icon hero-ai-logo" src="logo.png" alt="" aria-hidden="true">
+            <span class="hero-ai-logo devx-ai-dual" aria-hidden="true"><img class="devx-ai-logo-icon for-light" src="brand/devx-icon-on-light.png" alt=""><img class="devx-ai-logo-icon for-dark" src="brand/devx-icon-on-dark.png" alt=""></span>
             <span id="heroCtaTxt">Ask AI Concierge</span>
             <svg class="hero-cta-chev" viewBox="0 0 24 24" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
           </button>
@@ -5750,9 +5826,35 @@ function renderClientBranding(cfg){
   if(logo){if(cfg&&cfg.clientLogo){logo.src=cfg.clientLogo;logo.style.display='block'}else{logo.removeAttribute('src');logo.style.display='none'}logo.onerror=()=>{logo.style.display='none'}}
   if(name)name.textContent=String((cfg&&cfg.storeName)||'Your Store').trim().slice(0,60);
   if(tag)tag.textContent=String((cfg&&cfg.tagline)||'Smart shopping. Better living.').trim().slice(0,100);
+  try{applyHeroBranding()}catch(e){}
 }
 async function loadClientBranding(){try{const r=await fetch('/api/branding?'+branchQS(),{cache:'no-store'});if(!r.ok)return;const d=await r.json();CLIENT_BRANDING=d&&d.data?d.data:d;renderClientBranding(CLIENT_BRANDING||{})}catch(e){}}
 
+
+/* ─── Admin-controlled hero copy, gradients and fonts ─── */
+const HB_FONTS=new Set(['Montserrat']);
+function hbFont(f){if(!f||HB_FONTS.has(f))return;HB_FONTS.add(f);const l=document.createElement('link');l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family='+encodeURIComponent(f).replace(/%20/g,'+')+':wght@400;600;700;800;900&display=swap';document.head.appendChild(l)}
+function hbEsc(v){return String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function applyHeroBranding(){
+  const h=(CLIENT_BRANDING&&CLIENT_BRANDING.heroStyle)||{};
+  const h1=document.getElementById('heroH1'),sub=document.getElementById('heroSubTxt'),nm=document.getElementById('clientBrandName');
+  const ff=f=>f?`'${f}',Montserrat,system-ui,sans-serif`:'';
+  const grad=(el,a,b)=>{if(!el)return;if(a&&b){el.style.backgroundImage=`linear-gradient(95deg,${a},${b})`;el.classList.add('hb-grad')}else{el.style.backgroundImage='';el.classList.remove('hb-grad')}};
+  if(h1){
+    if(h.line1||h.line2){
+      const cur=h1.querySelector('em');const l2=h.line2||(cur?cur.textContent:'');
+      const l1=h.line1||(h1.firstChild&&h1.firstChild.nodeType===3?h1.firstChild.textContent:'');
+      h1.innerHTML=`<span class="hb-l1">${hbEsc(l1)}</span><br><em>${hbEsc(l2)}</em>`;
+    }else if(!h1.querySelector('.hb-l1')&&h1.firstChild&&h1.firstChild.nodeType===3){
+      const sp=document.createElement('span');sp.className='hb-l1';sp.textContent=h1.firstChild.textContent;h1.replaceChild(sp,h1.firstChild);
+    }
+    grad(h1.querySelector('.hb-l1'),h.line1From,h.line1To);grad(h1.querySelector('em'),h.line2From,h.line2To);
+    hbFont(h.heroFont);h1.style.fontFamily=ff(h.heroFont);
+  }
+  if(sub){if(h.sub)sub.textContent=h.sub;sub.style.setProperty('color',h.subColor||'',h.subColor?'important':'');hbFont(h.heroFont);sub.style.fontFamily=ff(h.heroFont)}
+  if(nm){grad(nm,h.nameFrom,h.nameTo);hbFont(h.nameFont);nm.style.fontFamily=ff(h.nameFont)}
+}
+(function(){const _al=applyLang;applyLang=function(){_al.apply(this,arguments);try{applyHeroBranding()}catch(e){}}})();
 /* Catalog: seeded once, then owned jointly with the backend platform */
 function withStock(p,i){return Object.assign({},p,{stock:p.stock!=null?p.stock:(18+((i*7)%30))})}
 let DB=[],CATS=[];
@@ -6477,6 +6579,7 @@ function openGroceryScanner(){
   const res=document.getElementById('groceryScanResults');
   if(st){st.classList.remove('on');st.textContent=''}
   if(res){res.classList.remove('on');res.innerHTML=''}
+  setScannerTab('list');productScanStatus('',false);
 }
 function closeGroceryScanner(){
   const m=document.getElementById('groceryScanner');if(m)m.classList.remove('on');
@@ -6624,11 +6727,33 @@ function groceryPrepareImage(file){
     img.src=url;
   });
 }
+function groceryFileToDataUrl(file,maxSide=1600,quality=.88){
+  return new Promise((resolve,reject)=>{
+    const img=new Image(),url=URL.createObjectURL(file);
+    img.onload=()=>{try{const w0=img.naturalWidth||img.width,h0=img.naturalHeight||img.height,sc=Math.min(1,maxSide/Math.max(w0,h0));
+      const c=document.createElement('canvas');c.width=Math.max(1,Math.round(w0*sc));c.height=Math.max(1,Math.round(h0*sc));
+      const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);x.drawImage(img,0,0,c.width,c.height);
+      URL.revokeObjectURL(url);resolve(c.toDataURL('image/jpeg',quality))}catch(e){URL.revokeObjectURL(url);reject(e)}};
+    img.onerror=()=>{URL.revokeObjectURL(url);reject(new Error('Could not read the image'))};
+    img.src=url;
+  });
+}
+/* Server vision reader — printed + handwritten, EN/HI/ML/AR/UR. Returns text lines ("qty english-name"). */
+async function groceryVisionRead(file,lang){
+  const image=await groceryFileToDataUrl(file,1600,.88);
+  const r=await fetch('/api/scan/list-image?'+branchQS(),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({image,lang})});
+  const j=await r.json().catch(()=>({}));
+  if(!r.ok)throw new Error(j.message||j.error||'AI list reader is unavailable');
+  const items=Array.isArray(j.items)?j.items:[];
+  return {text:items.map(it=>`${it.qty||1} ${it.english||it.original}`).join('\n'),items};
+}
+function groceryMatchCount(text){try{return matchGroceryLines(cleanOcrLines(text)).matches.length}catch(e){return 0}}
 async function runGroceryOCR(file){
   groceryStatus('Preparing the scanner…');
+  const lang=document.getElementById('groceryOcrLang')?.value||'eng';
+  let text='',ocrErr=null;
   try{
     const T=await ensureGroceryOCR();
-    const lang=document.getElementById('groceryOcrLang')?.value||'eng';
     const prepared=await groceryPrepareImage(file);
     groceryStatus('Reading the list… this can take a few seconds.');
     const out=await T.recognize(prepared,lang,{
@@ -6637,21 +6762,62 @@ async function runGroceryOCR(file){
       },
       config:{tessedit_pageseg_mode:'6',preserve_interword_spaces:'1'}
     });
-    let text=out?.data?.text||'';
+    text=out?.data?.text||'';
     /* A sparse-list pass helps when the photographed list has large gaps or one item per line. */
     if(cleanOcrLines(text).length<2){
       groceryStatus('Improving the scan…');
       const retry=await T.recognize(prepared,lang,{config:{tessedit_pageseg_mode:'11',preserve_interword_spaces:'1'}});
       if((retry?.data?.text||'').trim().length>text.trim().length) text=retry.data.text;
     }
-    if(!text.trim()){groceryStatus('No readable text found. Try a brighter, closer photo with the list filling most of the frame.');return;}
-    groceryStatus('List scanned. Matching items to the catalogue…');
-    renderGroceryResults(text);
-    const lines=cleanOcrLines(text);
-    groceryStatus(`Scanned ${lines.length} line${lines.length===1?'':'s'} and matched ${groceryScanMatches.length} catalogue item${groceryScanMatches.length===1?'':'s'}.`);
-  }catch(e){
-    groceryStatus((e&&e.message)||'Could not scan the list. Please try again.');
+  }catch(e){ocrErr=e}
+  /* Automatic fallback: handwriting, non-Latin scripts or weak on-device OCR → server AI reader. */
+  const lines=cleanOcrLines(text),matched=groceryMatchCount(text);
+  if(ocrErr||!text.trim()||!matched||matched<Math.ceil(lines.length*0.5)){
+    try{
+      groceryStatus('Reading handwriting with the AI list reader…');
+      const v=await groceryVisionRead(file,lang);
+      if(v.text.trim()&&groceryMatchCount(v.text)>=matched)text=v.text;
+    }catch(e){if(!text.trim()){groceryStatus((ocrErr&&ocrErr.message)||e.message||'Could not scan the list. Please try again.');return}}
   }
+  if(!text.trim()){groceryStatus('No readable text found. Try a brighter, closer photo with the list filling most of the frame.');return;}
+  groceryStatus('List scanned. Matching items to the catalogue…');
+  renderGroceryResults(text);
+  const finalLines=cleanOcrLines(text);
+  groceryStatus(`Scanned ${finalLines.length} line${finalLines.length===1?'':'s'} and matched ${groceryScanMatches.length} catalogue item${groceryScanMatches.length===1?'':'s'}.`);
+}
+
+/* ─── Find a product — photo → AI identify → catalogue match → Add to cart ─── */
+function setScannerTab(tab){
+  const list=tab!=='product';
+  document.getElementById('glsListPane')?.toggleAttribute('hidden',!list);
+  document.getElementById('glsProductPane')?.toggleAttribute('hidden',list);
+  document.getElementById('glsTabList')?.classList.toggle('on',list);
+  document.getElementById('glsTabProduct')?.classList.toggle('on',!list);
+  const t=document.getElementById('glsTitle');if(t)t.textContent=list?'Scan grocery list':'Find a product';
+}
+function productScanStatus(msg,on=true){const el=document.getElementById('productScanStatus');if(!el)return;el.textContent=msg;el.classList.toggle('on',on)}
+async function handleProductImage(input){
+  const file=input&&input.files&&input.files[0];input.value='';
+  if(!file)return;
+  if(!file.type||!file.type.startsWith('image/')){productScanStatus('Please choose an image file.');return}
+  const prev=document.getElementById('productScanPreview'),img=document.getElementById('productScanImage'),res=document.getElementById('productScanResults');
+  if(img){if(img.dataset.url)URL.revokeObjectURL(img.dataset.url);img.dataset.url=URL.createObjectURL(file);img.src=img.dataset.url}
+  if(prev)prev.classList.add('on');
+  if(res){res.classList.remove('on');res.innerHTML=''}
+  productScanStatus('Identifying the product…');
+  try{
+    const image=await groceryFileToDataUrl(file,1280,.85);
+    const r=await fetch('/api/scan/product-image?'+branchQS(),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({image})});
+    const j=await r.json().catch(()=>({}));
+    if(!r.ok)throw new Error(j.message||j.error||'Product recognition is unavailable right now');
+    const results=Array.isArray(j.results)?j.results:[];cacheProducts(results);
+    const idn=j.identification||{},label=[idn.brand,idn.productName].filter(Boolean).join(' ')||'this product';
+    if(!results.length){productScanStatus(`Looks like ${label}, but it isn’t in this store’s catalogue.`);return}
+    productScanStatus(j.matchType==='exact'?`Found: ${label}`:`Closest matches for ${label}`);
+    res.innerHTML=`<div class="gls-results-hd"><div class="gls-results-title">${j.matchType==='exact'?'Match found':'Similar products'}</div><div class="gls-results-count">${results.length} result${results.length===1?'':'s'}</div></div>`+
+      results.map(p=>`<div class="gls-item"><span class="gls-item-img">${p.img?`<img src="${esc(p.img)}" alt="">`:''}</span><span class="gls-item-main"><span class="gls-item-name">${esc(p.name)}</span><span class="gls-item-qty">${p.price!=null?'AED '+Number(p.price).toFixed(2):''}${p.stock===0?' · Out of stock':''}</span></span><button class="gls-primary gls-add-one" type="button" ${p.stock===0?'disabled':''} onclick="addOne(${Number(p.id)});this.textContent='Added ✓'">Add to cart</button></div>`).join('');
+    res.classList.add('on');
+  }catch(e){productScanStatus(e.message||'Could not identify the product. Try again.')}
 }
 function addScannedGroceries(){
   let added=0;
@@ -6787,10 +6953,12 @@ function weighBlock(o){
         <span class="wb-p">${priceChanged?`<span class="wb-price-old">AED ${oldPrice.toFixed(2)}</span><span class="wb-price-change">AED ${newPrice.toFixed(2)}</span><small style="display:block;color:#D62828;font-weight:900">Price changed</small>`:`AED ${newPrice.toFixed(2)}`}</span>
       </div>`;}).join('')}
     <div class="wb-tot"><span>Revised total</span><b class="${anyChanged?'wb-price-change':''}">AED ${Number(o.total||0).toFixed(2)}</b></div>
+    ${orderAddNote(o)}
     ${needs?`<button class="wb-btn" onclick="approveWeight('${o.id}')">Approve new total</button>
       <div class="wb-note">Nothing is charged until you approve.</div>`:''}
   </div>`;
 }
+function orderAddNote(o){const a=Number(o&&o.approvedAdditionTotal||0);return a>0?`<div class="wb-note" style="margin-top:4px">Includes <b>AED ${a.toFixed(2)}</b> in additional products you added after ordering${o.fee?` and AED ${Number(o.fee).toFixed(2)} delivery`:''}.</div>`:''}
 /* What the shopper does about money, driven entirely by payStatus so the
    card sheet can never open on an order whose real weight is still unknown. */
 function payBlock(o){
@@ -6807,7 +6975,7 @@ function payBlock(o){
       return `<div class="wb done"><div class="wb-h">✓ Paid — AED ${o.total}</div>
         <div class="wb-note">Settled by ${PMN[method]}.</div></div>`;
     return `<div class="wb pending"><div class="wb-h">💵 ${PMN[method]}</div>
-      <div class="wb-note">Pay <b>AED ${o.total}</b> when your order arrives${weighted?' — this is the actual weighed price':''}. Nothing is charged now.</div></div>`;
+      <div class="wb-note">Pay <b>AED ${o.total}</b> when your order arrives${weighted?' — this is the actual weighed price':''}. Nothing is charged now.</div>${orderAddNote(o)}</div>`;
   }
   switch(o.payStatus){
     case 'awaiting_weight':
@@ -6825,7 +6993,7 @@ function payBlock(o){
         <div class="wb-note">Paid by ${PMN[o.payMethod]||'card'}${o.payRef?' · ref '+esc(o.payRef):''}.</div></div>`;
     case 'due_on_delivery':
       return `<div class="wb pending"><div class="wb-h">💵 ${PMN[o.payMethod]||'Pay on delivery'}</div>
-        <div class="wb-note">Pay <b>AED ${o.total}</b> when your order arrives${(o.items||[]).some(i=>i.loose)?' — the amount above reflects the actual weighed price':''}. Nothing is charged now.</div></div>`;
+        <div class="wb-note">Pay <b>AED ${o.total}</b> when your order arrives${(o.items||[]).some(i=>i.loose)?' — the amount above reflects the actual weighed price':''}. Nothing is charged now.</div>${orderAddNote(o)}</div>`;
     default: return '';
   }
 }
@@ -7215,7 +7383,6 @@ async function renderStoreNavigation(){
     return;
   }
   const est=Math.max(2,Math.round(STORE_NAV_STOPS.reduce((a,s)=>a+(s.eta||1),0)+validStops*0.5));
-  const routeMap=storeNavMapSvg(STORE_NAV_STOPS,-1);
   const list=STORE_NAV_STOPS.map((s,i)=>{
     if(s.isCheckout)return `<div class="store-nav-step store-nav-step-checkout"><span class="store-nav-step-num">✓</span><div class="store-nav-step-copy"><div class="store-nav-step-title">Checkout Counter</div><div class="store-nav-step-sub">Final stop · complete your shopping</div><div class="store-nav-step-items">Head to checkout to finish your basket.</div></div><span class="store-nav-step-eta">~${s.eta||1} min</span></div>`;
     const loc=s.loc?`Aisle ${s.loc.aisle} · Rack ${s.loc.rack} · Shelf ${s.loc.shelf}`:'Location needs store update';
@@ -7225,7 +7392,6 @@ async function renderStoreNavigation(){
   }).join('');
   body.innerHTML=`<div class="store-nav-top"><button class="store-nav-back" onclick="closeStoreNavigation()" aria-label="Back"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button><div class="store-nav-top-copy"><div class="store-nav-top-title">Smart Store Navigation</div><div class="store-nav-top-sub">Optimized for your complete cart</div></div><div class="store-nav-top-right"><button class="store-nav-store-pill" type="button" onclick="openStorePicker(event)" aria-label="Change store"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg><span class="store-nav-current-store-label">${esc(BRANCH||'Current store')}</span><svg viewBox="0 0 24 24" style="width:11px;height:11px"><polyline points="6 9 12 15 18 9"/></svg></button><button class="store-nav-top-exit" type="button" onclick="closeStoreNavigation()" aria-label="Exit navigation">×</button></div></div>
     <div class="store-nav-hero"><div class="store-nav-hero-row"><div><div class="store-nav-hero-kicker">YOUR ROUTE</div><div class="store-nav-hero-title">Find it. Walk it. Done. ✨</div><div class="store-nav-hero-sub">We've included <b>${items.length} item${items.length===1?'':'s'}</b> from your full cart and grouped them into <b>${validStops} stop${validStops===1?'':'s'}</b> to reduce backtracking.</div></div><div style="font-size:28px">🧭</div></div><div class="store-nav-summary"><div class="store-nav-stat"><b>${items.length}</b><span>Cart items</span></div><div class="store-nav-stat"><b>${validStops}</b><span>Stops</span></div><div class="store-nav-stat"><b>~${est} min</b><span>Walk</span></div></div></div>
-    <div class="store-nav-map-card"><div class="store-nav-map-head"><b>${STORE_NAV_MAP_CONFIG&&STORE_NAV_MAP_CONFIG.layoutElements&&STORE_NAV_MAP_CONFIG.layoutElements.length?'Store layout':'Store map'}</b><span>${STORE_NAV_MAP_CONFIG&&STORE_NAV_MAP_CONFIG.mapName?esc(STORE_NAV_MAP_CONFIG.mapName):'Entry → every stop → exit'}</span></div>${routeMap}<div class="store-nav-map-legend"><span><i class="start"></i> Start</span><span><i></i> Route</span><span><i class="stop"></i> Stop</span></div></div>
     <div class="store-nav-route-list">${list}</div>
     <div class="store-nav-bottom"><button class="store-nav-guide-btn" type="button" onclick="startStoreNavGuide()">Start guided navigation →</button><button class="store-nav-exit-btn" type="button" onclick="closeStoreNavigation()">Exit navigation</button></div>`;
 }
@@ -7277,7 +7443,7 @@ function renderStoreNavGuide(){
   map.innerHTML=`<div class="store-nav-3d-card" id="storeNav3dCard">
     <div class="store-nav-3d-head"><div class="store-nav-3d-head-copy"><div class="store-nav-3d-kicker">LIVE 3D STORE PATH</div><div class="store-nav-3d-title">Walk the same store layout</div><div class="store-nav-3d-sub">Same published Admin map · current cart route highlighted</div></div><div class="store-nav-3d-actions"><button type="button" id="storeNav3dIsoBtn" class="active" onclick="storeNav3dIso()">3D</button><button type="button" id="storeNav3dTopBtn" onclick="storeNav3dTop()">Top</button></div></div>
     <div class="store-nav-3d-wrap"><canvas id="storeNav3dCanvas" class="store-nav-3d-canvas" aria-label="3D store navigation path"></canvas><div id="storeNav3dLoading" class="store-nav-3d-loading">Loading your 3D store path…<div><small>Using the same published Admin store layout.</small></div></div><div class="store-nav-3d-hud"><b>STOP ${idx+1}</b> · ${cur.isCheckout?'Checkout':(cur.loc?`Aisle ${cur.loc.aisle} · Rack ${cur.loc.rack} · Shelf ${cur.loc.shelf}`:'Store location')}</div></div><div class="store-nav-3d-note">Drag to look around · use the 3D / Top buttons to change the view</div>
-  </div><div style="margin-top:10px">${storeNavMapSvg(stops,idx)}</div>`;
+  </div>`;
   next.textContent=idx<stops.length-1?'Next stop →':'Finish route ✓';
   setTimeout(()=>mountStoreNav3D(idx),20);
 }

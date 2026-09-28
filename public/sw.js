@@ -1,5 +1,5 @@
 /* DevX NeXus service worker — additive PWA install support. */
-const CACHE = 'devx-nexus-shell-v1';
+const CACHE = 'devx-nexus-shell-v4';
 const SHELL = ['/', '/index.html', '/manifest.json', '/logo.png', '/pwa-icon-192.png', '/pwa-icon-512.png'];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(SHELL)).then(() => self.skipWaiting()));
