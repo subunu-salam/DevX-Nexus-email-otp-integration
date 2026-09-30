@@ -4920,33 +4920,27 @@ html[data-store="on"] .home-store-nav-3d{display:block}
 .gls-add-one[disabled]{opacity:.5;cursor:not-allowed}
 <style id="devx-v2-additions">
 /* ── Floating AI Concierge button (replaces the inline hero button) ── */
-/* Old pill button is hidden; the round AI button sits in its place inside the hero. */
-html body .hero-cta-row .hero-cta{display:none!important}
-html body .hero-cta-row.has-ai-fab{display:flex!important;justify-content:center!important;align-items:center!important;width:100%!important;min-height:0!important;margin:6px 0 10px!important}
-html body .ai-fab.in-hero{width:46px!important;height:46px!important;position:relative!important;right:auto!important;bottom:auto!important;left:auto!important;top:auto!important;z-index:3;flex:0 0 auto}
-html body .ai-fab.in-hero img{width:24px!important;height:24px!important}
-html body .ai-fab.in-hero:after{top:4px;right:5px;width:8px;height:8px}
-html body .ai-fab.in-hero .ai-fab-tip{right:auto;left:auto;top:auto;bottom:calc(100% + 8px);transform:translateY(4px)}
-html body .ai-fab.in-hero:hover .ai-fab-tip,html body .ai-fab.in-hero:focus-visible .ai-fab-tip{transform:none}
+html body .hero-cta-row,html body .hero-copy-actions .hero-cta-row,html body .hero-right .hero-cta-row{display:none!important}
 .ai-fab{position:fixed;right:max(16px,env(safe-area-inset-right));bottom:calc(var(--bot,72px) + 16px + env(safe-area-inset-bottom,0px));z-index:120;width:58px;height:58px;border-radius:50%;border:0;padding:0;cursor:pointer;display:grid;place-items:center;
-  background:radial-gradient(120% 120% at 28% 18%,#9CF0B8 0%,#3DD186 38%,#1FA864 72%,#138a50 100%);
-  box-shadow:0 12px 28px rgba(19,138,80,.38),0 2px 6px rgba(0,0,0,.18),inset 0 1px 0 rgba(255,255,255,.55),inset 0 -3px 8px rgba(0,60,30,.25);
+  background:radial-gradient(120% 120% at 28% 18%,#FFF3B0 0%,#FFD95A 38%,#F4B924 72%,#D99A0B 100%);
+  box-shadow:0 12px 28px rgba(217,154,11,.38),0 2px 6px rgba(0,0,0,.18),inset 0 1px 0 rgba(255,255,255,.55),inset 0 -3px 8px rgba(120,80,0,.25);
   transition:transform .3s cubic-bezier(.2,.9,.25,1.2),box-shadow .3s ease,opacity .25s ease;-webkit-tap-highlight-color:transparent}
-.ai-fab:before{content:"";position:absolute;inset:-6px;border-radius:50%;border:2px solid rgba(61,209,134,.55);animation:aiFabPulse 2.6s ease-out infinite;pointer-events:none}
-.ai-fab:after{content:"";position:absolute;top:7px;right:8px;width:9px;height:9px;border-radius:50%;background:#FFD93D;box-shadow:0 0 0 2px #1FA864,0 0 10px rgba(255,217,61,.9)}
+.ai-fab:before{content:"";position:absolute;inset:-6px;border-radius:50%;border:2px solid rgba(244,185,36,.55);animation:aiFabPulse 2.6s ease-out infinite;pointer-events:none}
+.ai-fab:after{content:"";position:absolute;top:7px;right:8px;width:9px;height:9px;border-radius:50%;background:#22C55E;box-shadow:0 0 0 2px #F4B924,0 0 10px rgba(34,197,94,.9)}
 .ai-fab img{width:30px;height:30px;object-fit:contain;display:block;filter:drop-shadow(0 1px 1px rgba(0,40,20,.25))}
 .ai-fab .for-dark{display:none}
-.ai-fab:hover{transform:translateY(-3px) scale(1.06);box-shadow:0 18px 36px rgba(19,138,80,.45),inset 0 1px 0 rgba(255,255,255,.55)}
+.ai-fab:hover{transform:translateY(-3px) scale(1.06);box-shadow:0 18px 36px rgba(217,154,11,.45),inset 0 1px 0 rgba(255,255,255,.55)}
 .ai-fab:active{transform:scale(.94)}
 .ai-fab-tip{position:absolute;right:calc(100% + 10px);top:50%;transform:translate(6px,-50%);white-space:nowrap;background:rgba(10,22,16,.92);color:#EAFBE9;font:800 10px 'Montserrat',sans-serif;letter-spacing:.02em;padding:7px 10px;border-radius:10px;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;box-shadow:0 8px 20px rgba(0,0,0,.25)}
 .ai-fab:hover .ai-fab-tip,.ai-fab:focus-visible .ai-fab-tip{opacity:1;transform:translate(0,-50%)}
-[data-theme="dark"] .ai-fab{background:radial-gradient(120% 120% at 28% 18%,#2c6b49 0%,#1b4d33 45%,#0f2a1c 100%);box-shadow:0 12px 28px rgba(0,0,0,.45),0 0 0 1px rgba(124,255,168,.35),inset 0 1px 0 rgba(255,255,255,.08)}
+[data-theme="dark"] .ai-fab{background:radial-gradient(120% 120% at 28% 18%,#E8B93A 0%,#C8921A 45%,#8A5E08 100%);box-shadow:0 12px 28px rgba(0,0,0,.45),0 0 0 1px rgba(255,217,90,.35),inset 0 1px 0 rgba(255,255,255,.08)}
 [data-theme="dark"] .ai-fab .for-light{display:none}[data-theme="dark"] .ai-fab .for-dark{display:block}
-[data-theme="dark"] .ai-fab:after{box-shadow:0 0 0 2px #0f2a1c,0 0 10px rgba(255,217,61,.8)}
+[data-theme="dark"] .ai-fab:after{box-shadow:0 0 0 2px #8A5E08,0 0 10px rgba(34,197,94,.8)}
 body.ai-fab-hidden .ai-fab,body:has(#view-chat.active) .ai-fab{opacity:0;transform:scale(.6);pointer-events:none}
 @keyframes aiFabPulse{0%{transform:scale(.92);opacity:.9}70%{transform:scale(1.25);opacity:0}100%{opacity:0}}
 @media(max-width:430px){.ai-fab{width:54px;height:54px}.ai-fab img{width:27px;height:27px}}
 @media(prefers-reduced-motion:reduce){.ai-fab:before{animation:none}}
+.hero-right .ai-fab{position:relative;right:auto;bottom:auto;z-index:2;margin:14px auto 0;align-self:center;flex:0 0 auto}
 
 /* ── Install / notification prompt: centred, attention-grabbing ── */
 .devx-prompt-backdrop.dx-center{align-items:center!important;justify-content:center!important;padding:20px!important;background:rgba(4,10,7,.58)}
@@ -5188,7 +5182,11 @@ body.ai-fab-hidden .ai-fab,body:has(#view-chat.active) .ai-fab{opacity:0;transfo
             <div class="client-brand-powered"><span>Powered by</span><strong class="devx-word-inline"><img class="on-dark" src="brand/devx-word-on-dark.png" alt="DEVX"><img class="on-light" src="brand/devx-word-on-light.png" alt="" aria-hidden="true"></strong><span>AI Concierge</span></div>
           </div>
         </div>
-        <div class="hero-cta-row">
+        <button class="ai-fab" id="aiFab" type="button" onclick="goChat()" aria-label="Ask AI Concierge">
+          <img class="for-light" src="brand/devx-icon-on-light.png" alt=""><img class="for-dark" src="brand/devx-icon-on-dark.png" alt="">
+          <span class="ai-fab-tip" id="aiFabTip">Ask AI Concierge</span>
+        </button>
+        <div class="hero-cta-row" style="display:none !important">
           <button class="hero-cta" onclick="goChat()">
             <span class="hero-ai-logo devx-ai-dual" aria-hidden="true"><img class="devx-ai-logo-icon for-light" src="brand/devx-icon-on-light.png" alt=""><img class="devx-ai-logo-icon for-dark" src="brand/devx-icon-on-dark.png" alt=""></span>
             <span id="heroCtaTxt">Ask AI Concierge</span>
@@ -5366,11 +5364,6 @@ body.ai-fab-hidden .ai-fab,body:has(#view-chat.active) .ai-fab{opacity:0;transfo
   </div>
 </div>
 
-<!-- FLOATING AI CONCIERGE -->
-<button class="ai-fab" id="aiFab" type="button" onclick="goChat()" aria-label="Ask AI Concierge">
-  <img class="for-light" src="brand/devx-icon-on-light.png" alt=""><img class="for-dark" src="brand/devx-icon-on-dark.png" alt="">
-  <span class="ai-fab-tip" id="aiFabTip">Ask AI Concierge</span>
-</button>
 
 <!-- BOTTOM NAV -->
 <nav class="bot-nav">
@@ -9392,7 +9385,7 @@ function renderExplore(){
 <script src="devx-push.js"></script>
 <script>
 /* Floating AI button: keep its label in sync with the (hidden) hero button text, hide it inside chat. */
-(function(){const fab=document.getElementById('aiFab');if(!fab)return;const row=document.querySelector('.hero-cta-row');if(row){row.querySelectorAll('.hero-cta').forEach(x=>x.style.setProperty('display','none','important'));row.classList.add('has-ai-fab');fab.classList.add('in-hero');row.appendChild(fab);}const sync=()=>{const t=(document.getElementById('heroCtaTxt')||{}).textContent||'Ask AI Concierge';fab.setAttribute('aria-label',t);const tip=document.getElementById('aiFabTip');if(tip)tip.textContent=t;document.body.classList.toggle('ai-fab-hidden',!!document.querySelector('#view-chat.active'))};const sv=window.switchView;if(typeof sv==='function')window.switchView=function(){const r=sv.apply(this,arguments);sync();return r};const src=document.getElementById('heroCtaTxt');if(src&&window.MutationObserver)new MutationObserver(sync).observe(src,{childList:true,characterData:true,subtree:true});sync()})();
+(function(){const fab=document.getElementById('aiFab');if(!fab)return;const sync=()=>{const t=(document.getElementById('heroCtaTxt')||{}).textContent||'Ask AI Concierge';fab.setAttribute('aria-label',t);const tip=document.getElementById('aiFabTip');if(tip)tip.textContent=t;document.body.classList.toggle('ai-fab-hidden',!!document.querySelector('#view-chat.active'))};const sv=window.switchView;if(typeof sv==='function')window.switchView=function(){const r=sv.apply(this,arguments);sync();return r};const src=document.getElementById('heroCtaTxt');if(src&&window.MutationObserver)new MutationObserver(sync).observe(src,{childList:true,characterData:true,subtree:true});sync()})();
 </script>
 </body>
 </html>
