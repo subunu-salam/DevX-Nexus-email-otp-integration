@@ -4042,5 +4042,38 @@ function mapb3dExitWalk(){
   renderDash();syncInvBadge();
 })();
 </script>
+<script src="devx-store3d.js"></script>
+<script>
+/* Store Studio 3D — realistic shelving layer (additive).
+   Runs after the original build: aisles/racks/shelves get real gondola shelving
+   with stocked products, the floor becomes wood planks and the back walls are
+   painted. Picking, selection highlight, walk mode and colliders are untouched
+   (the original body box stays as an invisible hit volume). */
+(function(){
+  const K=window.DevXStore3D;if(!K||typeof mapb3dBuild!=='function')return;
+  const orig=mapb3dBuild;
+  window.mapb3dBuild=function(){
+    orig.apply(this,arguments);
+    try{
+      if(!MAPB3D.scene||!MAPB3D.THREE)return;const T=MAPB3D.THREE;
+      const W=Math.max(10,Number(MAPB.canvasW)||40),D=Math.max(8,Number(MAPB.canvasH)||28);
+      MAPB3D.scene.children.slice().forEach(o=>{if(o.userData&&o.userData.map3dBase&&(o.isMesh||o.isGridHelper))MAPB3D.scene.remove(o)});
+      const shell=K.buildShell(T,W,D);shell.userData.map3dBase=true;MAPB3D.scene.add(shell);
+      const grid=new T.GridHelper(Math.max(W,D),Math.max(W,D),0x5b4632,0x5b4632);grid.material.transparent=true;grid.material.opacity=.12;grid.position.set(W/2,.012,D/2);grid.userData.map3dBase=true;MAPB3D.scene.add(grid);
+      if(MAPB3D.renderer){MAPB3D.renderer.toneMapping=T.ACESFilmicToneMapping;MAPB3D.renderer.toneMappingExposure=1.05}
+      MAPB3D.objects.forEach((g,id)=>{
+        const e=mapbFind(id);if(!e||!['aisle','rack','shelf'].includes(e.type))return;
+        const body=g.children[0];if(!body||!body.geometry||!body.geometry.parameters)return;
+        const {width:w,height:h,depth:d}=body.geometry.parameters;
+        g.children.forEach(c=>{if(c.isMesh){c.material=c.material.clone();c.material.transparent=true;c.material.opacity=0;c.material.depthWrite=false;c.castShadow=false}});
+        const gon=K.buildGondola(T,{w,h,d,seed:e.id,accent:e.color,sale:e.type==='aisle'&&K.hash(e.id)%3===0});
+        gon.traverse(n=>{if(n.isMesh&&n.material)n.material=n.material.clone()});   // own materials so selecting one unit never lights up the others
+        g.add(gon);
+      });
+      const selected=MAPB3D.objects.get(MAPB.selectedId);if(selected&&typeof mapb3dHighlight==='function')mapb3dHighlight(selected,true);
+    }catch(err){console.warn('[Store Studio 3D] realism layer skipped',err)}
+  };
+})();
+</script>
 </body>
 </html>

@@ -8,6 +8,10 @@
 <link rel="manifest" href="/manifest.json">
 <link rel="apple-touch-icon" href="/pwa-icon-192.png">
 <meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="DevX NeXus">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-icon" sizes="192x192" href="/pwa-icon-192.png">
+<link rel="apple-touch-icon" sizes="512x512" href="/pwa-icon-512.png">
 <title>DevX NeXus — AI Concierge</title>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -4914,6 +4918,73 @@ html[data-store="on"] .home-store-nav-3d{display:block}
 #glsProductPane[hidden],#glsListPane[hidden]{display:none!important}
 .gls-add-one{flex:0 0 auto;padding:8px 11px!important;font-size:10px!important;white-space:nowrap}
 .gls-add-one[disabled]{opacity:.5;cursor:not-allowed}
+<style id="devx-v2-additions">
+/* ── Floating AI Concierge button (replaces the inline hero button) ── */
+/* Old pill button is hidden; the round AI button sits in its place inside the hero. */
+html body .hero-cta-row .hero-cta{display:none!important}
+html body .hero-cta-row.has-ai-fab{display:flex!important;justify-content:center!important;align-items:center!important;width:100%!important;min-height:0!important;margin:6px 0 10px!important}
+html body .ai-fab.in-hero{width:46px!important;height:46px!important;position:relative!important;right:auto!important;bottom:auto!important;left:auto!important;top:auto!important;z-index:3;flex:0 0 auto}
+html body .ai-fab.in-hero img{width:24px!important;height:24px!important}
+html body .ai-fab.in-hero:after{top:4px;right:5px;width:8px;height:8px}
+html body .ai-fab.in-hero .ai-fab-tip{right:auto;left:auto;top:auto;bottom:calc(100% + 8px);transform:translateY(4px)}
+html body .ai-fab.in-hero:hover .ai-fab-tip,html body .ai-fab.in-hero:focus-visible .ai-fab-tip{transform:none}
+.ai-fab{position:fixed;right:max(16px,env(safe-area-inset-right));bottom:calc(var(--bot,72px) + 16px + env(safe-area-inset-bottom,0px));z-index:120;width:58px;height:58px;border-radius:50%;border:0;padding:0;cursor:pointer;display:grid;place-items:center;
+  background:radial-gradient(120% 120% at 28% 18%,#9CF0B8 0%,#3DD186 38%,#1FA864 72%,#138a50 100%);
+  box-shadow:0 12px 28px rgba(19,138,80,.38),0 2px 6px rgba(0,0,0,.18),inset 0 1px 0 rgba(255,255,255,.55),inset 0 -3px 8px rgba(0,60,30,.25);
+  transition:transform .3s cubic-bezier(.2,.9,.25,1.2),box-shadow .3s ease,opacity .25s ease;-webkit-tap-highlight-color:transparent}
+.ai-fab:before{content:"";position:absolute;inset:-6px;border-radius:50%;border:2px solid rgba(61,209,134,.55);animation:aiFabPulse 2.6s ease-out infinite;pointer-events:none}
+.ai-fab:after{content:"";position:absolute;top:7px;right:8px;width:9px;height:9px;border-radius:50%;background:#FFD93D;box-shadow:0 0 0 2px #1FA864,0 0 10px rgba(255,217,61,.9)}
+.ai-fab img{width:30px;height:30px;object-fit:contain;display:block;filter:drop-shadow(0 1px 1px rgba(0,40,20,.25))}
+.ai-fab .for-dark{display:none}
+.ai-fab:hover{transform:translateY(-3px) scale(1.06);box-shadow:0 18px 36px rgba(19,138,80,.45),inset 0 1px 0 rgba(255,255,255,.55)}
+.ai-fab:active{transform:scale(.94)}
+.ai-fab-tip{position:absolute;right:calc(100% + 10px);top:50%;transform:translate(6px,-50%);white-space:nowrap;background:rgba(10,22,16,.92);color:#EAFBE9;font:800 10px 'Montserrat',sans-serif;letter-spacing:.02em;padding:7px 10px;border-radius:10px;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;box-shadow:0 8px 20px rgba(0,0,0,.25)}
+.ai-fab:hover .ai-fab-tip,.ai-fab:focus-visible .ai-fab-tip{opacity:1;transform:translate(0,-50%)}
+[data-theme="dark"] .ai-fab{background:radial-gradient(120% 120% at 28% 18%,#2c6b49 0%,#1b4d33 45%,#0f2a1c 100%);box-shadow:0 12px 28px rgba(0,0,0,.45),0 0 0 1px rgba(124,255,168,.35),inset 0 1px 0 rgba(255,255,255,.08)}
+[data-theme="dark"] .ai-fab .for-light{display:none}[data-theme="dark"] .ai-fab .for-dark{display:block}
+[data-theme="dark"] .ai-fab:after{box-shadow:0 0 0 2px #0f2a1c,0 0 10px rgba(255,217,61,.8)}
+body.ai-fab-hidden .ai-fab,body:has(#view-chat.active) .ai-fab{opacity:0;transform:scale(.6);pointer-events:none}
+@keyframes aiFabPulse{0%{transform:scale(.92);opacity:.9}70%{transform:scale(1.25);opacity:0}100%{opacity:0}}
+@media(max-width:430px){.ai-fab{width:54px;height:54px}.ai-fab img{width:27px;height:27px}}
+@media(prefers-reduced-motion:reduce){.ai-fab:before{animation:none}}
+
+/* ── Install / notification prompt: centred, attention-grabbing ── */
+.devx-prompt-backdrop.dx-center{align-items:center!important;justify-content:center!important;padding:20px!important;background:rgba(4,10,7,.58)}
+.devx-prompt-backdrop.dx-center .devx-prompt-card{width:min(100%,400px);text-align:center;padding:26px 22px 20px;border-radius:28px;animation:dxPromptPop .45s cubic-bezier(.16,1.2,.3,1)}
+.devx-prompt-backdrop.dx-center .devx-prompt-icon{margin:0 auto 14px;width:64px;height:64px;border-radius:20px;font-size:28px;background:radial-gradient(120% 120% at 28% 18%,#9CF0B8,#1FA864 70%);box-shadow:0 14px 30px rgba(31,168,100,.35)}
+.devx-prompt-backdrop.dx-center .devx-prompt-sub{margin-left:auto;margin-right:auto}
+.devx-prompt-backdrop.dx-center .devx-prompt-actions{flex-direction:column-reverse}
+.devx-prompt-backdrop.dx-center .devx-prompt-btn{min-height:46px;font-size:11.5px}
+.dx-steps{list-style:none;margin:14px 0 2px;padding:0;text-align:left;display:grid;gap:8px;position:relative;z-index:1}
+.dx-steps li{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:14px;background:rgba(61,187,106,.08);border:1px solid rgba(61,187,106,.18);font-size:11px;color:var(--tx);line-height:1.35}
+.dx-steps .n{flex:0 0 22px;height:22px;border-radius:50%;background:var(--G);color:#fff;font-weight:900;font-size:10.5px;display:grid;place-items:center}
+.dx-steps svg{width:18px;height:18px;vertical-align:-4px;margin:0 3px;fill:none;stroke:#1a8cff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.dx-steps b{font-weight:900}
+@keyframes dxPromptPop{from{opacity:0;transform:translateY(16px) scale(.9)}to{opacity:1;transform:none}}
+
+/* ── Turn-by-turn navigation HUD over the 3D store ── */
+.dx-nav-host{position:relative}
+.dx-turn{position:absolute;left:8px;right:8px;top:8px;z-index:3;display:flex;flex-direction:column;gap:5px;pointer-events:none;font-family:'Montserrat',sans-serif}
+.dx-turn-main{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:14px;background:linear-gradient(135deg,#0f7a44,#15965a);color:#fff;box-shadow:0 10px 24px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.18);pointer-events:auto}
+.dx-turn.arrived .dx-turn-main{background:linear-gradient(135deg,#0b4f7a,#1377b8)}
+.dx-turn-ic{flex:0 0 40px;height:40px;border-radius:11px;background:rgba(255,255,255,.14);display:grid;place-items:center}
+.dx-turn-ic svg{width:28px;height:28px;fill:none;stroke:#fff;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.dx-turn-copy{min-width:0;flex:1}
+.dx-turn-dist{font-size:17px;font-weight:900;letter-spacing:-.02em;line-height:1.05}
+.dx-turn-text{font-size:10px;font-weight:700;opacity:.92;margin-top:2px;line-height:1.3;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.dx-turn-voice{flex:0 0 30px;height:30px;border-radius:50%;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.1);color:#fff;font-size:13px;cursor:pointer;display:grid;place-items:center;padding:0}
+.dx-turn-voice.on{background:rgba(255,255,255,.28)}
+.dx-turn-then{align-self:flex-start;display:flex;align-items:center;gap:6px;padding:5px 9px;border-radius:10px;background:rgba(8,40,24,.88);color:#dff7e8;font-size:9px;font-weight:700;max-width:100%;box-shadow:0 6px 14px rgba(0,0,0,.25)}
+.dx-turn-then span{opacity:.7;font-weight:800;text-transform:uppercase;letter-spacing:.06em;font-size:7.5px}
+.dx-turn-then svg{width:14px;height:14px;flex:0 0 14px;fill:none;stroke:#7CFFA8;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.dx-turn-then b{font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dx-eta{position:absolute;right:9px;bottom:9px;z-index:3;background:rgba(255,255,255,.94);color:#10231a;padding:6px 10px;border-radius:999px;font:700 9px 'Montserrat',sans-serif;box-shadow:0 6px 16px rgba(0,0,0,.28);pointer-events:none}
+.dx-eta b{color:#0f8a4d;font-weight:900}
+.dx-turn.compact .dx-turn-main{padding:7px 8px}.dx-turn.compact .dx-turn-ic{flex-basis:32px;height:32px}.dx-turn.compact .dx-turn-ic svg{width:22px;height:22px}.dx-turn.compact .dx-turn-dist{font-size:13px}.dx-turn.compact .dx-turn-then{display:none!important}
+.store-nav-3d-wrap{height:360px}
+.store-nav-3d-actions{display:flex;gap:4px}
+.store-nav-3d-actions button.active{background:#1FA864!important;border-color:#1FA864!important;color:#fff!important}
+@media(max-width:430px){.store-nav-3d-wrap{height:330px}.dx-turn-dist{font-size:15px}}
 </style>
 </head>
 <body>
@@ -5294,6 +5365,12 @@ html[data-store="on"] .home-store-nav-3d{display:block}
     </button>
   </div>
 </div>
+
+<!-- FLOATING AI CONCIERGE -->
+<button class="ai-fab" id="aiFab" type="button" onclick="goChat()" aria-label="Ask AI Concierge">
+  <img class="for-light" src="brand/devx-icon-on-light.png" alt=""><img class="for-dark" src="brand/devx-icon-on-dark.png" alt="">
+  <span class="ai-fab-tip" id="aiFabTip">Ask AI Concierge</span>
+</button>
 
 <!-- BOTTOM NAV -->
 <nav class="bot-nav">
@@ -9309,6 +9386,13 @@ function renderExplore(){
   /* Deep link: opened by scanning the store-entrance QR → ?mode=store */
   if(new URLSearchParams(location.search).get('mode')==='store'){setStoreMode(true)}
 })();
+</script>
+<script src="devx-store3d.js"></script>
+<script src="devx-nav3d.js"></script>
+<script src="devx-push.js"></script>
+<script>
+/* Floating AI button: keep its label in sync with the (hidden) hero button text, hide it inside chat. */
+(function(){const fab=document.getElementById('aiFab');if(!fab)return;const row=document.querySelector('.hero-cta-row');if(row){row.querySelectorAll('.hero-cta').forEach(x=>x.style.setProperty('display','none','important'));row.classList.add('has-ai-fab');fab.classList.add('in-hero');row.appendChild(fab);}const sync=()=>{const t=(document.getElementById('heroCtaTxt')||{}).textContent||'Ask AI Concierge';fab.setAttribute('aria-label',t);const tip=document.getElementById('aiFabTip');if(tip)tip.textContent=t;document.body.classList.toggle('ai-fab-hidden',!!document.querySelector('#view-chat.active'))};const sv=window.switchView;if(typeof sv==='function')window.switchView=function(){const r=sv.apply(this,arguments);sync();return r};const src=document.getElementById('heroCtaTxt');if(src&&window.MutationObserver)new MutationObserver(sync).observe(src,{childList:true,characterData:true,subtree:true});sync()})();
 </script>
 </body>
 </html>

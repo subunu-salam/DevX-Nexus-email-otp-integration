@@ -28,6 +28,7 @@ const STORES = require('./lib/stores');
 const TEN = require('./lib/tenancy');
 const ROLLUP = require('./lib/rollup');
 const GOALS = require('./lib/goals');
+const { Push } = require('./lib/push');
 
 const PORT = process.env.PORT || 3000;
 const ADMIN_PIN = process.env.ADMIN_PIN || '1234';
@@ -90,7 +91,7 @@ const VISION = groq
 
 /* ── storage ── */
 const KEYS = ['devx-catalog', 'devx-orders', 'devx-offers', 'devx-sponsored', 'devx-notifs-customer', 'devx-activity', 'devx-queries',
-  'devx-loyalty', 'devx-personal-offers', 'devx-zones', 'devx-staff', 'devx-audit', 'devx-slots', 'devx-branches', 'devx-catalogs', 'devx-order-additions', 'devx-customer-passwords', 'devx-streaks', 'devx-goal-dismissals', 'devx-streak-config', 'devx-store-navigation', 'devx-store-map-builder', 'devx-branding'];
+  'devx-loyalty', 'devx-personal-offers', 'devx-zones', 'devx-staff', 'devx-audit', 'devx-slots', 'devx-branches', 'devx-catalogs', 'devx-order-additions', 'devx-customer-passwords', 'devx-streaks', 'devx-goal-dismissals', 'devx-streak-config', 'devx-store-navigation', 'devx-store-map-builder', 'devx-branding', 'devx-push'];
 let db = {
   'devx-catalog': null,
   'devx-orders': [],
@@ -130,6 +131,8 @@ let db = {
   'devx-store-map-builder': {},
   /* Per-branch client branding shown on the customer home page. */
   'devx-branding': {},
+  /* Web Push: VAPID keys + device subscriptions (never sent to any client). */
+  'devx-push': {},
   'devx-order-count': 0
 };
 
@@ -297,6 +300,8 @@ function notify(type, title, msg, cid, phone) {
   });
   db['devx-notifs-customer'] = db['devx-notifs-customer'].slice(0, 60);
   if (phone) message(phone, `${title}\n${msg}`);
+  /* Also deliver to the shopper's installed app / browser as a system notification. */
+  if (phone) { const n = db['devx-notifs-customer'][0]; PUSH.send({ phone: LOY.normalisePhone(phone) }, { title, body: msg, tag: n.id, url: '/' }).catch(() => {}); }
 }
 /* Public state WITHOUT the catalogue.
    At 96k SKUs the catalogue is ~30 MB — shipping it to every shopper is what
@@ -332,6 +337,7 @@ function fullState(branchId) {
   const def = STORES.fallbackId(db);
   const s = {};
   KEYS.forEach(k => s[k] = db[k]);
+  delete s['devx-push'];   // private VAPID key + device endpoints stay server-side
   /* A picker at one shop must not see another shop's queue. Owners switch
      branches explicitly, which branchOf() already resolves. */
   for (const ord of db['devx-orders']) {
@@ -3353,7 +3359,7 @@ app.get('/api/audit', need('audit.view'), (req, res) => {
 
 app.post('/api/admin/set', (req, res, next) => {
   const { key } = req.body || {};
-  if (!KEYS.includes(key)) return res.status(400).json({ error: 'bad key' });
+  if (!KEYS.includes(key) || key === 'devx-push') return res.status(400).json({ error: 'bad key' });
   if (key === 'devx-sponsored') return need('offers.manage')(req, res, next);
   return need('inventory.edit')(req, res, next);
 }, (req, res) => {
@@ -3373,6 +3379,38 @@ app.post('/api/admin/set', (req, res, next) => {
   }
   broadcast({ [key]: value });
   res.json({ ok: true });
+});
+
+/* ── Web Push (lib/push.js) ── */
+const PUSH = new Push(() => db, () => save('devx-push'));
+app.get('/api/push/key', (req, res) => res.json({ publicKey: PUSH.publicKey() }));
+app.post('/api/push/subscribe', async (req, res) => {
+  const b = req.body || {}, s = shopper(req);
+  const r = PUSH.subscribe(b.subscription, { phone: s && s.phone ? LOY.normalisePhone(s.phone) : null, platform: String(b.platform || '').slice(0, 20), standalone: !!b.standalone });
+  if (!r.ok) return res.status(400).json(r);
+  if (b.welcome && r.isNew) {
+    const sub = PUSH.state().subs.find(x => x.endpoint === b.subscription.endpoint);
+    PUSH.sendTo(sub, { title: 'Notifications are on ✓', body: 'Order updates and offers from your store will appear here.', tag: 'devx-welcome', url: '/' }).catch(() => {});
+  }
+  res.json({ ok: true, linked: !!(s && s.phone) });
+});
+app.post('/api/push/unsubscribe', (req, res) => { PUSH.unsubscribe(req.body && req.body.endpoint); res.json({ ok: true }); });
+/* A shopper can test their own devices; staff can broadcast a test to every device. */
+app.post('/api/push/test-me', async (req, res) => {
+  const s = shopper(req); if (!s || !s.phone) return res.status(401).json({ error: 'sign in first' });
+  res.json(await PUSH.send({ phone: LOY.normalisePhone(s.phone) }, { title: 'DevX test notification', body: 'If you can see this in your notification centre, push is working.', tag: 'devx-test', url: '/' }));
+});
+app.post('/api/push/test', async (req, res) => {
+  if (!isAdmin(req)) return res.status(401).json({ error: 'admin only' });
+  const b = req.body || {};
+  const phone = b.phone ? LOY.normalisePhone(b.phone) : null;
+  res.json(await PUSH.send(phone ? { phone } : {}, { title: String(b.title || 'DevX NeXus'), body: String(b.body || 'Test notification from DevX NeXus.'), tag: 'devx-admin-test', url: '/' }));
+});
+app.get('/api/push/status', (req, res) => {
+  if (!isAdmin(req)) return res.status(401).json({ error: 'admin only' });
+  const subs = PUSH.state().subs;
+  const by = k => subs.reduce((m, x) => (m[x[k] || 'unknown'] = (m[x[k] || 'unknown'] || 0) + 1, m), {});
+  res.json({ devices: subs.length, linkedToShopper: subs.filter(x => x.phone).length, byPlatform: by('platform'), installedApps: subs.filter(x => x.standalone).length, keySource: process.env.VAPID_PUBLIC_KEY ? 'env' : 'generated' });
 });
 
 /* ── static frontends ── */
