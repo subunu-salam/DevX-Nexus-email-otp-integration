@@ -48,6 +48,8 @@
   /* After install (or on iOS standalone launch) ask for notifications. */
   window.maybeShowDevXNotificationPrompt = function(){
     if(!('Notification' in window)) return;
+    /* iOS/iPadOS: Web Push only exists inside the Home Screen app on 16.4+, never in Safari itself. */
+    if(isIOS && (!standalone() || !pushCapable())) return;
     if(Notification.permission === 'granted'){ devxEnsurePush(false); return; }
     if(Notification.permission !== 'default') return;
     const dismissed = LS.get('devx-notification-prompt-dismissed') === '1';
