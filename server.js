@@ -3357,6 +3357,18 @@ app.get('/api/audit', need('audit.view'), (req, res) => {
   res.json({ data: rows.slice(0, Math.min(300, parseInt(req.query.limit, 10) || 150)) });
 });
 
+/* Notifications created by "Publish Offer" (title "<n>% OFF <product>") that
+   were not in the stored list yet. Store-wide only (no cid/phone — personal
+   ones are already pushed by notify()), recent only, so re-saving an old list
+   can never re-send. Same tag as the in-app notification, so the OS shows it once. */
+function newOfferNotifs(prev, next) {
+  if (!Array.isArray(next)) return [];
+  const seen = new Set((Array.isArray(prev) ? prev : []).map(n => n && n.id));
+  const cutoff = Date.now() - 10 * 60 * 1000;
+  return next.filter(n => n && n.id && !seen.has(n.id) && n.type === 'offer' && !n.cid && !n.phone
+    && /^\d+% OFF /.test(String(n.title || '')) && new Date(n.at).getTime() >= cutoff).slice(0, 3);
+}
+
 app.post('/api/admin/set', (req, res, next) => {
   const { key } = req.body || {};
   if (!KEYS.includes(key) || key === 'devx-push') return res.status(400).json({ error: 'bad key' });
@@ -3373,9 +3385,18 @@ app.post('/api/admin/set', (req, res, next) => {
     audit(req, 'inventory.write', `updated ${value.length} products at ${bid}`);
     saveAll();
   } else {
+    /* Offers & Promotions: a newly published offer also goes out as a real
+       Web Push to every subscribed customer device (additive — the in-app
+       notification list below is written exactly as before). */
+    const freshOffers = key === 'devx-notifs-customer' ? newOfferNotifs(db[key], value) : [];
     db[key] = value;
     audit(req, 'inventory.write', `updated ${key}`);
     save(key);
+    freshOffers.forEach(n => {
+      PUSH.send({}, { title: String(n.title).slice(0, 120), body: String(n.msg || 'New offer at your store.').slice(0, 300), tag: n.id, url: '/' })
+        .then(r => console.log(`[push] offer "${n.title}" → ${r.delivered}/${r.targeted} devices`))
+        .catch(e => console.warn('[push] offer broadcast failed', e && e.message));
+    });
   }
   broadcast({ [key]: value });
   res.json({ ok: true });
