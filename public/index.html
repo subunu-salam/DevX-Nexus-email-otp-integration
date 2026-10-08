@@ -7659,7 +7659,7 @@ function setStoreMode(on){
   const headerStore=document.getElementById('headerStoreBtn');
   if(headerStore)headerStore.classList.toggle('on',on);
   renderProds();
-  if(on){showToast('Store Mode on — your Admin-matching 3D store route is ready','green');switchView('home');renderHomeStoreNav3D();}
+  if(on){showToast('Store Mode on — your store map route is ready','green');switchView('home');renderHomeStoreNav3D();}
   else {const wrap=document.getElementById('homeStoreNav3d');if(wrap)wrap.style.display='none';}
 }
 
@@ -9382,6 +9382,7 @@ function renderExplore(){
 </script>
 <script src="devx-store3d.js"></script>
 <script src="devx-nav3d.js"></script>
+<script src="devx-nav2d.js"></script>
 <script src="devx-push.js"></script>
 <script>
 /* Floating AI button: keep its label in sync with the (hidden) hero button text, hide it inside chat. */
