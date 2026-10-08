@@ -1773,6 +1773,23 @@ app.get('/api/group/overview', need('insights.view'), (req, res) => {
 app.get('/api/branches', (req, res) => {
   res.json({ data: STORES.list(db).filter(b => b.active !== false) });
 });
+/* Maps published from the Store Map Builder before the unit fix had every x / y
+   multiplied (the builder keeps positions as % of the canvas, but publish treated
+   them as metres) and then clamped at the edge, so blocks piled up on the right
+   and bottom. Records published after the fix carry coordFix:true. For older
+   records this rebuilds the true positions on read: unclamped values are scaled
+   back, clamped ones are taken from the saved builder design. Nothing is written. */
+function repairLegacyNavCoords(cfg, draft){
+  if(!cfg || cfg.coordFix || !Array.isArray(cfg.layoutElements) || !cfg.layoutElements.length) return cfg;
+  const cw=Math.max(1,Number(cfg.canvasW)||Number(draft&&draft.canvasW)||40), ch=Math.max(1,Number(cfg.canvasH)||Number(draft&&draft.canvasH)||28);
+  const byId=new Map(((draft&&Array.isArray(draft.elements))?draft.elements:[]).map(e=>[String(e.id),e]));
+  const lim=(n,hi)=>Math.max(0,Math.min(hi,Number(n)||0));
+  const fix=(v,dv,dim,cap)=>{v=Number(v)||0; if(v>=cap-1e-6) return (dv!=null&&isFinite(Number(dv)))?lim(dv,cap):v; return lim(v*dim/100,cap);};
+  const layoutElements=cfg.layoutElements.map(e=>{const d=byId.get(String(e.id)); return {...e, x:fix(e.x,d&&d.x,cw,98), y:fix(e.y,d&&d.y,ch,96)};});
+  const aisles=(Array.isArray(cfg.aisles)?cfg.aisles:[]).map(a=>{const m=layoutElements.find(e=>e.type==='aisle'&&String(e.label||'')===String(a.label||'')); return m?{...a,x:m.x,y:m.y}:a;});
+  const centre=(type,cur)=>{const e=layoutElements.find(x=>x.type===type); return e?{x:Math.max(1,Math.min(99,e.x+(Number(e.w)||0)/2)),y:Math.max(1,Math.min(99,e.y+(Number(e.h)||0)/2))}:cur;};
+  return {...cfg, layoutElements, aisles, entry:centre('entry',cfg.entry), exit:centre('exit',cfg.exit), checkout:centre('checkout',cfg.checkout)};
+}
 app.get('/api/store-navigation', (req, res) => {
   const asked = String((req.query && req.query.branch) || '').trim();
   const bid = asked && STORES.find(db, asked) ? asked : STORES.fallbackId(db);
@@ -1784,6 +1801,7 @@ app.get('/api/store-navigation', (req, res) => {
      navigation view from that branch's builder design. This is a read-only
      compatibility fallback and does not alter checkout, cart or inventory. */
   const draft = builderAll[bid] || null;
+  cfg = repairLegacyNavCoords(cfg, draft);
   if (draft && (!cfg || !cfg.mapDataUrl || !Array.isArray(cfg.layoutElements) || !cfg.layoutElements.length)) {
     const clamp=(n,lo=0,hi=100)=>Math.max(lo,Math.min(hi,Number(n)||0));
     const cw=Math.max(1,Number(draft.canvasW)||40), ch=Math.max(1,Number(draft.canvasH)||28);
@@ -1872,7 +1890,7 @@ app.post('/api/admin/store-navigation', need('inventory.edit'), (req, res) => {
     id:String(e.id||('nav-el-'+Date.now()+i)).slice(0,80),type:String(e.type||'zone').slice(0,30),label:String(e.label||'Element').slice(0,80),category:String(e.category||'').slice(0,80),
     x:clamp(e.x,0,98),y:clamp(e.y,0,96),w:clamp(e.w==null?5:e.w,.5,98),h:clamp(e.h==null?5:e.h,.5,96),rotation:clamp(e.rotation||0,-180,180),color:/^#[0-9a-f]{6}$/i.test(String(e.color||''))?String(e.color):'#e5f5eb',shape:['rounded','square','pill','circle'].includes(String(e.shape||''))?String(e.shape):'rounded',fontSize:Math.max(6,Math.min(40,Number(e.fontSize)||10)),fontColor:/^#[0-9a-f]{6}$/i.test(String(e.fontColor||''))?String(e.fontColor):'#173326',z:Math.max(1,Math.round(Number(e.z)||i+1)),floor:String(e.floor||'Ground Floor').slice(0,40)
   })):(cur.layoutElements||[]);
-  const cfg={version:3,branchId:bid,mapName:String(b.mapName||cur.mapName||'Store floor plan').slice(0,100),
+  const cfg={version:3,coordFix:(b.coordFix===true)||(cur.coordFix===true&&!Array.isArray(b.layoutElements)),branchId:bid,mapName:String(b.mapName||cur.mapName||'Store floor plan').slice(0,100),
     canvasW:Math.max(10,Math.min(200,Number(b.canvasW)||Number(cur.canvasW)||40)),canvasH:Math.max(8,Math.min(200,Number(b.canvasH)||Number(cur.canvasH)||28)),
     mapDataUrl:(b.clearMap ? null : (dataUrl||cur.mapDataUrl||null)),entry:point(b.entry||cur.entry||{x:50,y:94}),exit:point(b.exit||cur.exit||b.entry||{x:50,y:94}),checkout:point(b.checkout||cur.checkout||null),aisles,layoutElements:layoutElements.length?layoutElements:(cur.layoutElements||[]),updatedAt:new Date().toISOString()};
   if(!db['devx-store-navigation'])db['devx-store-navigation']={};
