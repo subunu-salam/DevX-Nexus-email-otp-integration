@@ -13,8 +13,7 @@
   const HOME = document.getElementById('homeStoreNav3d');
   const ORIG_HTML = HOME ? HOME.innerHTML : '';              /* the original 3D card markup, kept for the 2D ⇄ 3D switch */
   const render3dHome = window.renderHomeStoreNav3D;           /* the existing 3D home renderer, untouched */
-  let viewMode = '2d';
-  try{ if(localStorage.getItem('devx-home-nav-view') === '3d') viewMode = '3d'; }catch(e){}
+  let viewMode = '2d';                                        /* navigation always opens on the 2D map; 3D is a switch away */
   const WALK_PREVIEW = 2.3;   /* m/s the little person moves on screen */
   const WALK_REAL = 1.1;      /* m/s used for the time estimate */
   const STOP_PAUSE = 1.7, END_PAUSE = 3.2;
@@ -367,7 +366,7 @@
         const t = el('text', { x:0, y:0, 'font-size':20, 'text-anchor':'middle', 'dominant-baseline':'central', 'font-weight':800, fill:ink }, g);
         t.textContent = String(e.label || e.type || '');
         const full = t.textContent, an = Number((full.match(/Aisle\s*(\d+)/i) || [])[1]) || 0, part = full.split(/\s*[·|—–]\s*|\s+-\s+/)[0].trim();
-        labels.push({ t, w, h, cx:x + w/2, cy:y + h/2, shown:full, texts:[full, part, an ? 'A' + an : part.slice(0, 3)].filter((v, i, a) => v && a.indexOf(v) === i) });
+        labels.push({ t, w, h, cx:x + w/2, cy:y + h/2, shown:full, texts:[full, part, an ? 'A' + an : part.split(/\s+/)[0]].filter((v, i, a) => v && a.indexOf(v) === i) });
       });
       /* route: border, blue line, walked part, arrows */
       const gRoute = el('g', { fill:'none', 'stroke-linecap':'round', 'stroke-linejoin':'round' }, svg);
@@ -629,7 +628,6 @@
   function to2dButton(){ const b = document.createElement('button'); b.type = 'button'; b.className = 'dx2-to2d'; b.textContent = '2D map'; b.title = 'Switch to the 2D map'; b.addEventListener('click', () => setViewMode('2d')); return b; }
   function setViewMode(mode){
     viewMode = mode === '3d' ? '3d' : '2d';
-    try{ localStorage.setItem('devx-home-nav-view', viewMode); }catch(e){}
     if(guideOpen()) window.renderStoreNavGuide(); else window.renderHomeStoreNav3D();
   }
 
@@ -711,7 +709,7 @@
   function endGuide(){
     hushVoice();
     if(typeof STORE_NAV_3D !== 'undefined'){ STORE_NAV_3D.guideStarted = false; if(guideOwns3d()) stop3d(); }
-    closeDetail(); F.picked = false;
+    closeDetail(); F.picked = false; F.guideFull = false; document.getElementById('storeNavGuide')?.classList.remove('dxfs');
     const map = document.getElementById('storeNavGuideMap'), had = !!(map && map.firstChild);
     if(map) map.innerHTML = '';
     G.reset();
@@ -773,8 +771,8 @@
     host.appendChild(box);
   }
 
-  /* ── Guided screen: full screen is the user's choice (3D starts full screen, the 2D map starts as a card) ── */
-  function guideFullWanted(){ return F.guideFull == null ? viewMode === '3d' : !!F.guideFull; }
+  /* ── Guided screen: always opens as the normal card; full screen is a toggle on the map (2D and 3D) ── */
+  function guideFullWanted(){ return !!F.guideFull; }
   function toggleGuideFull(force){
     F.guideFull = force == null ? !guideFullWanted() : !!force;
     injectCss(); document.getElementById('storeNavGuide')?.classList.toggle('dxfs', F.guideFull);
