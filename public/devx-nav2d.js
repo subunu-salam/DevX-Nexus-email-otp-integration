@@ -99,6 +99,9 @@
 .dxf-fullbtn{display:grid!important;place-items:center;padding:5px 7px!important}
 .dxf-fullbtn svg,.dx2-ctrl button svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
 .dx2-ctrl button[id$="Full"] svg{stroke:#3c4043}
+.dx2-map.side .dx2-turn{right:auto;width:340px}
+.dx2-map.side .dx2-turn-text{white-space:normal}
+.store-nav-guide:not(.dxfs) .store-nav-3d-actions button{padding:6px 6px}
 .dxf-on .store-nav-3d-hud{display:none}
 .dxf-layer{position:absolute;inset:0;z-index:2;pointer-events:none;overflow:hidden;font-family:'Montserrat',sans-serif}
 .dxf-chip{position:absolute;left:0;top:0;display:flex;align-items:center;gap:4px;max-width:150px;padding:3px 7px;border:1px solid rgba(255,255,255,.22);border-radius:9px;background:rgba(9,24,17,.86);color:#eafff0;font:800 9px/1.2 'Montserrat',sans-serif;text-align:left;white-space:nowrap;pointer-events:none;box-shadow:0 3px 10px rgba(0,0,0,.35);will-change:transform}
@@ -166,6 +169,16 @@
     const n = Math.max(2, Math.ceil(Math.hypot(b.x - a.x, b.y - a.y)/0.6));
     for(let i = 1; i < n; i++){ const t = i/n; if(navCellBlocked(a.x + (b.x - a.x)*t, a.y + (b.y - a.y)*t, obs)) return false; }
     return true;
+  }
+  /* true extent of the floor plan in metres: the canvas plus any rotated / overhanging element */
+  function planBounds(extra){
+    const { W, D } = dims(); let x0 = 0, y0 = 0, x1 = W, y1 = D;
+    navLayoutEls().forEach(e => { if(String(e.type || '').toLowerCase() === 'text') return;
+      const w = Math.max(.4, (Number(e.w) || 1)/100*W), h = Math.max(.4, (Number(e.h) || 1)/100*D), cx = (Number(e.x) || 0)/100*W + w/2, cy = (Number(e.y) || 0)/100*D + h/2, a = (Number(e.rotation) || 0)*Math.PI/180;
+      const hw = Math.abs(w/2*Math.cos(a)) + Math.abs(h/2*Math.sin(a)), hh = Math.abs(w/2*Math.sin(a)) + Math.abs(h/2*Math.cos(a));
+      x0 = Math.min(x0, cx - hw); x1 = Math.max(x1, cx + hw); y0 = Math.min(y0, cy - hh); y1 = Math.max(y1, cy + hh); });
+    (extra || []).forEach(q => { x0 = Math.min(x0, q.x); x1 = Math.max(x1, q.x); y0 = Math.min(y0, q.y); y1 = Math.max(y1, q.y); });
+    return { x0, y0, x1, y1 };
   }
   /* string-pull the grid staircase into natural walking lines */
   function smooth(points, obs){
@@ -313,7 +326,7 @@
       const on = (id, fn) => { const b = document.getElementById(P + id); if(b) b.addEventListener('click', fn); };
       on('To3dBtn', () => setViewMode('3d'));
       on('OverviewBtn', () => setMode('overview')); on('FollowBtn', () => setMode('follow')); on('Recenter', () => setMode('follow'));
-      on('ZoomIn', () => zoomBy(.7)); on('ZoomOut', () => zoomBy(1/.7)); on('Full', () => toggleHomeFull());
+      on('ZoomIn', () => zoomBy(.7)); on('ZoomOut', () => zoomBy(1/.7)); on('Full', () => (opt.onFull || toggleHomeFull)());
       on('StepsBtn', () => { st.stepsOpen = !st.stepsOpen; document.getElementById(P + 'Steps').classList.toggle('on', st.stepsOpen); document.getElementById(P + 'StepsBtn').textContent = st.stepsOpen ? 'Hide steps' : 'Steps'; });
       on('StartBtn', () => { if(typeof startStoreNavGuide === 'function') startStoreNavGuide(); });
       bindGestures(document.getElementById(P + 'Svg'));
@@ -333,8 +346,9 @@
       svg.innerHTML = '';
       const defs = el('defs', null, svg);
       defs.innerHTML = `<filter id="${P}Sh" x="-40%" y="-40%" width="180%" height="200%"><feDropShadow dx="0" dy=".12" stdDeviation=".14" flood-color="#202124" flood-opacity=".35"/></filter><radialGradient id="${P}Beam" cx="50%" cy="100%" r="100%"><stop offset="0" stop-color="#4285f4" stop-opacity=".5"/><stop offset="1" stop-color="#4285f4" stop-opacity="0"/></radialGradient>`;
-      el('rect', { x:-W, y:-D, width:W*3, height:D*3, fill:'#e6e9ed' }, svg);
-      el('rect', { x:0, y:0, width:W, height:D, rx:.5, fill:'#f8f6f0', stroke:'#b6bcc6', 'stroke-width':.14 }, svg);
+      const B = planBounds(route.pts), bw = B.x1 - B.x0, bh = B.y1 - B.y0, fp = .7;
+      el('rect', { x:num(B.x0 - bw*4), y:num(B.y0 - bh*4), width:num(bw*9), height:num(bh*9), fill:'#e6e9ed' }, svg);
+      el('rect', { x:num(B.x0 - fp), y:num(B.y0 - fp), width:num(bw + fp*2), height:num(bh + fp*2), rx:.5, fill:'#f8f6f0', stroke:'#b6bcc6', 'stroke-width':.14 }, svg);
       if(cfg.mapDataUrl && !els.length) el('image', { href:cfg.mapDataUrl, x:0, y:0, width:W, height:D, preserveAspectRatio:'none' }, svg);
       const targets = new Set(); route.pins.filter(p => p.state === 'active').map(p => p.stop).forEach(s => { if(s && s.loc && typeof navAisleElFor === 'function'){ const a = navAisleElFor(Number(s.loc.aisle) || 0); if(a) targets.add(a); } });
       const gEls = el('g', null, svg), labels = [];
@@ -352,7 +366,8 @@
         }
         const t = el('text', { x:0, y:0, 'font-size':20, 'text-anchor':'middle', 'dominant-baseline':'central', 'font-weight':800, fill:ink }, g);
         t.textContent = String(e.label || e.type || '');
-        labels.push({ t, w, h, cx:x + w/2, cy:y + h/2, n:t.textContent.length || 1, tall:h > w*1.35 });
+        const full = t.textContent, an = Number((full.match(/Aisle\s*(\d+)/i) || [])[1]) || 0, part = full.split(/\s*[·|—–]\s*|\s+-\s+/)[0].trim();
+        labels.push({ t, w, h, cx:x + w/2, cy:y + h/2, shown:full, texts:[full, part, an ? 'A' + an : part.slice(0, 3)].filter((v, i, a) => v && a.indexOf(v) === i) });
       });
       /* route: border, blue line, walked part, arrows */
       const gRoute = el('g', { fill:'none', 'stroke-linecap':'round', 'stroke-linejoin':'round' }, svg);
@@ -382,18 +397,24 @@
       el('rect', { x:-.78, y:-3.05, width:1.56, height:1.75, rx:.62, fill:'#1a73e8', stroke:'#fff', 'stroke-width':.16 }, person);
       el('circle', { cx:0, cy:-3.85, r:.78, fill:'#f8c9a4', stroke:'#fff', 'stroke-width':.16 }, person);
       el('path', { d:'M-.78 -3.95 A.78 .78 0 0 1 .78 -3.95 Q0 -4.35 -.78 -3.95 Z', fill:'#3c2f2f' }, person);
-      return { ghost, border, line, walked, gArrows, arrows, startDot, pins, labels, walker, beam, halo, person, legL, legR, armL, armR };
+      return { bounds:{ x0:B.x0 - fp, y0:B.y0 - fp, x1:B.x1 + fp, y1:B.y1 + fp }, ghost, border, line, walked, gArrows, arrows, startDot, pins, labels, walker, beam, halo, person, legL, legR, armL, armR };
     }
 
     /* ───────── view (zoom / pan / follow) ───────── */
     function baseView(){
-      const map = document.getElementById(P + 'Map'), r = st.route; if(!map || !r) return null;
-      const cw = Math.max(200, map.clientWidth), ch = Math.max(160, map.clientHeight), aspect = cw/ch;
-      const turn = document.getElementById(P + 'Turn'), topPx = (turn ? turn.offsetHeight : 56) + 16, botPx = 14;
-      /* fit the store into the area left free under the instruction banner */
-      const availH = Math.max(60, ch - topPx - botPx), k = Math.min((cw - 20)/r.W, availH/r.D);
+      const map = document.getElementById(P + 'Map'), r = st.route; if(!map || !r || !st.gfx) return null;
+      const cw = Math.max(200, map.clientWidth), ch = Math.max(160, map.clientHeight), aspect = cw/ch, pad = 12;
+      const b = st.gfx.bounds, bw = b.x1 - b.x0, bh = b.y1 - b.y0, turn = document.getElementById(P + 'Turn');
+      map.classList.remove('side');
+      const topPx = (turn ? turn.offsetHeight : 56) + 8 + pad;
+      /* A: banner across the top, plan underneath.  B (wide screens): banner in the left column, plan beside it at full height. */
+      const A = { x0:pad, x1:cw - pad, y0:topPx, y1:ch - pad }, Bx = { x0:340 + 8 + pad*2, x1:cw - 50 - pad, y0:pad, y1:ch - pad };
+      const kOf = R => Math.min(Math.max(40, R.x1 - R.x0)/bw, Math.max(40, R.y1 - R.y0)/bh);
+      let R = A, k = kOf(A);
+      if(cw >= 760 && kOf(Bx) > k*1.05){ R = Bx; k = kOf(Bx); map.classList.add('side'); }
       const w = cw/k, h = ch/k;
-      return { x:r.W/2 - w/2, y:r.D/2 - (topPx + availH/2)/k, w, h, aspect };
+      st.cw = cw;
+      return { x:(b.x0 + b.x1)/2 - ((R.x0 + R.x1)/2)/k, y:(b.y0 + b.y1)/2 - ((R.y0 + R.y1)/2)/k, w, h, aspect };
     }
     function clampView(v){
       const b = st.base; if(!b) return v;
@@ -404,16 +425,23 @@
     function applyView(){
       const svg = document.getElementById(P + 'Svg'), g = st.gfx, v = st.vb; if(!svg || !g || !v) return;
       svg.setAttribute('viewBox', `${num(v.x)} ${num(v.y)} ${num(v.w)} ${num(v.h)}`);
-      const u = v.w/100; st.u = u;               /* 1u = 1% of the visible width */
+      const cwPx = st.cw || 400, u = v.w/cwPx*(cwPx > 900 ? 5 : 4.2); st.u = u;   /* 1u ≈ 4–5 screen pixels at any screen size or zoom */
       if(g.ghost) g.ghost.setAttribute('stroke-width', num(u*1.5)); g.border.setAttribute('stroke-width', num(u*2.5)); g.line.setAttribute('stroke-width', num(u*1.75)); g.walked.setAttribute('stroke-width', num(u*1.75));
       g.startDot.setAttribute('transform', `translate(${num(st.route.start.x)} ${num(st.route.start.y)}) scale(${num(u)})`);
-      g.pins.forEach(p => p.g.setAttribute('transform', `translate(${num(p.p.x)} ${num(p.p.y)}) scale(${num(u*1.05)})`));
+      g.pins.forEach(p => p.g.setAttribute('transform', `translate(${num(p.p.x)} ${num(p.p.y)}) scale(${num(u*1.25)})`));
+      const pxu = u/(cwPx > 900 ? 5 : 4.2), maxFs = 12*pxu, minFs = 6.5*pxu;      /* label size limits in screen pixels */
       g.labels.forEach(l => {
-        const fs = Math.min(u*2.5, l.h*.5, l.w*.5), len = fs*.62*l.n;
-        const fitsFlat = len <= l.w*.94 && fs <= l.h*.8, fitsTall = l.tall && len <= l.h*.94 && fs <= l.w*.8;
-        if(fs < u*1.35 || (!fitsFlat && !fitsTall)){ l.t.setAttribute('display', 'none'); return; }
+        let pick = null;
+        for(const text of l.texts){
+          const n = text.length || 1;
+          const flat = Math.min(maxFs, l.h*.62, l.w*.94/(.6*n)), tall = Math.min(maxFs, l.w*.62, l.h*.94/(.6*n));
+          if(flat >= minFs && flat >= tall){ pick = { text, fs:flat, rot:false }; break; }
+          if(tall >= minFs){ pick = { text, fs:tall, rot:true }; break; }
+        }
+        if(!pick){ l.t.setAttribute('display', 'none'); return; }
+        if(l.shown !== pick.text){ l.shown = pick.text; l.t.textContent = pick.text; }
         l.t.removeAttribute('display');
-        l.t.setAttribute('transform', `translate(${num(l.cx)} ${num(l.cy)})${!fitsFlat && fitsTall ? ' rotate(-90)' : ''} scale(${(fs/20).toFixed(4)})`);
+        l.t.setAttribute('transform', `translate(${num(l.cx)} ${num(l.cy)})${pick.rot ? ' rotate(-90)' : ''} scale(${(pick.fs/20).toFixed(4)})`);
       });
       /* direction arrows on the line, evenly spaced on screen */
       const spacing = Math.max(.9, u*5.2), want = st.route.total > spacing ? Math.min(140, Math.floor(st.route.total/spacing)) : 0;
@@ -489,7 +517,7 @@
       const g = st.gfx, r = st.route; if(!g || !r) return;
       const u = st.u || 1, p = r.at(st.s), moving = st.pause <= 0 && r.total > 0 && st.s < r.total;
       const deg = Math.atan2(p.dx, -p.dy)*180/Math.PI;
-      g.walker.setAttribute('transform', `translate(${num(p.x)} ${num(p.y)}) scale(${num(u*1.12)})`);
+      g.walker.setAttribute('transform', `translate(${num(p.x)} ${num(p.y)}) scale(${num(u*1.35)})`);
       g.beam.setAttribute('transform', `rotate(${num(deg)})`);
       const sw = moving ? Math.sin(st.phase) : 0, bob = moving ? Math.abs(Math.sin(st.phase))*.14 : 0;
       g.person.setAttribute('transform', `translate(0 ${num(-bob)})`);
@@ -654,14 +682,14 @@
 
   /* ───────── GUIDED "Stop X of N" screen ───────── */
   const render3dGuide = window.renderStoreNavGuide;            /* the existing 3D guide renderer, untouched */
-  const G = createNav('dx2g', { host:() => document.getElementById('storeNavGuideMap'), wrap:true, foot:false, mode:'overview', kicker:'Live store map', title:'Follow the blue line' });
+  const G = createNav('dx2g', { host:() => document.getElementById('storeNavGuideMap'), wrap:true, foot:false, full:true, onFull:() => toggleGuideFull(), mode:'overview', kicker:'Live store map', title:'Follow the blue line' });
   window.renderStoreNavGuide = function(){
-    injectCss(); document.getElementById('storeNavGuide')?.classList.add('dxfs');   /* guided navigation is a full-screen interface */
+    injectCss(); document.getElementById('storeNavGuide')?.classList.toggle('dxfs', guideFullWanted());
     if(viewMode === '3d' && typeof render3dGuide === 'function'){
       G.reset();
       const r = render3dGuide.apply(this, arguments);
       injectCss();
-      const actions = document.querySelector('#storeNavGuideMap .store-nav-3d-actions'); if(actions && !actions.querySelector('.dx2-to2d')) actions.insertBefore(to2dButton(), actions.firstChild);
+      const actions = document.querySelector('#storeNavGuideMap .store-nav-3d-actions'); if(actions && !actions.querySelector('.dx2-to2d')){ actions.insertBefore(to2dButton(), actions.firstChild); const f = document.createElement('button'); f.type = 'button'; f.className = 'dxf-fullbtn'; f.title = 'Full screen on / off'; f.setAttribute('aria-label', 'Full screen on or off'); f.innerHTML = FS_ICON; f.addEventListener('click', () => toggleGuideFull()); actions.appendChild(f); }
       return r;
     }
     const stops = STORE_NAV_STOPS, idx = STORE_NAV_GUIDE_INDEX, cur = stops[idx];
@@ -745,6 +773,15 @@
     host.appendChild(box);
   }
 
+  /* ── Guided screen: full screen is the user's choice (3D starts full screen, the 2D map starts as a card) ── */
+  function guideFullWanted(){ return F.guideFull == null ? viewMode === '3d' : !!F.guideFull; }
+  function toggleGuideFull(force){
+    F.guideFull = force == null ? !guideFullWanted() : !!force;
+    injectCss(); document.getElementById('storeNavGuide')?.classList.toggle('dxfs', F.guideFull);
+    setTimeout(() => { if(live3d()){ try{ resizeStoreNav3D(); }catch(e){} if(S3().view === 'all') fitAll(); } }, 60);
+  }
+  document.addEventListener('keydown', ev => { if(ev.key !== 'Escape') return; if(document.getElementById('homeStoreNav3d')?.classList.contains('dxfs-home')) toggleHomeFull(false); else if(guideOpen() && document.getElementById('storeNavGuide')?.classList.contains('dxfs')) toggleGuideFull(false); });
+
   /* ── Home card: full-screen toggle ── */
   function toggleHomeFull(force){
     const wrap = document.getElementById('homeStoreNav3d'); if(!wrap) return;
@@ -764,7 +801,7 @@
     const top = ((host.querySelector('.dx-turn') || {}).offsetHeight || 0) + 22, bot = 40;
     const yMax = 1 - 2*top/h, yMin = -1 + 2*bot/h, want = (yMin + yMax)/2;
     const elev = 60*Math.PI/180, sy = Math.sin(elev), sz = Math.cos(elev), v = new T.Vector3();
-    const corners = []; [0, W].forEach(x => [0, 2.7].forEach(y => [0, D].forEach(z => corners.push([x, y, z]))));
+    const PB = planBounds(), corners = []; [PB.x0, PB.x1].forEach(x => [0, 2.7].forEach(y => [PB.y0, PB.y1].forEach(z => corners.push([x, y, z]))));
     /* try the store both ways round and keep whichever shows it larger (portrait phones get the long side vertical) */
     const solve = rot => {
       const ext = rot ? W : D, hx = rot ? 1 : 0, hz = rot ? 0 : 1;
