@@ -78,7 +78,72 @@
 .dx2-step-d{font-size:8.5px;font-weight:800;color:#5f6368;flex-shrink:0}
 @media(max-width:430px){.dx2-map{height:310px}.dx2-title{font-size:11.5px}}
 `;
-  function injectCss(){ if(document.getElementById('dx2-style')) return; const s = document.createElement('style'); s.id = 'dx2-style'; s.textContent = css; document.head.appendChild(s); }
+
+  const FS_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>';
+  const cssFs = `
+.store-nav-guide.dxfs{align-items:stretch;background:#0c1713}
+.store-nav-guide.dxfs .store-nav-guide-card{max-width:none;width:100%;height:100%;border-radius:0;display:flex;flex-direction:column;box-sizing:border-box;padding:10px 12px calc(10px + env(safe-area-inset-bottom,0px));animation:none}
+.store-nav-guide.dxfs .store-nav-live-map{flex:1;min-height:0;margin-top:8px;padding:0;display:flex;flex-direction:column;overflow:hidden;border-radius:16px}
+.store-nav-guide.dxfs .store-nav-3d-card,.store-nav-guide.dxfs .dx2-card{flex:1;min-height:0;display:flex;flex-direction:column;margin:0;border-radius:16px}
+.store-nav-guide.dxfs .store-nav-3d-wrap,.store-nav-guide.dxfs .dx2-card .dx2-map{flex:1;min-height:0;height:auto!important}
+.store-nav-guide.dxfs .store-nav-guide-step{margin-top:8px;padding:10px 12px}
+.store-nav-guide.dxfs .store-nav-3d-note{padding-top:5px;padding-bottom:5px}
+.store-nav-guide.dxfs .store-nav-3d-sub{display:none}
+.store-nav-guide.dxfs .store-nav-3d-actions button,#homeStoreNav3d .home-store-nav-3d-actions button{padding:6px 7px}
+#homeStoreNav3d.dxfs-home .home-store-nav-3d-sub{display:none}
+#homeStoreNav3d.dxfs-home{position:fixed;inset:0;z-index:605;margin:0!important;border:0;border-radius:0!important;display:flex!important;flex-direction:column}
+#homeStoreNav3d.dxfs-home .home-store-nav-3d-wrap,#homeStoreNav3d.dxfs-home .dx2-map{flex:1;min-height:0;height:auto!important}
+#homeStoreNav3d.dxfs-home .dx2-steps.on{max-height:32vh}
+#homeStoreNav3d.dxfs-home .dx2-head,#homeStoreNav3d.dxfs-home .home-store-nav-3d-head{padding-top:calc(10px + env(safe-area-inset-top,0px))}
+.dxf-exit{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(64px + env(safe-area-inset-bottom,0px));z-index:7;border:0;border-radius:999px;padding:9px 14px;background:#202124;color:#fff;font:800 10px 'Montserrat',sans-serif;box-shadow:0 6px 18px rgba(0,0,0,.4);cursor:pointer}
+.dxf-fullbtn{display:grid!important;place-items:center;padding:5px 7px!important}
+.dxf-fullbtn svg,.dx2-ctrl button svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.dx2-ctrl button[id$="Full"] svg{stroke:#3c4043}
+.dxf-on .store-nav-3d-hud{display:none}
+.dxf-layer{position:absolute;inset:0;z-index:2;pointer-events:none;overflow:hidden;font-family:'Montserrat',sans-serif}
+.dxf-chip{position:absolute;left:0;top:0;display:flex;align-items:center;gap:4px;max-width:150px;padding:3px 7px;border:1px solid rgba(255,255,255,.22);border-radius:9px;background:rgba(9,24,17,.86);color:#eafff0;font:800 9px/1.2 'Montserrat',sans-serif;text-align:left;white-space:nowrap;pointer-events:none;box-shadow:0 3px 10px rgba(0,0,0,.35);will-change:transform}
+.dxf-chip:after{content:'';position:absolute;left:50%;bottom:-4px;width:7px;height:7px;margin-left:-3.5px;transform:rotate(45deg);background:inherit;border-right:inherit;border-bottom:inherit}
+.dxf-chip span{min-width:0;display:block;overflow:hidden}
+.dxf-chip b{display:block;font-weight:900}
+.dxf-chip u{text-decoration:none}.dxf-chip .s{display:none}
+.dxf-chip em{display:block;font-style:normal;font-weight:700;font-size:7.5px;opacity:.78;overflow:hidden;text-overflow:ellipsis;max-width:118px}
+.dxf-chip i{flex:none;width:15px;height:15px;border-radius:50%;background:#fff;color:#0f7b45;font:900 8.5px/15px 'Montserrat',sans-serif;text-align:center;font-style:normal}
+.dxf-chip.min em{display:none}.dxf-chip.min .l{display:none}.dxf-chip.min .s{display:inline}
+.dxf-chip.stop{background:rgba(15,123,69,.95);border-color:#7cffa8;color:#fff}
+.dxf-chip.cur{background:#1a73e8;border-color:#fff;z-index:2}.dxf-chip.cur i{color:#1a73e8}
+.dxf-chip.zone{background:rgba(9,24,17,.5);border-style:dashed;font-weight:700}
+.dxf-chip.t-checkout{background:rgba(120,84,0,.92);border-color:#f6d98a}
+.dxf-you{position:absolute;left:0;top:0;width:0;height:0;z-index:3;will-change:transform}
+.dxf-you:before{content:'';position:absolute;left:-9px;top:-9px;width:18px;height:18px;border-radius:50%;background:#1a73e8;border:3px solid #fff;box-sizing:border-box;box-shadow:0 0 0 0 rgba(26,115,232,.55);animation:dxfPulse 1.8s infinite}
+.dxf-you span{position:absolute;left:-16px;top:-27px;width:32px;text-align:center;padding:2px 0;border-radius:6px;background:#1a73e8;color:#fff;font:900 8px 'Montserrat',sans-serif;box-shadow:0 2px 6px rgba(0,0,0,.35)}
+@keyframes dxfPulse{0%{box-shadow:0 0 0 0 rgba(26,115,232,.55)}100%{box-shadow:0 0 0 16px rgba(26,115,232,0)}}
+.dxf-mini{position:absolute;left:9px;bottom:9px;z-index:4;width:132px;padding:4px;border:1px solid rgba(255,255,255,.25);border-radius:10px;background:rgba(9,24,17,.9);box-shadow:0 6px 16px rgba(0,0,0,.4);cursor:pointer;display:none}
+.dxf-mini.on{display:block}
+.dxf-mini svg{display:block;width:100%;height:auto!important;border-radius:6px!important}
+.dxf-allbtn.active{background:#27954e!important;border-color:#27954e!important;color:#fff!important}
+.dxf-detail{position:absolute;left:8px;right:8px;bottom:8px;z-index:8;max-height:62%;display:flex;flex-direction:column;border-radius:16px;background:#fff;color:#202124;box-shadow:0 -6px 28px rgba(0,0,0,.4);overflow:hidden;font-family:'Montserrat',sans-serif;text-align:left}
+.dxf-detail-head{display:flex;align-items:center;gap:10px;padding:11px 12px;border-bottom:1px solid #eceff1}
+.dxf-detail-head>div{flex:1;min-width:0}
+.dxf-detail-head b{display:block;font-size:14px;font-weight:900}
+.dxf-detail-head span{display:block;font-size:9px;font-weight:700;color:#5f6368;margin-top:2px}
+.dxf-detail-head button{width:30px;height:30px;border-radius:50%;border:1px solid #dadce0;background:#fff;color:#202124;font-size:17px;line-height:1;cursor:pointer;flex:none}
+.dxf-detail-stops{padding:8px 12px;background:#e8f0fe;border-bottom:1px solid #d2e3fc}
+.dxf-pick{display:flex;align-items:center;gap:9px;padding:3px 0}
+.dxf-pick i{flex:none;width:20px;height:20px;border-radius:50%;background:#1a73e8;color:#fff;font:900 10px/20px 'Montserrat',sans-serif;text-align:center;font-style:normal}
+.dxf-pick b{display:block;font-size:10.5px;font-weight:900}.dxf-pick span{display:block;font-size:8.5px;font-weight:700;color:#174ea6}
+.dxf-detail-list{overflow:auto;-webkit-overflow-scrolling:touch;padding:0 12px 8px}
+.dxf-rack{display:flex;justify-content:space-between;position:sticky;top:0;background:#fff;padding:8px 0 4px;font-size:8.5px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:#188038}
+.dxf-rack span{color:#80868b;letter-spacing:0;text-transform:none}
+.dxf-prod{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid #f1f3f4}
+.dxf-prod>div{flex:1;min-width:0}
+.dxf-prod b{display:block;font-size:10px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dxf-prod span{display:block;font-size:8px;font-weight:600;color:#5f6368}
+.dxf-prod em{flex:none;font-style:normal;font-size:8px;font-weight:800;color:#3c4043;background:#f1f3f4;border-radius:6px;padding:3px 6px}
+.dxf-prod strong{flex:none;min-width:48px;text-align:right;font-size:9.5px;font-weight:900}
+.dxf-prod.cart b{color:#1a73e8}.dxf-prod.cart em{background:#1a73e8;color:#fff}
+.dxf-detail-empty{padding:14px 12px;font-size:10px;font-weight:700;color:#5f6368}
+`;
+  function injectCss(){ if(document.getElementById('dx2-style')) return; const s = document.createElement('style'); s.id = 'dx2-style'; s.textContent = css + cssFs; document.head.appendChild(s); }
 
   const ICONS = {
     straight:'<path d="M12 21V5M6 11l6-6 6 6"/>',
@@ -232,6 +297,7 @@
           </div>
           <div class="dx2-chip" id="${P}Chip"></div>
           <div class="dx2-ctrl">
+            ${opt.full ? `<button type="button" id="${P}Full" aria-label="Full screen" title="Full screen">${FS_ICON}</button>` : ''}
             <button type="button" id="${P}Recenter" aria-label="Re-centre on me" title="Re-centre"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><circle cx="12" cy="12" r="7.5"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg></button>
             <button type="button" id="${P}ZoomIn" aria-label="Zoom in">+</button>
             <button type="button" id="${P}ZoomOut" aria-label="Zoom out">−</button>
@@ -247,7 +313,7 @@
       const on = (id, fn) => { const b = document.getElementById(P + id); if(b) b.addEventListener('click', fn); };
       on('To3dBtn', () => setViewMode('3d'));
       on('OverviewBtn', () => setMode('overview')); on('FollowBtn', () => setMode('follow')); on('Recenter', () => setMode('follow'));
-      on('ZoomIn', () => zoomBy(.7)); on('ZoomOut', () => zoomBy(1/.7));
+      on('ZoomIn', () => zoomBy(.7)); on('ZoomOut', () => zoomBy(1/.7)); on('Full', () => toggleHomeFull());
       on('StepsBtn', () => { st.stepsOpen = !st.stepsOpen; document.getElementById(P + 'Steps').classList.toggle('on', st.stepsOpen); document.getElementById(P + 'StepsBtn').textContent = st.stepsOpen ? 'Hide steps' : 'Steps'; });
       on('StartBtn', () => { if(typeof startStoreNavGuide === 'function') startStoreNavGuide(); });
       bindGestures(document.getElementById(P + 'Svg'));
@@ -406,6 +472,15 @@
       });
       const up = ev => { st.ptrs.delete(ev.pointerId); if(st.ptrs.size < 2) st.pinch = 0; };
       svg.addEventListener('pointerup', up); svg.addEventListener('pointercancel', up); svg.addEventListener('pointerleave', up);
+      /* tap an aisle / rack on the map → product details */
+      let down = null;
+      svg.addEventListener('pointerdown', ev => { down = { x:ev.clientX, y:ev.clientY }; });
+      svg.addEventListener('click', ev => {
+        if(!st.vb || !st.route || (down && Math.hypot(ev.clientX - down.x, ev.clientY - down.y) > 8)) return;
+        const m = toMap(ev), px = m.x/st.route.W*100, py = m.y/st.route.D*100;
+        const hit = navLayoutEls().filter(e => !['zone','section','text'].includes(String(e.type || '').toLowerCase()) && px >= Number(e.x) && px <= Number(e.x) + Number(e.w) && py >= Number(e.y) && py <= Number(e.y) + Number(e.h)).sort((a, b) => (Number(b.z) || 0) - (Number(a.z) || 0))[0];
+        if(hit) openDetail(hit, document.getElementById(P + 'Map'));
+      });
       svg.addEventListener('wheel', ev => { if(!(ev.ctrlKey || ev.metaKey) || !st.vb) return; ev.preventDefault(); const c = toMap(ev); zoomBy(ev.deltaY > 0 ? 1.12 : .89, c.x, c.y); }, { passive:false });
     }
 
@@ -532,7 +607,7 @@
 
   /* ───────── HOME card ───────── */
   const H = createNav('dx2', {
-    host:() => document.getElementById('homeStoreNav3d'), wrap:false, foot:true, mode:'overview', kicker:'In-store mode', title:'Your cart route',
+    host:() => document.getElementById('homeStoreNav3d'), wrap:false, foot:true, full:true, mode:'overview', kicker:'In-store mode', title:'Your cart route',
     before(host){ if(!guideOwns3d()) stop3d();   /* never tear down a running 3D guide */
       host.dataset.dx2 = '1'; host.classList.add('dx2'); host.setAttribute('aria-label', 'In-store map navigation'); }
   });
@@ -543,7 +618,7 @@
     injectCss(); H.reset();
     wrap.dataset.dx2 = '0'; wrap.classList.remove('dx2'); wrap.setAttribute('aria-label', 'In-store 3D navigation');
     wrap.innerHTML = ORIG_HTML;
-    const actions = wrap.querySelector('.home-store-nav-3d-actions'); if(actions) actions.insertBefore(to2dButton(), actions.firstChild);
+    const actions = wrap.querySelector('.home-store-nav-3d-actions'); if(actions){ actions.insertBefore(to2dButton(), actions.firstChild); const f = document.createElement('button'); f.type = 'button'; f.className = 'dxf-fullbtn'; f.title = 'Full screen'; f.setAttribute('aria-label', 'Full screen'); f.innerHTML = FS_ICON; f.addEventListener('click', () => toggleHomeFull()); actions.appendChild(f); }
     return wrap;
   }
   /* same name + same callers as before */
@@ -579,8 +654,9 @@
 
   /* ───────── GUIDED "Stop X of N" screen ───────── */
   const render3dGuide = window.renderStoreNavGuide;            /* the existing 3D guide renderer, untouched */
-  const G = createNav('dx2g', { host:() => document.getElementById('storeNavGuideMap'), wrap:true, foot:false, mode:'follow', kicker:'Live store map', title:'Follow the blue line' });
+  const G = createNav('dx2g', { host:() => document.getElementById('storeNavGuideMap'), wrap:true, foot:false, mode:'overview', kicker:'Live store map', title:'Follow the blue line' });
   window.renderStoreNavGuide = function(){
+    injectCss(); document.getElementById('storeNavGuide')?.classList.add('dxfs');   /* guided navigation is a full-screen interface */
     if(viewMode === '3d' && typeof render3dGuide === 'function'){
       G.reset();
       const r = render3dGuide.apply(this, arguments);
@@ -607,6 +683,7 @@
   function endGuide(){
     hushVoice();
     if(typeof STORE_NAV_3D !== 'undefined'){ STORE_NAV_3D.guideStarted = false; if(guideOwns3d()) stop3d(); }
+    closeDetail(); F.picked = false;
     const map = document.getElementById('storeNavGuideMap'), had = !!(map && map.firstChild);
     if(map) map.innerHTML = '';
     G.reset();
@@ -621,6 +698,204 @@
     window.setStoreMode = function(on){ const r = origMode.apply(this, arguments); if(!on){ try{ stop3d(); }catch(e){} } return r; };
   }
   window.addEventListener('pagehide', hushVoice);
+
+
+  /* ══════════════════════════════════════════════════════════════════════
+     FULL-SCREEN NAVIGATION + RACK DETAILS  (3D view first, shared with 2D)
+     • Guided navigation fills the whole screen; the Home card has a full-screen button.
+     • 3D opens on an "Overview" camera fitted so every aisle and rack is in view,
+       zoom-out is capped at that fit, and a mini-map appears whenever you zoom in.
+     • A fixed-size "You" marker keeps your position readable at any zoom.
+     • Every aisle carries a label chip (category, item count, your stops);
+       tapping one lists the products on its racks and shelves.
+     Everything here is an overlay on top of the existing 3D scene.
+     ══════════════════════════════════════════════════════════════════════ */
+  const F = { host:null, layer:null, chips:[], you:null, mini:null, miniYou:null, fit:null, ro:null, picked:false, lastDeclutter:0, idx:-1 };
+  const S3 = () => (typeof STORE_NAV_3D !== 'undefined' ? STORE_NAV_3D : null);
+  const live3d = () => { const S = S3(); return !!(S && S.renderer && S.camera && S.controls && S.canvas && S.canvas.isConnected && S.THREE); };
+  const aisleNo = e => Number((String(e.label || '').match(/Aisle\s*(\d+)/i) || [])[1]) || Number(e.aisle) || 0;
+  function aisleProducts(n){
+    if(!n || typeof DB === 'undefined' || !Array.isArray(DB)) return [];
+    return DB.map(p => ({ p, loc:navLocParts(p.loc) })).filter(x => x.loc && x.loc.aisle === n).sort((a, b) => a.loc.rack - b.loc.rack || a.loc.shelf - b.loc.shelf || String(a.p.name).localeCompare(String(b.p.name)));
+  }
+  function aisleCategory(n, prods){
+    const a = typeof navAisleAnchor === 'function' ? navAisleAnchor(n) : null; if(a && a.category) return String(a.category);
+    const c = {}; prods.forEach(x => { if(x.p.cat) c[x.p.cat] = (c[x.p.cat] || 0) + 1; });
+    return Object.keys(c).sort((x, y) => c[y] - c[x])[0] || '';
+  }
+  const stopsInAisle = n => (STORE_NAV_STOPS || []).map((s, i) => ({ s, i })).filter(x => x.s && x.s.loc && Number(x.s.loc.aisle) === n);
+  const TYPE_NOTE = { checkout:'Pay for your basket here.', entry:'Store entrance — your route starts here.', exit:'Store exit.', restroom:'Restrooms.', service:'Customer service desk.', 'service-desk':'Customer service desk.', 'customer-service':'Customer service desk.', stairs:'Stairs to the next floor.' };
+
+  /* ── detail sheet (2D and 3D) ── */
+  function closeDetail(){ document.querySelectorAll('.dxf-detail').forEach(n => n.remove()); }
+  function openDetail(e, host){
+    closeDetail(); if(!e || !host) return;
+    const n = aisleNo(e), type = String(e.type || '').toLowerCase(), prods = aisleProducts(n), cat = n ? aisleCategory(n, prods) : '', stops = n ? stopsInAisle(n) : [];
+    const inCart = new Set(); stops.forEach(x => (x.s.items || []).forEach(it => inCart.add(String(it.name))));
+    const box = document.createElement('div'); box.className = 'dxf-detail'; box.setAttribute('role', 'dialog'); box.setAttribute('aria-label', 'Rack details');
+    let html = `<div class="dxf-detail-head"><div><b>${E(e.label || e.type || 'Location')}</b><span>${E([cat, prods.length ? prods.length + ' product' + (prods.length === 1 ? '' : 's') : ''].filter(Boolean).join(' · ') || (TYPE_NOTE[type] || 'Store area'))}</span></div><button type="button" aria-label="Close">×</button></div>`;
+    if(stops.length) html += `<div class="dxf-detail-stops">${stops.map(x => `<div class="dxf-pick"><i>${x.i + 1}</i><div><b>${E((x.s.items || []).map(it => it.name + (it.qty > 1 ? ' ×' + it.qty : '')).join(', ') || 'Stop ' + (x.i + 1))}</b><span>Stop ${x.i + 1} on your route · Rack ${x.s.loc.rack} · Shelf ${x.s.loc.shelf}</span></div></div>`).join('')}</div>`;
+    if(prods.length){
+      const racks = {}; prods.slice(0, 80).forEach(x => { (racks[x.loc.rack] = racks[x.loc.rack] || []).push(x); });
+      html += `<div class="dxf-detail-list">${Object.keys(racks).sort((a, b) => a - b).map(r => `<div class="dxf-rack">Rack ${r}<span>${racks[r].length} item${racks[r].length === 1 ? '' : 's'}</span></div>${racks[r].map(x => `<div class="dxf-prod${inCart.has(String(x.p.name)) ? ' cart' : ''}"><div><b>${E(x.p.name)}</b><span>${E([x.p.brand, x.p.unit].filter(Boolean).join(' · '))}</span></div><em>Shelf ${x.loc.shelf}</em><strong>${x.p.price != null ? 'AED ' + E(x.p.price) : ''}</strong></div>`).join('')}`).join('')}${prods.length > 80 ? `<div class="dxf-rack">+${prods.length - 80} more</div>` : ''}</div>`;
+    } else if(n) html += `<div class="dxf-detail-empty">No product locations are recorded for this aisle yet.</div>`;
+    box.innerHTML = html;
+    box.querySelector('button').addEventListener('click', closeDetail);
+    ['pointerdown','wheel','touchstart'].forEach(t => box.addEventListener(t, ev => ev.stopPropagation(), { passive:true }));
+    host.appendChild(box);
+  }
+
+  /* ── Home card: full-screen toggle ── */
+  function toggleHomeFull(force){
+    const wrap = document.getElementById('homeStoreNav3d'); if(!wrap) return;
+    const on = force == null ? !wrap.classList.contains('dxfs-home') : !!force;
+    injectCss(); wrap.classList.toggle('dxfs-home', on);
+    document.body.style.overflow = on ? 'hidden' : '';
+    let x = wrap.querySelector('.dxf-exit');
+    if(on && !x){ x = document.createElement('button'); x.type = 'button'; x.className = 'dxf-exit'; x.textContent = '× Exit full screen'; x.addEventListener('click', () => toggleHomeFull(false)); wrap.appendChild(x); }
+    if(!on && x) x.remove();
+    setTimeout(() => { if(live3d()){ try{ resizeStoreNav3D(); }catch(e){} if(S3().view === 'all') fitAll(); } }, 60);
+  }
+
+  /* ── 3D: overview camera that always frames the whole store ── */
+  function fitAll(){
+    if(!live3d()) return; const S = S3(), T = S.THREE, cam = S.camera, { W, D } = dims();
+    const host = S.canvas.parentElement, h = Math.max(200, host.clientHeight);
+    const top = ((host.querySelector('.dx-turn') || {}).offsetHeight || 0) + 22, bot = 40;
+    const yMax = 1 - 2*top/h, yMin = -1 + 2*bot/h, want = (yMin + yMax)/2;
+    const elev = 60*Math.PI/180, sy = Math.sin(elev), sz = Math.cos(elev), v = new T.Vector3();
+    const corners = []; [0, W].forEach(x => [0, 2.7].forEach(y => [0, D].forEach(z => corners.push([x, y, z]))));
+    /* try the store both ways round and keep whichever shows it larger (portrait phones get the long side vertical) */
+    const solve = rot => {
+      const ext = rot ? W : D, hx = rot ? 1 : 0, hz = rot ? 0 : 1;
+      const measure = (d, t) => { const cx = rot ? t : W/2, cz = rot ? D/2 : t; cam.position.set(cx + hx*sz*d, sy*d, cz + hz*sz*d); cam.lookAt(cx, 0, cz); cam.updateMatrixWorld(true); let x0 = 9, x1 = -9, y0 = 9, y1 = -9; corners.forEach(c => { v.set(c[0], c[1], c[2]).project(cam); x0 = Math.min(x0, v.x); x1 = Math.max(x1, v.x); y0 = Math.min(y0, v.y); y1 = Math.max(y1, v.y); }); return { x0, x1, y0, y1 }; };
+      let t = ext/2, d = Math.max(8, Math.max(W, D)*.5), m = null;
+      for(let i = 0; i < 170; i++){
+        for(let k = 0; k < 3; k++){ m = measure(d, t); const mid = (m.y0 + m.y1)/2, m2 = measure(d, t + .5), slope = ((m2.y0 + m2.y1)/2 - mid)/.5; if(Math.abs(slope) > 1e-5) t += Math.max(-ext, Math.min(ext, (want - mid)/slope)); }
+        m = measure(d, t);
+        if(m.x0 >= -.95 && m.x1 <= .95 && m.y0 >= yMin && m.y1 <= yMax) break;
+        d *= 1.04;
+      }
+      return { rot, d, t, hx, hz };
+    };
+    const a = solve(false), b = solve(true), best = b.d < a.d*.9 ? b : a;
+    const d = best.d, cx = best.rot ? best.t : W/2, cz = best.rot ? D/2 : best.t;
+    S.controls.target.set(cx, 0, cz); S.controls.maxDistance = Math.max(d*1.12, Math.max(W, D)*1.3); S.controls.minDistance = 4;
+    cam.position.set(cx + best.hx*sz*d, sy*d, cz + best.hz*sz*d); cam.lookAt(cx, 0, cz); S.controls.update();
+    F.fit = { d, rot:best.rot };
+    /* keep the mini-map the same way up as the overview */
+    if(F.mini){ const sv = F.mini.querySelector('svg'), g = F.mini.querySelector('.dxf-mini-g'); if(sv && g){ sv.setAttribute('viewBox', best.rot ? `-1 -1 ${num(D + 2)} ${num(W + 2)}` : `-1 -1 ${num(W + 2)} ${num(D + 2)}`); if(best.rot) g.setAttribute('transform', `matrix(0 1 -1 0 ${num(D)} 0)`); else g.removeAttribute('transform'); F.mini.style.width = best.rot ? '96px' : '132px'; } }
+  }
+  window.storeNav3dAll = function(){ const S = S3(); if(!S) return; F.picked = true; S.view = 'all'; fitAll(); };
+  ['storeNav3dIso', 'storeNav3dTop', 'storeNav3dFollow'].forEach(name => { const o = window[name]; if(typeof o === 'function') window[name] = function(){ F.picked = true; return o.apply(this, arguments); }; });
+
+  /* ── 3D: overlay layer (aisle chips, "You" marker, mini-map) ── */
+  function buildOverlay(idx){
+    const S = S3(), host = S.canvas.parentElement, { W, D } = dims(), stops = STORE_NAV_STOPS || [];
+    host.querySelectorAll('.dxf-layer,.dxf-mini').forEach(n => n.remove()); closeDetail();
+    host.classList.add('dxf-on'); F.host = host; F.idx = idx;
+    const layer = document.createElement('div'); layer.className = 'dxf-layer'; host.appendChild(layer); F.layer = layer; F.chips = [];
+    /* the scene's own tiny sprite labels are replaced by readable chips */
+    if(S.elGroups) S.elGroups.forEach(g => g.children.forEach(c => { if(c.isSprite) c.visible = false; }));
+    const H3 = { aisle:2.4, rack:2.2, shelf:1.0, checkout:1.0, entry:2.2, exit:2.2, restroom:2.4, service:1.2, stairs:2 };
+    navLayoutEls().forEach(e => {
+      const type = String(e.type || '').toLowerCase(); if(type === 'text') return;
+      const n = aisleNo(e), isAisle = type === 'aisle' && n > 0, sIn = isAisle ? stopsInAisle(n) : [], cur = sIn.some(x => x.i === idx);
+      const prods = isAisle ? aisleProducts(n) : [], cat = isAisle ? aisleCategory(n, prods) : '';
+      const b = document.createElement('div');
+      b.className = 'dxf-chip' + (sIn.length ? ' stop' : '') + (cur ? ' cur' : '') + (type === 'zone' || type === 'section' ? ' zone' : '') + (isAisle ? '' : ' t-' + type);
+      const label = String(e.label || e.type || ''), short = isAisle ? 'A' + n : label;
+      let sub = '';
+      if(sIn.length){ const first = sIn.find(x => x.i === idx) || sIn[0], names = (first.s.items || []).map(it => it.name); sub = (names[0] || 'Stop ' + (first.i + 1)) + (names.length > 1 ? ' +' + (names.length - 1) : '') + ` · R${first.s.loc.rack} S${first.s.loc.shelf}`; }
+      else if(isAisle) sub = [cat, prods.length ? prods.length + ' items' : ''].filter(Boolean).join(' · ');
+      b.innerHTML = `${sIn.map(x => `<i>${x.i + 1}</i>`).join('')}<span><b><u class="l">${E(label)}</u><u class="s">${E(short)}</u></b>${sub ? `<em>${E(sub)}</em>` : ''}</span>`;
+      layer.appendChild(b);
+      const chip = { b, e, type, x:(Number(e.x || 0) + Number(e.w || 0)/2)/100*W, y:(H3[type] || (type === 'zone' || type === 'section' ? .1 : 1.1)) + .35, z:(Number(e.y || 0) + Number(e.h || 0)/2)/100*D, prio:cur ? 3 : (sIn.length ? 2 : (isAisle ? 1 : 0)), size:{} };
+      chip.size.full = [b.offsetWidth, b.offsetHeight]; b.classList.add('min'); chip.size.min = [b.offsetWidth, b.offsetHeight];
+      F.chips.push(chip);
+    });
+    F.chips.sort((a, b) => b.prio - a.prio);
+    const you = document.createElement('div'); you.className = 'dxf-you'; you.innerHTML = '<span>You</span>'; layer.appendChild(you); F.you = you;
+    /* mini-map: the whole store, always */
+    const mini = document.createElement('button'); mini.type = 'button'; mini.className = 'dxf-mini'; mini.title = 'Show the whole store'; mini.setAttribute('aria-label', 'Mini-map — tap to show the whole store');
+    const fill = { aisle:'#cfe9db', rack:'#cfe9db', shelf:'#dbeee3', checkout:'#f6d98a', entry:'#7cffa8', exit:'#c9b5f5' };
+    const rects = navLayoutEls().filter(e => !['zone','section','text'].includes(String(e.type || '').toLowerCase())).map(e => { const t = String(e.type || '').toLowerCase(), hit = t === 'aisle' && stopsInAisle(aisleNo(e)).some(x => x.i === idx || idx < 0); return `<rect x="${num(Number(e.x || 0)/100*W)}" y="${num(Number(e.y || 0)/100*D)}" width="${num(Math.max(.4, Number(e.w || 1)/100*W))}" height="${num(Math.max(.4, Number(e.h || 1)/100*D))}" rx=".2" fill="${hit ? '#4da3ff' : (fill[t] || '#b9c7bf')}"/>`; }).join('');
+    let line = ''; try{ const pts = idx >= 0 ? navGuideSegmentPoints(stops, idx) : navBuildPathPoints(stops, -1); line = pts.map(p => num(p.x/100*W) + ',' + num(p.y/100*D)).join(' '); }catch(err){}
+    mini.innerHTML = `<svg viewBox="-1 -1 ${num(W + 2)} ${num(D + 2)}" aria-hidden="true"><g class="dxf-mini-g"><rect x="0" y="0" width="${W}" height="${D}" rx=".6" fill="#12241b" stroke="#3a5a49" stroke-width=".3"/>${rects}<polyline points="${line}" fill="none" stroke="#19b86a" stroke-width=".7" stroke-linecap="round" stroke-linejoin="round"/><circle class="dxf-mini-you" r="1.5" fill="#1a73e8" stroke="#fff" stroke-width=".5"/></g></svg>`;
+    mini.addEventListener('click', ev => { ev.stopPropagation(); window.storeNav3dAll(); });
+    host.appendChild(mini); F.mini = mini; F.miniYou = mini.querySelector('.dxf-mini-you');
+    /* view buttons: add "Overview" (whole store) to both 3D headers */
+    const card = host.closest('.store-nav-3d-card, #homeStoreNav3d'), actions = card && card.querySelector('.store-nav-3d-actions, .home-store-nav-3d-actions');
+    if(actions && !actions.querySelector('.dxf-allbtn')){ const a = document.createElement('button'); a.type = 'button'; a.className = 'dxf-allbtn'; a.textContent = 'Overview'; a.addEventListener('click', () => window.storeNav3dAll()); const ref = actions.querySelector('.dx2-to2d'); actions.insertBefore(a, ref ? ref.nextSibling : actions.firstChild); }
+    const note = card && card.querySelector('.store-nav-3d-note, .home-store-nav-3d-footer'); if(note && note.firstChild && note.firstChild.nodeType === 3) note.firstChild.textContent = 'Tap an aisle for products · pinch to zoom · ';
+  }
+  /* a tap on a label chip, or on the aisle / rack itself, opens its product details */
+  function tap3d(ev){
+    if(!live3d() || !F.host) return; const S = S3(), T = S.THREE, r = F.host.getBoundingClientRect(), x = ev.clientX - r.left, y = ev.clientY - r.top, { W, D } = dims(), v = new T.Vector3();
+    let hit = F.chips.find(c => c.mode && c.type !== 'zone' && c.type !== 'section' && Math.abs(x - c.sx) <= c.size[c.mode][0]/2 + 5 && y <= c.sy + 6 && y >= c.sy - c.size[c.mode][1] - 6);
+    if(!hit){
+      let best = 1e9;
+      F.chips.forEach(c => { if(c.type === 'zone' || c.type === 'section') return; const e = c.e, x0 = Number(e.x || 0)/100*W, z0 = Number(e.y || 0)/100*D, x1 = x0 + Number(e.w || 1)/100*W, z1 = z0 + Number(e.h || 1)/100*D; let a = 1e9, b = -1e9, t = 1e9, u = -1e9; [x0, x1].forEach(px => [0, c.y].forEach(py => [z0, z1].forEach(pz => { v.set(px, py, pz).project(S.camera); const sx = (v.x + 1)/2*r.width, sy = (1 - v.y)/2*r.height; a = Math.min(a, sx); b = Math.max(b, sx); t = Math.min(t, sy); u = Math.max(u, sy); }))); if(x >= a && x <= b && y >= t && y <= u){ const area = (b - a)*(u - t); if(area < best){ best = area; hit = c; } } });
+    }
+    if(hit) openDetail(hit.e, F.host);
+  }
+  function clampTarget(){
+    const S = S3(); if(!S || !S.controls || !S.camera || F.clamping) return; const { W, D } = dims(), t = S.controls.target;
+    const nx = Math.max(0, Math.min(W, t.x)), nz = Math.max(0, Math.min(D, t.z)); if(nx === t.x && nz === t.z) return;
+    F.clamping = true; S.camera.position.x += nx - t.x; S.camera.position.z += nz - t.z; t.x = nx; t.z = nz; F.clamping = false;
+  }
+  if(typeof window.mountStoreNav3D === 'function'){
+    const mount0 = window.mountStoreNav3D;
+    window.mountStoreNav3D = async function(idx){
+      const S = S3(); if(S && !F.picked) S.view = 'all';                 /* default: whole store in view */
+      const r = await mount0.apply(this, arguments);
+      try{
+        if(live3d()){
+          injectCss();
+          const S2 = S3(), host = S2.canvas.parentElement;
+          if(F.ctl !== S2.controls){ F.ctl = S2.controls; S2.controls.addEventListener('change', clampTarget); }
+          if(F.ro) try{ F.ro.disconnect(); }catch(e){}
+          if('ResizeObserver' in window){ let first = true; F.ro = new ResizeObserver(() => { if(first){ first = false; return; } if(!live3d()) return; try{ resizeStoreNav3D(); }catch(e){} if(S3().view === 'all') fitAll(); }); F.ro.observe(host); }
+          if(F.tapCanvas !== S2.canvas){ F.tapCanvas = S2.canvas; let dn = null;
+            S2.canvas.addEventListener('pointerdown', ev => { dn = { x:ev.clientX, y:ev.clientY, t:performance.now() }; });
+            S2.canvas.addEventListener('pointerup', ev => { if(!dn || Math.hypot(ev.clientX - dn.x, ev.clientY - dn.y) > 8 || performance.now() - dn.t > 600) return; dn = null; tap3d(ev); }); }
+          buildOverlay(typeof idx === 'number' ? idx : -1);
+          fitAll(); if(S2.view !== 'all'){ const keep = S2.view; try{ ({ iso:window.storeNav3dIso, top:window.storeNav3dTop, follow:window.storeNav3dFollow }[keep] || (() => {}))(); }catch(e){} }
+          if(!F.raf) F.raf = requestAnimationFrame(overlayFrame);
+        }
+      }catch(err){ console.warn('[DevX nav] overlay', err); }
+      return r;
+    };
+  }
+  function overlayFrame(now){
+    F.raf = requestAnimationFrame(overlayFrame);
+    if(!live3d() || !F.layer || !F.layer.isConnected) return;
+    const S = S3(), T = S.THREE, cam = S.camera, host = F.host, w = host.clientWidth, h = host.clientHeight, v = F.v || (F.v = new T.Vector3());
+    const proj = (x, y, z) => { v.set(x, y, z).project(cam); return { x:(v.x + 1)/2*w, y:(1 - v.y)/2*h, ok:v.z < 1 && v.z > -1 }; };
+    const person = S.nav && S.nav.person;
+    if(person && F.you){ const p = proj(person.position.x, 2.05, person.position.z); F.you.style.display = p.ok && S.view !== 'follow' ? '' : 'none'; F.you.style.transform = `translate(${p.x.toFixed(1)}px,${p.y.toFixed(1)}px)`; if(F.miniYou){ F.miniYou.setAttribute('cx', num(person.position.x)); F.miniYou.setAttribute('cy', num(person.position.z)); } }
+    else if(F.you) F.you.style.display = 'none';
+    const declutter = now - F.lastDeclutter > 220; if(declutter) F.lastDeclutter = now;
+    const placed = declutter ? [] : null, top = ((host.querySelector('.dx-turn') || {}).offsetHeight || 0) + 10;
+    F.chips.forEach(c => {
+      const p = proj(c.x, c.y, c.z); c.sx = p.x; c.sy = p.y;
+      if(declutter){
+        let mode = '';
+        if(p.ok && p.x > -40 && p.x < w + 40 && p.y > top && p.y < h + 10){
+          for(const m of ['full', 'min']){ const sz = c.size[m], r = [p.x - sz[0]/2 - 2, p.y - sz[1] - 2, p.x + sz[0]/2 + 2, p.y + 2]; if(!placed.some(q => r[0] < q[2] && r[2] > q[0] && r[1] < q[3] && r[3] > q[1])){ mode = m; placed.push(r); break; } }
+          if(!mode && c.prio >= 2){ mode = 'min'; }
+        }
+        if(c.mode !== mode){ c.mode = mode; c.b.style.display = mode ? '' : 'none'; c.b.classList.toggle('min', mode === 'min'); }
+      }
+      if(c.mode) c.b.style.transform = `translate(${p.x.toFixed(1)}px,${p.y.toFixed(1)}px) translate(-50%,-100%)`;
+    });
+    if(declutter){
+      const dist = cam.position.distanceTo(S.controls.target), zoomedIn = S.view === 'follow' || (F.fit && dist < F.fit.d*.82);
+      if(F.mini) F.mini.classList.toggle('on', !!zoomedIn);
+      document.querySelectorAll('.dxf-allbtn').forEach(b => b.classList.toggle('active', S.view === 'all'));
+      if(S.view === 'all') ['storeNav3dIsoBtn','storeNav3dTopBtn','storeNav3dFollowBtn','homeStoreNav3dIsoBtn','homeStoreNav3dTopBtn'].forEach(id => document.getElementById(id)?.classList.remove('active'));
+    }
+  }
 
   /* If Store Mode was already switched on before this file loaded, redraw. */
   try{ if(typeof storeMode !== 'undefined' && storeMode) window.renderHomeStoreNav3D(); }catch(e){}
