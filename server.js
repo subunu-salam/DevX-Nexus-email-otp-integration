@@ -3453,6 +3453,12 @@ app.get('/api/push/status', (req, res) => {
 });
 
 /* ── static frontends ── */
+/* An admin subdomain (admin.…, crm.…, or anything ending -admin.… / -crm.…) opens the CRM at its root. */
+app.get(['/', '/index.html'], (req, res, next) => {
+  const sub = String(req.hostname || '').toLowerCase().split('.')[0];
+  if (/^(admin|crm)$|-(admin|crm)$/.test(sub)) return res.sendFile(path.join(__dirname, 'public', 'admin.html'));
+  next();
+});
 app.use(express.static(path.join(__dirname, 'public')));
 app.get('/admin', (req, res) => res.sendFile(path.join(__dirname, 'public', 'admin.html')));
 
