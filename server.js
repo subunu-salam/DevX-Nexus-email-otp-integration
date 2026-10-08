@@ -1791,7 +1791,7 @@ app.get('/api/store-navigation', (req, res) => {
     const layoutElements=els.map((e,i)=>({
       id:String(e.id||('nav-el-'+i)).slice(0,80), type:String(e.type||'zone').slice(0,30),
       label:String(e.label||'Element').slice(0,80), category:String(e.category||'').slice(0,80),
-      x:clamp((Number(e.x)||0)/cw*100,0,98), y:clamp((Number(e.y)||0)/ch*100,0,96),
+      x:clamp(Number(e.x)||0,0,98), y:clamp(Number(e.y)||0,0,96),
       w:clamp((Number(e.w)||1)/cw*100,.5,98), h:clamp((Number(e.h)||1)/ch*100,.5,96),
       rotation:Number(e.rotation)||0, z:Math.max(1,Math.round(Number(e.z)||i+1)), floor:String(e.floor||draft.floor||'Ground Floor').slice(0,40)
     }));
