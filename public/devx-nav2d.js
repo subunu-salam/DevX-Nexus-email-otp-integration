@@ -10,6 +10,11 @@
   if(typeof navLayoutEls !== 'function' || typeof navAStarSegment !== 'function') return;
 
   const NS = 'http://www.w3.org/2000/svg';
+  const HOME = document.getElementById('homeStoreNav3d');
+  const ORIG_HTML = HOME ? HOME.innerHTML : '';              /* the original 3D card markup, kept for the 2D ⇄ 3D switch */
+  const render3dHome = window.renderHomeStoreNav3D;           /* the existing 3D home renderer, untouched */
+  let viewMode = '2d';
+  try{ if(localStorage.getItem('devx-home-nav-view') === '3d') viewMode = '3d'; }catch(e){}
   const WALK_PREVIEW = 2.3;   /* m/s the little person moves on screen */
   const WALK_REAL = 1.1;      /* m/s used for the time estimate */
   const STOP_PAUSE = 1.7, END_PAUSE = 3.2;
@@ -24,8 +29,12 @@
 .dx2-title{font-size:12.5px;font-weight:900;margin-top:2px;color:#202124}
 .dx2-sub{font-size:8px;color:#5f6368;margin-top:2px;line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .dx2-seg{display:flex;background:#f1f3f4;border-radius:10px;padding:2px;flex-shrink:0}
-.dx2-seg button{border:0;background:none;color:#5f6368;border-radius:8px;padding:6px 9px;font:800 8px 'Montserrat',sans-serif;cursor:pointer}
+.dx2-seg button{border:0;background:none;color:#5f6368;border-radius:8px;padding:6px 7px;font:800 8px 'Montserrat',sans-serif;cursor:pointer}
 .dx2-seg button.active{background:#fff;color:#1a73e8;box-shadow:0 1px 3px rgba(60,64,67,.25)}
+.dx2-dim{display:flex;background:#e8f0fe;border-radius:10px;padding:2px;flex-shrink:0}
+.dx2-dim button{border:0;background:none;color:#5f6368;border-radius:8px;padding:6px 8px;font:900 8px 'Montserrat',sans-serif;cursor:pointer}
+.dx2-dim button.active{background:#1a73e8;color:#fff}
+.dx2-to2d{border:1px solid #7CFFA8!important;color:#7CFFA8!important;background:rgba(124,255,168,.1)!important}
 .dx2-map{position:relative;height:340px;background:#e6e9ed;overflow:hidden;user-select:none;-webkit-user-select:none}
 .dx2-svg{display:block;width:100%;height:100%;touch-action:pan-y}
 .dx2-map.zoomed .dx2-svg{touch-action:none;cursor:grab}
@@ -87,13 +96,19 @@
     const wrap = document.getElementById('homeStoreNav3d'); if(!wrap) return null;
     if(wrap.dataset.dx2 === '1') return wrap;
     injectCss();
+    if(typeof STORE_NAV_3D === 'undefined' || !STORE_NAV_3D.canvas || STORE_NAV_3D.canvas.id !== 'storeNav3dCanvas') stop3d();   /* never tear down a running guide */
+    if(st.ro){ try{ st.ro.disconnect(); }catch(e){} st.ro = null; }
     wrap.dataset.dx2 = '1'; wrap.classList.add('dx2'); wrap.setAttribute('aria-label', 'In-store map navigation');
     wrap.innerHTML = `
       <div class="dx2-head">
         <div class="dx2-head-copy">
-          <div class="dx2-kicker">In-store mode · Map navigation</div>
+          <div class="dx2-kicker">In-store mode</div>
           <div class="dx2-title">Your cart route</div>
           <div class="dx2-sub" id="dx2Meta">Using the published store map</div>
+        </div>
+        <div class="dx2-dim" role="group" aria-label="Map type">
+          <button type="button" class="active" aria-pressed="true">2D</button>
+          <button type="button" id="dx2To3dBtn" aria-pressed="false">3D</button>
         </div>
         <div class="dx2-seg">
           <button type="button" id="dx2OverviewBtn" class="active">Overview</button>
@@ -119,6 +134,7 @@
         <button type="button" class="dx2-btn primary" id="dx2StartBtn"><svg viewBox="0 0 24 24"><path d="M12 2l8 19-8-4.5L4 21z"/></svg>Start</button>
       </div>
       <div class="dx2-steps" id="dx2Steps"></div>`;
+    document.getElementById('dx2To3dBtn').addEventListener('click', () => setViewMode('3d'));
     document.getElementById('dx2OverviewBtn').addEventListener('click', () => setMode('overview'));
     document.getElementById('dx2FollowBtn').addEventListener('click', () => setMode('follow'));
     document.getElementById('dx2Recenter').addEventListener('click', () => setMode('follow'));
@@ -128,8 +144,40 @@
     document.getElementById('dx2StartBtn').addEventListener('click', () => { if(typeof startStoreNavGuide === 'function') startStoreNavGuide(); });
     bindGestures(document.getElementById('dx2Svg'));
     if('ResizeObserver' in window){ st.ro = new ResizeObserver(() => { if(st.built) refit(); }); st.ro.observe(document.getElementById('dx2Map')); }
-    else window.addEventListener('resize', () => { if(st.built) refit(); });
+    else if(!st.resizeBound){ st.resizeBound = true; window.addEventListener('resize', () => { if(st.built && document.getElementById('dx2Map')) refit(); }); }
     return wrap;
+  }
+
+  /* ───────── 2D ⇄ 3D switch + clean shutdown of the 3D scene / voice ───────── */
+  function hushVoice(){ try{ if('speechSynthesis' in window) window.speechSynthesis.cancel(); }catch(e){} }
+  function stop3d(){
+    hushVoice();
+    if(typeof STORE_NAV_3D === 'undefined') return;
+    const S = STORE_NAV_3D; S.nav = null;
+    if(S.renderer){
+      try{ cancelAnimationFrame(S.frame); }catch(e){}
+      try{ if(S.controls && S.controls.dispose) S.controls.dispose(); S.renderer.dispose(); if(S.renderer.forceContextLoss) S.renderer.forceContextLoss(); }catch(e){}
+      S.renderer = null; S.scene = null; S.camera = null; S.controls = null; S.objects = []; S.routeDots = []; S.walkers = []; S.route = null;
+    }
+    S.canvas = null; S.root = null;
+  }
+  /* put the original 3D card back, with one extra button to return to the 2D map */
+  function ensure3dCard(){
+    const wrap = document.getElementById('homeStoreNav3d'); if(!wrap) return null;
+    if(wrap.dataset.dx2 === '0') return wrap;
+    injectCss();
+    if(st.ro){ try{ st.ro.disconnect(); }catch(e){} st.ro = null; }
+    st.built = false; st.sig = ''; st.gfx = null;
+    wrap.dataset.dx2 = '0'; wrap.classList.remove('dx2'); wrap.setAttribute('aria-label', 'In-store 3D navigation');
+    wrap.innerHTML = ORIG_HTML;
+    const actions = wrap.querySelector('.home-store-nav-3d-actions');
+    if(actions){ const b = document.createElement('button'); b.type = 'button'; b.id = 'dx2To2dBtn'; b.className = 'dx2-to2d'; b.textContent = '2D map'; b.title = 'Switch to the 2D map'; b.addEventListener('click', () => setViewMode('2d')); actions.insertBefore(b, actions.firstChild); }
+    return wrap;
+  }
+  function setViewMode(mode){
+    viewMode = mode === '3d' ? '3d' : '2d';
+    try{ localStorage.setItem('devx-home-nav-view', viewMode); }catch(e){}
+    window.renderHomeStoreNav3D();
   }
 
   /* ───────── geometry helpers ───────── */
@@ -453,7 +501,17 @@
   }
 
   /* ───────── public entry: same name + same callers as before ───────── */
-  window.renderHomeStoreNav3D = async function(){
+  window.renderHomeStoreNav3D = function(){
+    if(viewMode === '3d' && typeof render3dHome === 'function'){
+      if(typeof storeMode === 'undefined' || !storeMode) return;
+      /* while the guided screen owns the 3D scene, leave it alone; the home card is redrawn when the guide closes */
+      if(document.getElementById('storeNavGuide')?.classList.contains('on')) return;
+      ensure3dCard();
+      return render3dHome.apply(this, arguments);
+    }
+    return render2dHome();
+  };
+  async function render2dHome(){
     const wrap = document.getElementById('homeStoreNav3d');
     if(!wrap || typeof storeMode === 'undefined' || !storeMode) return;
     const items = cartArr();
@@ -488,10 +546,29 @@
     st.base = baseView(); if(st.mode === 'free') st.mode = 'overview'; setMode(st.mode);
     hud();
     if(!st.raf) st.raf = requestAnimationFrame(frame);
-  };
-  /* legacy button handlers kept as harmless aliases */
-  window.homeStoreNav3dIso = function(){ setMode('follow'); };
-  window.homeStoreNav3dTop = function(){ setMode('overview'); };
+  }
+  /* ───────── voice + 3D scene must end when navigation is exited ─────────
+     The guided screen only hid itself on exit, so its 3D walker kept looping in
+     the background and kept speaking. Shut it down on every exit path. */
+  function endGuide(){
+    hushVoice();
+    if(typeof STORE_NAV_3D === 'undefined') return;
+    const S = STORE_NAV_3D, wasGuide = !!(S.canvas && S.canvas.id === 'storeNav3dCanvas');
+    S.guideStarted = false;
+    if(!wasGuide) return;
+    stop3d();
+    const map = document.getElementById('storeNavGuideMap'); if(map) map.innerHTML = '';
+    if(viewMode === '3d' && typeof storeMode !== 'undefined' && storeMode) setTimeout(() => window.renderHomeStoreNav3D(), 30);
+  }
+  ['closeStoreNavGuide', 'closeStoreNavigation'].forEach(name => {
+    const orig = window[name]; if(typeof orig !== 'function') return;
+    window[name] = function(){ const r = orig.apply(this, arguments); try{ endGuide(); }catch(e){} return r; };
+  });
+  if(typeof window.setStoreMode === 'function'){
+    const origMode = window.setStoreMode;
+    window.setStoreMode = function(on){ const r = origMode.apply(this, arguments); if(!on){ try{ stop3d(); }catch(e){} } return r; };
+  }
+  window.addEventListener('pagehide', hushVoice);
 
   /* If Store Mode was already switched on before this file loaded, redraw in 2D. */
   try{ if(typeof storeMode !== 'undefined' && storeMode) window.renderHomeStoreNav3D(); }catch(e){}
