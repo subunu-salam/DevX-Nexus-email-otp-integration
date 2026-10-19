@@ -14,6 +14,7 @@ const { Server } = require('socket.io');
 const OpenAI = require('openai');
 const Groq = require('groq-sdk');
 const { Catalog } = require('./lib/catalog');
+const SEARCH = require('./lib/search');
 const { withImages, thumb } = require('./lib/images');
 const PAY = require('./lib/payments');
 const INSIGHT = require('./lib/insights');
@@ -740,6 +741,11 @@ function impliedCats(query) {
   return cats;
 }
 function searchProducts(query, catalog) {
+  try { return SEARCH.smartSearch(query, catalog); }
+  catch (e) { console.error('[nexus] smart search failed, using legacy search:', e.message); }
+  return legacySearchProducts(query, catalog);
+}
+function legacySearchProducts(query, catalog) {
   const t = query.toLowerCase();
   const cats = impliedCats(query);
   const terms = t.split(/\s+/).filter(w => w.length > 2 && !STOPWORDS.has(w));
@@ -865,6 +871,161 @@ function parseLLMJson(text) {
   const m = s.match(/\{[\s\S]*?"reply"[\s\S]*?\}/);
   if (m) { try { return JSON.parse(m[0]); } catch (_) {} }
   return null;
+}
+
+
+/* ── Dish recipe engine ─────────────────────────────────────
+   A dish ("chicken biryani") needs MORE than its headline items: spices,
+   vegetables, dairy, oil. This maps dishes -> the store group-keys that
+   make up a complete cart, in sections. Only groups that actually exist
+   in the live catalogue are used, so nothing is ever hallucinated.
+   Used by the no-LLM fallback AND to top up the LLM's list when it
+   returns only a few items.                                          */
+const PROTEIN_GROUPS = ['whole-chicken','chicken-breast','chicken-thigh','mutton','beef-mince','fish-salmon','fish-hammour','prawns'];
+const DISH_RECIPES = {
+  biryani: {
+    label: 'biryani',
+    proteins: { chicken:'whole-chicken', mutton:'mutton', lamb:'mutton', prawn:'prawns', shrimp:'prawns', fish:'fish-hammour', beef:'beef-mince' },
+    defaultProtein: null,   // plain "biryani" with no protein -> no meat forced
+    vegProtein: ['carrots','potatoes','frozen-peas'],
+    sections: [
+      ['Rice & base',  [['basmati-rice',1],['ghee',1],['sunflower-oil',1]]],
+      ['Protein',      ['__protein__']],
+      ['Vegetables & herbs', [['onions',2],['tomatoes',1],['ginger',1],['garlic',1],['mint',1],['coriander',1],['lemons',1]]],
+      ['Dairy',        [['plain-yogurt',1]]],
+      ['Spices',       [['biryani-masala',1],['garam-masala',1],['turmeric',1],['chili-powder',1],['cardamom',1],['cinnamon',1],['bay-leaf',1],['saffron',1],['salt',1]]]
+    ]
+  },
+  mandi: {
+    label: 'mandi',
+    proteins: { chicken:'whole-chicken', mutton:'mutton', lamb:'mutton' },
+    defaultProtein: 'whole-chicken',
+    sections: [
+      ['Rice & base', [['basmati-rice',1],['ghee',1],['sunflower-oil',1]]],
+      ['Protein', ['__protein__']],
+      ['Vegetables', [['onions',1],['tomatoes',1],['garlic',1],['lemons',1]]],
+      ['Spices', [['black-pepper',1],['cardamom',1],['cinnamon',1],['turmeric',1],['cumin',1],['bay-leaf',1],['salt',1]]]
+    ]
+  },
+  kabsa: {
+    label: 'kabsa',
+    proteins: { chicken:'whole-chicken', mutton:'mutton', lamb:'mutton' },
+    defaultProtein: 'whole-chicken',
+    sections: [
+      ['Rice & base', [['basmati-rice',1],['sunflower-oil',1],['tomato-paste',1]]],
+      ['Protein', ['__protein__']],
+      ['Vegetables', [['onions',1],['tomatoes',1],['carrots',1],['garlic',1],['lemons',1]]],
+      ['Spices', [['black-pepper',1],['cardamom',1],['cinnamon',1],['cumin',1],['bay-leaf',1],['salt',1]]]
+    ]
+  },
+  curry: {
+    label: 'curry',
+    proteins: { chicken:'whole-chicken', mutton:'mutton', lamb:'mutton', fish:'fish-hammour', prawn:'prawns', beef:'beef-mince' },
+    defaultProtein: null,
+    vegProtein: ['potatoes','carrots','frozen-peas'],
+    sections: [
+      ['Protein', ['__protein__']],
+      ['Vegetables & herbs', [['onions',2],['tomatoes',1],['ginger',1],['garlic',1],['coriander',1]]],
+      ['Base', [['sunflower-oil',1],['plain-yogurt',1],['coconut-milk',1]]],
+      ['Spices', [['turmeric',1],['chili-powder',1],['coriander-powder',1],['cumin',1],['garam-masala',1],['salt',1]]],
+      ['Serve with', [['basmati-rice',1],['naan',1]]]
+    ]
+  },
+  pasta: {
+    label: 'pasta',
+    proteins: { chicken:'chicken-breast' },
+    defaultProtein: null,
+    sections: [
+      ['Pasta', [['pasta-penne',1],['pasta-spaghetti',1]]],
+      ['Protein', ['__protein__']],
+      ['Sauce & dairy', [['pasta-sauce',1],['tomato-paste',1],['cream',1],['mozzarella',1],['butter',1]]],
+      ['Vegetables & herbs', [['onions',1],['garlic',1],['tomatoes',1],['bell-pepper',1]]],
+      ['Seasoning', [['olive-oil',1],['black-pepper',1],['salt',1]]]
+    ]
+  },
+  pizza: {
+    label: 'pizza',
+    proteins: { chicken:'chicken-breast' },
+    defaultProtein: null,
+    sections: [
+      ['Base', [['flour-wheat',1],['tomato-paste',1],['pasta-sauce',1]]],
+      ['Cheese & dairy', [['mozzarella',1],['butter',1]]],
+      ['Protein', ['__protein__']],
+      ['Toppings', [['bell-pepper',1],['onions',1],['tomatoes',1],['olive',1]]],
+      ['Seasoning', [['olive-oil',1],['black-pepper',1],['salt',1]]]
+    ]
+  },
+  salad: {
+    label: 'salad',
+    proteins: { chicken:'chicken-breast', tuna:'canned-tuna' },
+    defaultProtein: null,
+    sections: [
+      ['Fresh veg', [['lettuce',1],['tomatoes',1],['cucumber',1],['carrots',1],['bell-pepper',1],['onions',1]]],
+      ['Protein', ['__protein__']],
+      ['Dressing', [['olive-oil',1],['lemons',1],['black-pepper',1],['salt',1]]]
+    ]
+  },
+  omelette: {
+    label: 'omelette',
+    proteins: {},
+    defaultProtein: null,
+    sections: [
+      ['Base', [['eggs',1],['butter',1],['full-cream-milk',1]]],
+      ['Fillings', [['onions',1],['tomatoes',1],['bell-pepper',1],['cheese-slices',1],['coriander',1]]],
+      ['Seasoning', [['black-pepper',1],['salt',1]]]
+    ]
+  },
+  sandwich: {
+    label: 'sandwich',
+    proteins: { chicken:'chicken-breast', tuna:'canned-tuna', egg:'eggs' },
+    defaultProtein: null,
+    sections: [
+      ['Bread', [['white-bread',1]]],
+      ['Filling', ['__protein__', ['cheese-slices',1],['mayonnaise',1],['butter',1]]],
+      ['Fresh veg', [['lettuce',1],['tomatoes',1],['cucumber',1]]]
+    ]
+  },
+  sambar: {
+    label: 'sambar',
+    proteins: {}, defaultProtein: null,
+    sections: [
+      ['Lentils', [['toor-dal',1]]],
+      ['Vegetables', [['onions',1],['tomatoes',1],['carrots',1],['potatoes',1]]],
+      ['Spices', [['turmeric',1],['chili-powder',1],['coriander-powder',1],['cumin',1],['salt',1]]],
+      ['Serve with', [['basmati-rice',1]]]
+    ]
+  }
+};
+// Find the dish in the prompt and resolve the protein variant. Returns
+// [{group, qty, section}] limited to groups that exist in the catalogue.
+function dishPlanGroups(text, groups) {
+  const t = ' ' + String(text || '').toLowerCase() + ' ';
+  let dish = null;
+  for (const k of Object.keys(DISH_RECIPES)) {
+    if (new RegExp('\\b' + k + '\\b').test(t)) { dish = k; break; }
+  }
+  if (!dish) return null;
+  const R = DISH_RECIPES[dish];
+  let protein = null, veg = false;
+  if (/\b(veg|vegetable|vegetarian|paneer|mushroom)\b/.test(t)) veg = true;
+  else for (const [w, g] of Object.entries(R.proteins)) {
+    if (new RegExp('\\b' + w + '\\b').test(t)) { protein = g; break; }
+  }
+  if (!protein && !veg) protein = R.defaultProtein;
+  const out = [], seen = new Set();
+  const add = (g, q, section) => {
+    if (!g || seen.has(g) || !groups.has(g)) return;
+    seen.add(g); out.push({ group: g, qty: q || 1, section });
+  };
+  for (const [section, list] of R.sections) {
+    for (const entry of list) {
+      if (entry === '__protein__') {
+        if (protein) add(protein, 1, section);
+        else if (veg && R.vegProtein) R.vegProtein.forEach(g => add(g, 1, section));
+      } else add(entry[0], entry[1], section);
+    }
+  }
+  return { dish, label: R.label, protein, veg, items: out };
 }
 
 /* Build a plan row from a group's members: best-value default SKU,
@@ -1123,9 +1284,20 @@ app.post('/api/concierge', GUARD.limit('concierge'), GUARD.sanePrompt, async (re
      scanning the whole catalogue. Keeps AI latency flat from 1k to 100k SKUs.
      Falls back to the original linear search for tiny catalogues. */
   const ix = indexOf(branchOf(req));
-  const candidates = ix.size > 2000
-    ? ix.candidatesFor(searchPrompt, 60)
-    : searchProducts(searchPrompt, catalog);
+  let candidates;
+  try {
+    // ix.items is a stable array, so the search vocabulary is cached between requests.
+    if (ix.size > 2000) {
+      const pool = ix.candidatesFor(SEARCH.normalizeQuery(searchPrompt, ix.items) || searchPrompt, 400);
+      candidates = SEARCH.smartSearch(searchPrompt, pool, { vocabFrom: ix.items });
+    } else {
+      candidates = SEARCH.smartSearch(searchPrompt, ix.size ? ix.items : catalog);
+    }
+  } catch (e) {
+    console.error('[nexus] smart search error:', e.message);
+    candidates = ix.size > 2000 ? ix.candidatesFor(searchPrompt, 60) : legacySearchProducts(searchPrompt, catalog);
+  }
+  const searchSegs = candidates.segments || [];
   /* Budget: use the amount in this message, otherwise keep the one the shopper
      already gave this session so follow-ups ("i asked for 154", "add more",
      "anything cheaper") still build to the same budget. Cleared on a brand-new
@@ -1171,6 +1343,7 @@ app.post('/api/concierge', GUARD.limit('concierge'), GUARD.sanePrompt, async (re
   let clarify = '';
   let recipe = null;
   let usedLLM = false;
+  let llmOffTopic = false;
   let llmError = '';
 
   // Deterministic short-circuit for acknowledgements / chit-chat ("ok", "thanks",
@@ -1261,6 +1434,9 @@ HOW THIS APP WORKS — answer from these facts, do not invent:
 • Past orders, live status and the weighed prices are all in "My Orders" (the Orders tab at the bottom).
 • You can shop by typing or by voice, in any language.
 ` : ''}
+${(() => { const seen = new Set(); const keys = [];
+  for (const p of candidates) { const g = p.group || ('solo-' + p.id); if (groups.has(g) && !g.startsWith('solo-') && !seen.has(g)) { seen.add(g); keys.push(g); } if (keys.length >= 15) break; }
+  return keys.length ? 'BEST KEYWORD MATCHES for this message (group-keys, most relevant first) — if the shopper named a product, pick from these:\n' + keys.join(', ') + '\n' : ''; })()}
 STORE MENU${budget ? ' (key=AEDprice)' : ''}:
 ${storeMenu(groups, !!budget)}${nutriFacts}`;
 
@@ -1314,6 +1490,7 @@ ${storeMenu(groups, !!budget)}${nutriFacts}`;
         if (answeringClarify) clarify = '';   // never re-ask after an answer
         // Off-topic / not-sold: the model set in_scope:false -> show NO products.
         const offTopic = parsed.in_scope === false;
+        llmOffTopic = offTopic;
         suggestions = Array.isArray(parsed.suggestions)
           ? parsed.suggestions.filter(s => typeof s === 'string' && s.trim()).slice(0, 4) : [];
         // Recipe steps (only when the shopper asked for a recipe).
@@ -1407,6 +1584,7 @@ ${storeMenu(groups, !!budget)}${nutriFacts}`;
       suggestions = replyLang === 'English' ? ['Ingredients for biryani', 'Something healthy', 'Snacks for movie night'] : [];
     } else if (candidates.length) {
       // We DID match real products to the words — safe to show them.
+      const fallbackCap = searchSegs.length > 1 ? Math.min(15, searchSegs.length * 3) : (candidates.isCategory ? 12 : 6);
       const seenGroups = new Set(), seenNames = new Set();
       for (const p of candidates) {
         const gkey = p.group || ('solo-' + p.id);
@@ -1416,7 +1594,7 @@ ${storeMenu(groups, !!budget)}${nutriFacts}`;
         if (seenNames.has(nm)) continue;          // no duplicate product names
         seenGroups.add(gkey); seenNames.add(nm);
         plan.push(row);
-        if (plan.length >= 6) break;
+        if (plan.length >= fallbackCap) break;
       }
       if (dishKey && plan.length < 3) {
         // Supplement with dish-specific ingredients from catalog
@@ -1439,7 +1617,10 @@ ${storeMenu(groups, !!budget)}${nutriFacts}`;
         : null;
       const MATCH = {
         English: dishReply || (plan.length
-          ? `I found ${plan.length} item${plan.length > 1 ? 's' : ''} for you — including ${productNames}. Tap any item to see more brands and sizes.`
+          ? (candidates.corrected && candidates.corrected.length ? `Showing results for "${candidates.corrected.map(c => c[1]).join('", "')}". ` : '') +
+            (searchSegs.length > 1
+              ? `Here's what I found for ${searchSegs.filter(x => x.products.length).map(x => x.tokens.join(' ')).join(', ')}. Tap any item to see more brands and sizes.`
+              : `I found ${plan.length} item${plan.length > 1 ? 's' : ''} for you — including ${productNames}. Tap any item to see more brands and sizes.`)
           : `I couldn't find an exact match. Try describing what you need differently, e.g. "bread, cheese and tomatoes for a sandwich".`),
         Malayalam: `നിങ്ങളുടെ അഭ്യർത്ഥനയ്ക്ക് അനുയോജ്യമായ ഉൽപ്പന്നങ്ങൾ ലഭ്യമാണ്. ബ്രാൻഡ്, സൈസ് കാണാൻ ഓരോ ഉൽപ്പന്നവും ടാപ്പ് ചെയ്യൂ.`,
         Arabic: `وجدت منتجات تناسب طلبك — اضغط على أي منتج لرؤية جميع الماركات والأحجام المتاحة.`,
@@ -1469,11 +1650,90 @@ ${storeMenu(groups, !!budget)}${nutriFacts}`;
           Arabic: `أضفت المكونات الأساسية لـ${dishKey} إلى سلتك. اضغط على أي عنصر لتغيير الماركة.`,
         };
         reply = DISH_REPLY[replyLang] || DISH_REPLY.English;
+      } else if (replyLang === 'English' && searchSegs.length && intent !== 'general_conversation') {
+        // The shopper named something specific and we do not stock it: say so plainly.
+        const nf = searchSegs.map(x => x.tokens.join(' ')).join(', ');
+        reply = `Sorry, I couldn't find "${nf}" in our store right now. Try another name or brand, or tell me a dish and I'll build the shopping list for it.`;
       } else {
         reply = HUH[replyLang] || HUH.English;
       }
       suggestions = replyLang === 'English' ? ['Ingredients for a dish', 'Something healthy', 'Household items'] : [];
     }
+  }
+
+  /* ── SEARCH RELEVANCE (exact answers) ───────────────────────────
+     For a plain product request the cart must contain what was asked for:
+       • rows that don't relate to anything the shopper named are dropped
+       • every named item (milk, eggs AND bread) is present, even if the
+         model skipped one
+       • if the model returned nothing for an in-stock product, use the
+         keyword match instead of saying nothing.                        */
+  if (!clarify && !llmOffTopic && !addOn && intent === 'product_search' && searchSegs.length && candidates.length) {
+    try {
+      const gk = r => r.p.group || ('solo-' + r.p.id);
+      const gOf = p => p.group || ('solo-' + p.id);
+      const want = new Set();
+      searchSegs.forEach(sg => sg.products.slice(0, 12).forEach(p => want.add(gOf(p))));
+      if (usedLLM && plan.length && !candidates.isCategory) {
+        const kept = plan.filter(r => want.has(gk(r)));
+        if (kept.length) plan = kept;
+      }
+      const have = new Set(plan.map(gk));
+      const addedNames = [];
+      for (const sg of searchSegs) {
+        const top = sg.products.slice(0, 2).map(gOf);
+        if (!top.length || top.some(g => have.has(g))) continue;
+        const g = top[0];
+        const members = groups.get(g);
+        if (!members) continue;
+        const addedRow = rowFromMembers(members, 1, groups);
+        plan.push(addedRow);
+        have.add(g);
+        if (usedLLM) addedNames.push(addedRow.p.name);
+      }
+      if (addedNames.length && replyLang === 'English') reply = (reply ? reply.replace(/\s+$/, '') + ' ' : '') + `I've also added ${addedNames.join(', ')} from your list.`;
+      if (plan.length > 15) plan = plan.slice(0, 15);
+    } catch (e) { console.error('[nexus] relevance pass warning:', e.message); }
+  }
+
+  /* ── DISH COMPLETENESS ───────────────────────────────────────
+     A dish request must come back as a COMPLETE cart (rice/protein PLUS
+     vegetables, herbs, dairy, oil and spices). Keeps whatever the LLM picked
+     (and its quantities), adds the missing recipe groups, and orders by
+     recipe section. In the no-LLM fallback the recipe replaces the loose
+     keyword hits (which gave "rice + chicken" only). */
+  if (!clarify && !addOn && !/masala|powder|spice mix/i.test(prompt) && (intent === 'recipe_assistance' || !usedLLM) && (usedLLM ? plan.length > 0 : true)) {
+    try {
+      const dp = dishPlanGroups(script ? searchPrompt + ' ' + prompt : prompt, groups);   // protein from the shopper's words, not the generic non-English expansion
+      if (dp && dp.items.length) {
+        const gk = r => r.p.group || ('solo-' + r.p.id);
+        const hasMeat = plan.some(r => PROTEIN_GROUPS.includes(gk(r)));
+        const byGroup = new Map(plan.map(r => [gk(r), r]));
+        const rows = [];
+        const used = new Set();
+        for (const it of dp.items) {
+          const isMeat = PROTEIN_GROUPS.includes(it.group);
+          if (isMeat && usedLLM && hasMeat && !byGroup.has(it.group)) continue;  // LLM already chose its protein
+          const row = byGroup.get(it.group) || rowFromMembers(groups.get(it.group), it.qty, groups);
+          row.section = it.section;
+          rows.push(row); used.add(it.group);
+        }
+        if (usedLLM) {   // keep extra LLM picks the recipe didn't list (e.g. its chosen cut of meat)
+          for (const r of plan) if (!used.has(gk(r))) { rows.push(r); used.add(gk(r)); }
+        }
+        // one product name per row, cap at 24
+        const names = new Set();
+        plan = rows.filter(r => { const n = (r.p.name || '').toLowerCase(); if (names.has(n)) return false; names.add(n); return true; }).slice(0, 24);
+        if (!usedLLM) {
+          if (replyLang === 'English') {
+            const secs = [...new Set(plan.map(r => r.section).filter(Boolean))].map(x => x.toLowerCase());
+            const title = (dp.veg ? 'vegetable ' : '') + dp.label;
+            reply = `Here's everything you need for ${title}: ${secs.join(', ')}. I've picked the best-value option for each — tap any item to swap brands or sizes.`;
+            followUp = 'Want me to add raita ingredients, a side salad or cold drinks to go with it?';
+          }
+        }
+      }
+    } catch (e) { console.error('[nexus] dish plan warning:', e.message); }
   }
 
   // NOTE: when the LLM succeeds we TRUST its item list. If it returned no items
