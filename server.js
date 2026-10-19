@@ -1796,8 +1796,9 @@ ${storeMenu(groups, !!budget)}${nutriFacts}`;
       plan.push(rowFromMembers(groups.get(g), 1, groups));
       if (plan.length >= 10) break;
     }
-    if (plan.length) reply = reply && !/didn.t quite catch/i.test(reply) ? reply
-      : `Here's a balanced cart within AED ${budget}:`;
+    // Replace the "couldn't find / didn't catch" text: the shopper asked for a budget cart, not a product.
+    if (plan.length) reply = reply && !/didn.t quite catch|couldn.t find/i.test(reply) ? reply
+      : `Here's a balanced weekly cart within AED ${budget} — staples, protein, dairy, produce and basics. Tap any item to swap brands or sizes, or change quantities.`;
   }
   if (budget && plan.length) {
     let sum = () => plan.reduce((s, r) => s + lineOf(r), 0);
