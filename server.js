@@ -1909,6 +1909,8 @@ app.post('/api/orders', GUARD.limit('write'), (req, res) => {
      an unknown branch id produced an empty catalogue and every line came back
      as "unknown product" instead of falling back to the founding branch. */
   o.branchId = STORES.resolve(db, { requested: o.branchId });
+  { const sb = STORES.find(db, o.branchId);
+    if (sb) o.branch = [sb.name, sb.area].filter(Boolean).join(' — '); }
   const cat = catalogOf(o.branchId);
   let sub = 0;
   for (const it of o.items) {
@@ -2033,6 +2035,12 @@ app.get('/api/group/overview', need('insights.view'), (req, res) => {
 
 app.get('/api/branches', (req, res) => {
   res.json({ data: STORES.list(db).filter(b => b.active !== false) });
+});
+/* Store finder for the customer app: nearest shops to the shopper's phone,
+   with the one inside the auto-pick radius (default 1 km) flagged. */
+app.get('/api/branches/nearby', (req, res) => {
+  const q = req.query || {};
+  res.json(STORES.nearby(db, { lat: q.lat, lng: q.lng, radiusKm: q.radius || 1, q: q.q }));
 });
 /* Maps published from the Store Map Builder before the unit fix had every x / y
    multiplied (the builder keeps positions as % of the canvas, but publish treated
@@ -2266,6 +2274,24 @@ app.post('/api/branches', need('branch.create'), (req, res) => {
   audit(req, 'branch.create', `added ${nb.name} (${nb.area})`, { branchId: nb.id });
   save('devx-branches');
   res.json({ data: nb });
+});
+
+/* Pin an existing shop on the map (or correct its address / phone). Only the
+   location fields can change here — everything else about a branch stays as it is. */
+app.patch('/api/branches/:id/location', need('branch.create'), (req, res) => {
+  const b = req.body || {};
+  if (!db['devx-branches'].length) STORES.list(db).forEach(x => db['devx-branches'].push({ ...x }));
+  const br = db['devx-branches'].find(x => x.id === req.params.id);
+  if (!br) return res.status(404).json({ error: 'No such branch' });
+  const lat = STORES.cleanCoord(b.lat, 90), lng = STORES.cleanCoord(b.lng, 180);
+  if ((b.lat !== undefined || b.lng !== undefined) && (lat == null || lng == null))
+    return res.status(400).json({ error: 'Latitude and longitude must both be valid numbers' });
+  if (lat != null) { br.lat = lat; br.lng = lng; }
+  if (b.address !== undefined) br.address = String(b.address || '').slice(0, 140);
+  if (b.phone !== undefined) br.phone = String(b.phone || '').slice(0, 30);
+  audit(req, 'branch.location', `${br.name} (${br.area}) pinned at ${br.lat}, ${br.lng}`, { branchId: br.id });
+  save('devx-branches');
+  res.json({ data: br });
 });
 
 /* Structured errors, for a chain operator or for forwarding to Sentry. */
