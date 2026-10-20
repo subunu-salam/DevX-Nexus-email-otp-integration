@@ -1349,6 +1349,40 @@ body.rtl .msg-row.user{flex-direction:row}
    Original logo, HTML structure, JavaScript and all features
    are preserved. This only changes the mobile layout.
    ========================================================= */
+/* ── Store location pill + finder ── */
+.hdr-loc{flex:1 1 auto;min-width:0;max-width:170px;margin:0 auto 0 4px;height:36px;display:flex;align-items:center;gap:6px;padding:0 10px 0 8px;border-radius:999px;border:1px solid rgba(61,187,106,.30);background:rgba(61,187,106,.10);color:#E8FFF1;cursor:pointer;text-align:left;font-family:'Montserrat',sans-serif}
+.hdr-loc:hover{background:rgba(61,187,106,.18)}
+.hdr-loc>svg{width:15px;height:15px;flex:0 0 15px;stroke:#5EE08F;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.hdr-loc-txt{display:flex;flex-direction:column;min-width:0;line-height:1.1}
+.hdr-loc-k{font-size:7.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#8FD9AB;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hdr-loc-v{font-size:10.5px;font-weight:800;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hdr-loc .chev{width:11px;height:11px;flex:0 0 11px;stroke:#8FD9AB}
+.hdr-loc.busy>svg:first-child{animation:locPulse 1s ease-in-out infinite}
+@keyframes locPulse{50%{opacity:.35}}
+.nxl-ov{position:fixed;inset:0;z-index:9000;background:rgba(5,20,12,.55);display:none;align-items:flex-end;justify-content:center}
+.nxl-ov.on{display:flex}
+.nxl-sheet{width:100%;max-width:520px;max-height:82vh;display:flex;flex-direction:column;background:var(--bg,#fff);color:var(--tx,#10261a);border-radius:22px 22px 0 0;padding:18px 16px calc(16px + env(safe-area-inset-bottom));box-shadow:0 -10px 40px rgba(0,0,0,.25);font-family:'Montserrat',sans-serif}
+.nxl-hd{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+.nxl-hd b{font-size:17px;font-weight:900}
+.nxl-hd small{display:block;font-size:11px;color:var(--tx2,#5b6b62);font-weight:500;margin-top:2px}
+.nxl-x{width:34px;height:34px;border-radius:50%;border:1px solid var(--bdr,#dfe7e2);background:transparent;color:inherit;font-size:20px;cursor:pointer}
+.nxl-gps{width:100%;display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:14px;border:1.5px solid var(--G,#1f9d55);background:rgba(31,157,85,.08);color:var(--G,#1f9d55);font:800 13px 'Montserrat',sans-serif;cursor:pointer}
+.nxl-gps svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2}
+.nxl-search{display:flex;align-items:center;gap:8px;margin:12px 0 6px;padding:0 12px;height:44px;border-radius:14px;border:1px solid var(--bdr,#dfe7e2);background:var(--bg2,#f5f8f6)}
+.nxl-search svg{width:16px;height:16px;stroke:var(--tx2,#5b6b62);fill:none;stroke-width:2}
+.nxl-search input{flex:1;border:0;outline:0;background:transparent;color:inherit;font:500 14px 'Montserrat',sans-serif}
+.nxl-status{font-size:11.5px;color:var(--tx2,#5b6b62);margin:6px 2px 8px;line-height:1.45}
+.nxl-list{overflow:auto;display:flex;flex-direction:column;gap:8px;padding-bottom:4px}
+.nxl-row{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:12px;border-radius:14px;border:1.5px solid var(--bdr,#dfe7e2);background:transparent;color:inherit;cursor:pointer;font-family:'Montserrat',sans-serif}
+.nxl-row.on{border-color:var(--G,#1f9d55);background:rgba(31,157,85,.07)}
+.nxl-row .ic{width:38px;height:38px;flex:0 0 38px;border-radius:12px;background:rgba(31,157,85,.12);display:flex;align-items:center;justify-content:center;font-size:18px}
+.nxl-row .cp{flex:1;min-width:0}
+.nxl-row .cp b{display:block;font-size:13.5px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nxl-row .cp span{display:block;font-size:11px;color:var(--tx2,#5b6b62);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nxl-row .km{font-size:11px;font-weight:800;white-space:nowrap;text-align:right}
+.nxl-row .km em{display:block;font-style:normal;font-size:9px;font-weight:800;color:var(--G,#1f9d55);margin-top:3px}
+@media (max-width:430px){.hdr-loc{margin-top:7px;height:32px;max-width:132px;padding:0 7px 0 6px;gap:4px}.hdr-loc-v{font-size:9.5px}.hdr-loc-k{font-size:7px}.hdr-loc .chev{display:none}}
+@media (max-width:360px){.hdr-loc{max-width:96px}.hdr-loc-k{display:none}}
 @media (max-width:430px){
   :root{--hdr:52px}
 
@@ -4993,6 +5027,11 @@ body.ai-fab-hidden .ai-fab,body:has(#view-chat.active) .ai-fab{opacity:0;transfo
       <span class="devx-wm-sub">AI<br>Concierge</span>
     </span>
   </a>
+  <button class="hdr-loc" id="hdrLoc" type="button" onclick="openLocSheet()" title="Choose your store" aria-label="Choose your store">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+    <span class="hdr-loc-txt"><span class="hdr-loc-k" id="hdrLocK">Your store</span><span class="hdr-loc-v" id="hdrLocV">Locating…</span></span>
+    <svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+  </button>
   <div class="hdr-actions">
     <button class="hdr-store-btn" id="headerStoreBtn" type="button" onclick="openStoreEntry()" title="Shop at Store" aria-label="Shop at Store">
       <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3h-3zM18 18h3v3h-3zM18 14h3v3h-3zM14 18v3h3"/></svg>
@@ -5828,7 +5867,7 @@ const CID=(function(){let c=localStorage.getItem('devx-cid');if(!c){c='c'+Date.n
    return by bookmark or from their history without the parameter. */
 const BRANCH=(function(){
   const q=new URLSearchParams(location.search).get('branch');
-  if(q){localStorage.setItem('devx-branch',q);
+  if(q){localStorage.setItem('devx-branch',q);localStorage.setItem('devx-branch-mode','manual');
     // tidy the URL so the parameter is not carried into shares
     try{history.replaceState({},'',location.pathname+location.hash)}catch(e){}
     return q;}
@@ -8047,7 +8086,7 @@ function renderCk(){
       <div id="ckIdentityAction" style="margin-top:7px"></div>
     </div>
     <div class="ck-field"><label class="ck-lbl">Full Name</label><input class="ck-inp" id="ckName" placeholder="Your name"></div>
-    ${ckMode==='pickup'?`<div class="ck-field"><label class="ck-lbl">Select Branch</label><select class="ck-sel" id="ckBranch"><option>Madina Supermarket — Deira (Branch 3)</option><option>Madina Supermarket — Al Nahda (Branch 1)</option><option>Madina Supermarket — Sharjah (Branch 7)</option></select></div>${buildMap(items)}`:''}
+    ${ckMode==='pickup'?`<div class="ck-field"><label class="ck-lbl">Select Branch</label><select class="ck-sel" id="ckBranch">${locStoreOptions()}</select><button type="button" onclick="openLocSheet()" style="margin-top:6px;border:0;background:none;color:var(--G);font:700 12px 'Montserrat',sans-serif;cursor:pointer;padding:0">Change store</button></div>${buildMap(items)}`:''}
     ${ckMode==='delivery'?`<div class="ck-field"><label class="ck-lbl">Delivery Address</label>
       <div class="ck-address-flow">
         <div><label class="ck-address-label" for="ckAddress">Address</label><textarea class="ck-address-input address-main" id="ckAddress" rows="2" placeholder="Street, area / community, landmark" autocomplete="street-address" aria-describedby="ckAddressError"></textarea><div class="ck-address-error" id="ckAddressError">Enter your street, area or community.</div></div>
@@ -8155,9 +8194,11 @@ async function placeOrder(){
   const slotKey=document.getElementById('ckTime')?.value||'';
   const slotEl=document.getElementById('ckTime');
   const slot=slotEl?slotEl.options[slotEl.selectedIndex]?.text||'':'';
-  const branch=document.getElementById('ckBranch')?.value||'Madina Supermarket — Deira (Branch 3)';
+  const ckBr=document.getElementById('ckBranch');
+  const branchId=(ckMode==='pickup'&&ckBr&&ckBr.value)||BRANCH||(typeof locCurrent==='function'&&(locCurrent()||{}).id)||'';
+  const branch=(ckBr&&ckBr.selectedIndex>=0?ckBr.options[ckBr.selectedIndex].text.split(' · ')[0]:'')||localStorage.getItem('devx-branch-label')||'Madina Supermarket — Deira (Branch 3)';
   let order={
-    cid:CID,date:new Date().toISOString(),mode:ckMode,branch,payMethod:ckPay,
+    cid:CID,date:new Date().toISOString(),mode:ckMode,branch,branchId,payMethod:ckPay,
     coupon:CK_COUPON||null,slotKey:slotKey||null,
     customer:{name,phone,addr,slot},
     items:items.map(i=>i.loose?({id:i.id,name:i.name,qty:1,loose:true,grams:i.grams,price:i.price,loc:i.loc,unit:i.unit}):({id:i.id,name:i.name,qty:i.qty,price:i.price,loc:i.loc,unit:i.unit})),
@@ -9387,6 +9428,96 @@ function renderExplore(){
 <script>
 /* Floating AI button: keep its label in sync with the (hidden) hero button text, hide it inside chat. */
 (function(){const fab=document.getElementById('aiFab');if(!fab)return;const sync=()=>{const t=(document.getElementById('heroCtaTxt')||{}).textContent||'Ask AI Concierge';fab.setAttribute('aria-label',t);const tip=document.getElementById('aiFabTip');if(tip)tip.textContent=t;document.body.classList.toggle('ai-fab-hidden',!!document.querySelector('#view-chat.active'))};const sv=window.switchView;if(typeof sv==='function')window.switchView=function(){const r=sv.apply(this,arguments);sync();return r};const src=document.getElementById('heroCtaTxt');if(src&&window.MutationObserver)new MutationObserver(sync).observe(src,{childList:true,characterData:true,subtree:true});sync()})();
+</script>
+<div class="nxl-ov" id="locOv" onclick="if(event.target===this)closeLocSheet()" role="dialog" aria-modal="true" aria-labelledby="locTitle">
+  <div class="nxl-sheet">
+    <div class="nxl-hd"><div><b id="locTitle">Choose your store</b><small>Your order goes straight to this store</small></div><button class="nxl-x" type="button" onclick="closeLocSheet()" aria-label="Close">×</button></div>
+    <button class="nxl-gps" type="button" onclick="locDetect(true)"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="8"/></svg>Use my current location</button>
+    <label class="nxl-search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg><input id="locQ" type="search" placeholder="Search store, area or city" oninput="locRenderList()" autocomplete="off"></label>
+    <div class="nxl-status" id="locStatus"></div>
+    <div class="nxl-list" id="locList"></div>
+  </div>
+</div>
+<script>
+/* ══ STORE LOCATION ═════════════════════════════════════════════════════
+   On open the app asks the phone where it is and picks the nearest store
+   inside 1 km automatically. The shopper can always open the finder from the
+   header, search, and pick any store by hand — a manual pick (or a store QR /
+   ?branch= link) is respected and never overridden by the auto-pick.
+   The chosen store id rides on every order as branchId, so the order lands
+   in that store's CRM. */
+const LOC_RADIUS_KM=1;
+let LOC_ROWS=[],LOC_POS=null;
+function locGet(k){try{return localStorage.getItem(k)}catch(e){return null}}
+function locSet(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+function locLabel(b){return b?[b.name,b.area].filter(Boolean).join(' — '):''}
+function locKm(d){return d==null?'':(d<1?Math.round(d*1000)+' m':d.toFixed(1)+' km')}
+function locPill(k,v,busy){const a=document.getElementById('hdrLocK'),b=document.getElementById('hdrLocV'),btn=document.getElementById('hdrLoc');if(a)a.textContent=k;if(b)b.textContent=v;if(btn)btn.classList.toggle('busy',!!busy)}
+function locPosition(){return new Promise((res,rej)=>{if(!navigator.geolocation)return rej(new Error('unsupported'));navigator.geolocation.getCurrentPosition(p=>res({lat:p.coords.latitude,lng:p.coords.longitude}),rej,{enableHighAccuracy:true,timeout:10000,maximumAge:300000})})}
+async function locFetch(){
+  const u=new URLSearchParams({radius:String(LOC_RADIUS_KM)});
+  if(LOC_POS){u.set('lat',LOC_POS.lat);u.set('lng',LOC_POS.lng)}
+  const r=await fetch('/api/branches/nearby?'+u,{cache:'no-store'});
+  const d=await r.json();LOC_ROWS=Array.isArray(d.data)?d.data:[];return d;
+}
+function locCurrent(){return LOC_ROWS.find(b=>b.id===BRANCH)||(BRANCH?null:LOC_ROWS.find(b=>b.distanceKm==null)||LOC_ROWS[0])||null}
+function locShowCurrent(){
+  const b=locCurrent();
+  if(!b){locPill('Your store','Choose store');return}
+  locSet('devx-branch-label',locLabel(b));
+  locPill(b.distanceKm!=null?'Store · '+locKm(b.distanceKm):'Your store',b.area||b.name);
+}
+function locChoose(id,mode){
+  const b=LOC_ROWS.find(x=>x.id===id);
+  locSet('devx-branch',id);locSet('devx-branch-mode',mode||'manual');
+  if(b)locSet('devx-branch-label',locLabel(b));
+  if(id===BRANCH){closeLocSheet();locShowCurrent();return}
+  /* Prices, stock, slots and the CRM all belong to the store, so reload into it. */
+  location.reload();
+}
+async function locDetect(fromSheet){
+  const st=document.getElementById('locStatus');
+  locPill('Finding stores','Locating…',true);
+  if(st&&fromSheet)st.textContent='Getting your location…';
+  try{LOC_POS=await locPosition()}catch(e){
+    LOC_POS=null;
+    if(st)st.textContent=e&&e.code===1?'Location permission is off — search for your store below.':'Could not get your location — search for your store below.';
+  }
+  let d={};try{d=await locFetch()}catch(e){if(st)st.textContent='Could not load stores. Check your connection.';}
+  if(LOC_POS){
+    if(d.nearest){
+      if(st)st.textContent='Nearest store within '+LOC_RADIUS_KM+' km: '+locLabel(d.nearest)+' ('+locKm(d.nearest.distanceKm)+').';
+      /* Auto-pick only when the shopper has not chosen a store themselves. */
+      if(!fromSheet&&locGet('devx-branch-mode')!=='manual'&&d.nearest.id!==BRANCH){
+        if(typeof showToast==='function')showToast('Switched to your nearest store: '+(d.nearest.area||d.nearest.name),'green');
+        setTimeout(()=>locChoose(d.nearest.id,'auto'),900);return;
+      }
+      if(fromSheet&&d.nearest.id!==BRANCH){locChoose(d.nearest.id,'manual');return}
+    }else if(st){st.textContent='No store within '+LOC_RADIUS_KM+' km of you. Pick one from the list.'}
+    if(!d.nearest&&!fromSheet&&locGet('devx-branch-mode')!=='manual'){
+      try{if(!sessionStorage.getItem('devx-loc-none')){sessionStorage.setItem('devx-loc-none','1');if(typeof showToast==='function')showToast('No store within 1 km — tap the location pill to choose one','')}}catch(e){}
+    }
+  }
+  locShowCurrent();locRenderList();
+}
+function locRenderList(){
+  const el=document.getElementById('locList');if(!el)return;
+  const q=(document.getElementById('locQ')?.value||'').trim().toLowerCase();
+  const rows=LOC_ROWS.filter(b=>!q||[b.name,b.area,b.city,b.address].join(' ').toLowerCase().includes(q));
+  if(!rows.length){el.innerHTML='<div class="nxl-status">No store matches “'+esc(q)+'”.</div>';return}
+  el.innerHTML=rows.map(b=>`<button type="button" class="nxl-row ${b.id===BRANCH?'on':''}" onclick="locChoose('${esc(b.id)}','manual')"><span class="ic">🏪</span><span class="cp"><b>${esc(locLabel(b)||b.id)}</b><span>${esc([b.address,b.city].filter(Boolean).join(', '))}</span></span><span class="km">${esc(locKm(b.distanceKm))}${b.withinRadius?'<em>WITHIN 1 KM</em>':(b.id===BRANCH?'<em>SELECTED</em>':'')}</span></button>`).join('');
+}
+function openLocSheet(){document.getElementById('locOv').classList.add('on');const st=document.getElementById('locStatus');if(st&&!st.textContent)st.textContent=LOC_POS?'':'Tap “Use my current location” or search below.';locRenderList();if(!LOC_ROWS.length)locFetch().then(locRenderList).catch(()=>{})}
+function closeLocSheet(){document.getElementById('locOv').classList.remove('on')}
+/* Store list for checkout — so pickup shows the real shops, not a fixed list. */
+/* Checkout uses the store the shopper is browsing: the cart's prices and stock
+   come from that store's catalogue, so switching happens via the finder. */
+function locStoreOptions(){
+  const b=locCurrent();
+  if(!b)return '<option value="">'+esc(locGet('devx-branch-label')||'Your selected store')+'</option>';
+  return `<option value="${esc(b.id)}" selected>${esc(locLabel(b))}${b.distanceKm!=null?' · '+locKm(b.distanceKm):''}</option>`;
+}
+(function(){const lbl=locGet('devx-branch-label');if(lbl)locPill('Your store',lbl.split(' — ').pop());locFetch().then(()=>{locShowCurrent();locDetect(false)}).catch(()=>locDetect(false))})();
 </script>
 </body>
 </html>

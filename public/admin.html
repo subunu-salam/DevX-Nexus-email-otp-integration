@@ -864,6 +864,11 @@ tbody tr.click:hover{background:var(--GL)}
             <div class="fld" style="margin:0"><label class="lbl">City</label><input class="inp" id="brCity" placeholder="Dubai, UAE"></div>
             <button class="btn grn" onclick="addBranch()">Open shop</button>
           </div>
+          <div style="display:grid;grid-template-columns:1.4fr 1.4fr auto;gap:10px;align-items:end;margin-top:10px">
+            <div class="fld" style="margin:0"><label class="lbl">Map location (lat, lng)</label><input class="inp" id="brLatLng" placeholder="25.2697, 55.3095 — paste from Google Maps"></div>
+            <div class="fld" style="margin:0"><label class="lbl">Street address</label><input class="inp" id="brAddr" placeholder="e.g. Al Muraqqabat Rd, Deira"></div>
+            <button class="btn ghost sm" type="button" onclick="brUseHere()">Use this device's location</button>
+          </div>
           <p class="td-sub" style="margin-top:9px;line-height:1.6">A new shop opens completely empty &mdash; no products, no stock, its own floor plan and its own delivery windows. Nothing is inherited from another branch unless you copy it below.</p>
         </div></div>
 
@@ -1983,6 +1988,7 @@ async function loadBranches(){
           : `${(b.inStock||0).toLocaleString()} in stock · ${b.categories} categories${s2.orders!=null?` · ${s2.orders} orders`:''}`}</div>
         <div style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap;align-items:center">
           <button class="btn ghost sm" onclick="pickBranchSetup('${esc(b.id)}')">Stock it</button>
+          ${allowed('*')?`<button class="btn ghost sm" onclick="setBranchLocation('${esc(b.id)}')">📍 ${brHasPin(b.id)?'Edit location':'Set location'}</button>`:''}
           ${here?'<span class="st-pill" style="background:var(--GD)">You are here</span>'
                 :`<button class="btn ghost sm" onclick="switchBranch('${esc(b.id)}')">Work in this shop</button>`}
         </div></div>`;}).join('')}</div>`;
@@ -1998,18 +2004,39 @@ async function loadBranches(){
     renderBranchSetup();
   }catch(e){el.innerHTML='<div class="empty">Could not load your shops.</div>'}
 }
+/* ── store location (used by the customer app's 1 km auto-pick) ── */
+function brParseLatLng(v){const m=String(v||'').match(/(-?\d+(?:\.\d+)?)\s*[, ]\s*(-?\d+(?:\.\d+)?)/);if(!m)return null;const lat=+m[1],lng=+m[2];return Math.abs(lat)<=90&&Math.abs(lng)<=180?{lat,lng}:null}
+function brHasPin(id){const b=BRANCHES.find(x=>x.id===id);return !!(b&&b.lat!=null&&b.lng!=null)}
+function brUseHere(){if(!navigator.geolocation){toast('This browser cannot share location');return}navigator.geolocation.getCurrentPosition(p=>{document.getElementById('brLatLng').value=p.coords.latitude.toFixed(6)+', '+p.coords.longitude.toFixed(6)},()=>toast('Location permission was denied'),{enableHighAccuracy:true,timeout:10000})}
+async function setBranchLocation(id){
+  const b=BRANCHES.find(x=>x.id===id)||{};
+  const cur=b.lat!=null?b.lat+', '+b.lng:'';
+  const v=prompt('Map location for '+(b.area||b.name||id)+'\nPaste "lat, lng" (Google Maps → right-click the shop → copy coordinates):',cur);
+  if(v==null)return;
+  const ll=brParseLatLng(v);if(!ll){toast('That does not look like "lat, lng"');return}
+  const address=prompt('Street address (optional):',b.address||'');
+  try{
+    const r=await fetch('/api/branches/'+encodeURIComponent(id)+'/location',{method:'PATCH',headers:authHeaders({'Content-Type':'application/json'}),body:JSON.stringify({lat:ll.lat,lng:ll.lng,address:address==null?undefined:address})});
+    const d=await r.json();if(!r.ok){toast(d.error||'Could not save the location');return}
+    toast('Location saved — shoppers within 1 km now get this store automatically');
+    try{BRANCHES=((await (await fetch('/api/branches',{headers:authHeaders()})).json()).data)||BRANCHES}catch(e){}
+    loadBranches();
+  }catch(e){toast('Could not reach the server')}
+}
 async function addBranch(){
   const name=document.getElementById('brName').value.trim();
   const area=document.getElementById('brArea').value.trim();
   const city=document.getElementById('brCity').value.trim()||'Dubai, UAE';
   if(!name){toast('Give the shop a name');return}
+  const ll=brParseLatLng(document.getElementById('brLatLng').value);
+  const address=document.getElementById('brAddr').value.trim();
   try{
     const r=await fetch('/api/branches',{method:'POST',
-      headers:authHeaders({'Content-Type':'application/json'}),body:JSON.stringify({name,area,city})});
+      headers:authHeaders({'Content-Type':'application/json'}),body:JSON.stringify({name,area,city,address,lat:ll&&ll.lat,lng:ll&&ll.lng})});
     const d=await r.json();
     if(!r.ok){toast(d.error||'Could not open the shop');return}
     toast(name+' opened — it starts empty');
-    document.getElementById('brName').value='';document.getElementById('brArea').value='';
+    document.getElementById('brName').value='';document.getElementById('brArea').value='';document.getElementById('brLatLng').value='';document.getElementById('brAddr').value='';
     try{BRANCHES=((await (await fetch('/api/branches',{headers:authHeaders()})).json()).data)||BRANCHES;renderBranchCard()}catch(e){}
     loadBranches();
   }catch(e){toast('Could not reach the server')}

@@ -167,3 +167,19 @@ Re-read what changed. There is no per-record diffing and it does not need any.
 | 429 | Rate limited, or account locked |
 
 Error messages are written for the person reading them, not for a log. `"You run one shop — your dashboard is the group"` beats `"insufficient scope"`.
+
+---
+
+## Store location (customer app)
+
+| Method | Path | Auth | Notes |
+|---|---|---|---|
+| GET | `/api/branches/nearby?lat=&lng=&radius=1&q=` | public | Active stores nearest first, each with `distanceKm` and `withinRadius`; `nearest` = closest store inside the radius (default 1 km) or `null`. `q` filters by name / area / city / address. |
+| PATCH | `/api/branches/:id/location` | `branch.create` | Body `{ lat, lng, address?, phone? }`. Pins a store on the map so the 1 km auto-pick can find it. |
+
+`POST /api/branches` also accepts `lat`, `lng`, `address`, `phone`.
+Orders carry `branchId` (the store chosen in the header); the server stamps `branch` with that store's real name, and the order appears only in that store's CRM.
+
+## Storage: SQL Server
+
+Set `MSSQL_SERVER`, `MSSQL_USER`, `MSSQL_PASSWORD` (and optionally `MSSQL_DATABASE`, default `DevXNexus`) in `.env`. On boot the app creates the database and `dbo.nexus_state` (key → JSON) if missing, loads from it, and writes every change back in a transaction. Takes priority over `DATABASE_URL`. If the server is unreachable at boot the app logs the error and falls back to the local file so the shop stays up.
