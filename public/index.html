@@ -1350,13 +1350,13 @@ body.rtl .msg-row.user{flex-direction:row}
    are preserved. This only changes the mobile layout.
    ========================================================= */
 /* ── Store location pill + finder ── */
-.hdr-loc{flex:1 1 auto;min-width:0;max-width:170px;margin:0 auto 0 4px;height:36px;display:flex;align-items:center;gap:6px;padding:0 10px 0 8px;border-radius:999px;border:1px solid rgba(61,187,106,.30);background:rgba(61,187,106,.10);color:#E8FFF1;cursor:pointer;text-align:left;font-family:'Montserrat',sans-serif}
-.hdr-loc:hover{background:rgba(61,187,106,.18)}
-.hdr-loc>svg{width:15px;height:15px;flex:0 0 15px;stroke:#5EE08F;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-.hdr-loc-txt{display:flex;flex-direction:column;min-width:0;line-height:1.1}
-.hdr-loc-k{font-size:7.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#8FD9AB;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.hdr-loc-v{font-size:10.5px;font-weight:800;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.hdr-loc .chev{width:11px;height:11px;flex:0 0 11px;stroke:#8FD9AB}
+.hdr-loc{flex:0 1 auto;min-width:0;max-width:210px;margin:0 auto 0 6px;height:38px;display:flex;align-items:center;gap:8px;padding:0 12px 0 5px;border-radius:999px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);color:#fff;cursor:pointer;text-align:left;font-family:'Montserrat',sans-serif;transition:background .18s ease,border-color .18s ease}
+.hdr-loc:hover{background:rgba(255,255,255,.10);border-color:rgba(61,187,106,.45)}
+.hdr-loc>svg:first-child{box-sizing:border-box;width:28px;height:28px;flex:0 0 28px;padding:6px;border-radius:50%;background:rgba(61,187,106,.18);stroke:#5EE08F;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.hdr-loc-txt{display:flex;flex-direction:column;min-width:0;line-height:1.15;gap:1px}
+.hdr-loc-k{font-size:8px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.55);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hdr-loc-v{font-size:12px;font-weight:800;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hdr-loc .chev{width:12px;height:12px;flex:0 0 12px;stroke:rgba(255,255,255,.6);fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
 .hdr-loc.busy>svg:first-child{animation:locPulse 1s ease-in-out infinite}
 @keyframes locPulse{50%{opacity:.35}}
 .nxl-ov{position:fixed;inset:0;z-index:9000;background:rgba(5,20,12,.55);display:none;align-items:flex-end;justify-content:center}
@@ -1381,8 +1381,8 @@ body.rtl .msg-row.user{flex-direction:row}
 .nxl-row .cp span{display:block;font-size:11px;color:var(--tx2,#5b6b62);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .nxl-row .km{font-size:11px;font-weight:800;white-space:nowrap;text-align:right}
 .nxl-row .km em{display:block;font-style:normal;font-size:9px;font-weight:800;color:var(--G,#1f9d55);margin-top:3px}
-@media (max-width:430px){.hdr-loc{margin-top:7px;height:32px;max-width:132px;padding:0 7px 0 6px;gap:4px}.hdr-loc-v{font-size:9.5px}.hdr-loc-k{font-size:7px}.hdr-loc .chev{display:none}}
-@media (max-width:360px){.hdr-loc{max-width:96px}.hdr-loc-k{display:none}}
+@media (max-width:430px){.hdr-loc{margin-top:5px;height:36px;max-width:150px;padding:0 9px 0 4px;gap:6px}.hdr-loc>svg:first-child{width:26px;height:26px;flex-basis:26px;padding:5px}.hdr-loc-v{font-size:11px}.hdr-loc-k{font-size:7.5px}}
+@media (max-width:360px){.hdr-loc{max-width:112px}.hdr-loc .chev{display:none}}
 @media (max-width:430px){
   :root{--hdr:52px}
 
@@ -5029,14 +5029,10 @@ body.ai-fab-hidden .ai-fab,body:has(#view-chat.active) .ai-fab{opacity:0;transfo
   </a>
   <button class="hdr-loc" id="hdrLoc" type="button" onclick="openLocSheet()" title="Choose your store" aria-label="Choose your store">
     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
-    <span class="hdr-loc-txt"><span class="hdr-loc-k" id="hdrLocK">Your store</span><span class="hdr-loc-v" id="hdrLocV">Locating…</span></span>
+    <span class="hdr-loc-txt"><span class="hdr-loc-k" id="hdrLocK">Shopping at</span><span class="hdr-loc-v" id="hdrLocV">Locating…</span></span>
     <svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
   </button>
   <div class="hdr-actions">
-    <button class="hdr-store-btn" id="headerStoreBtn" type="button" onclick="openStoreEntry()" title="Shop at Store" aria-label="Shop at Store">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3h-3zM18 18h3v3h-3zM18 14h3v3h-3zM14 18v3h3"/></svg>
-      <span>Shop at Store</span>
-    </button>
     <button class="hdr-icon-btn" id="langBtn" onclick="cycleLang()" title="Language / भाषा / زبان" style="font-size:10.5px;font-weight:800;letter-spacing:.02em">EN</button>
     <button class="hdr-icon-btn" id="themeBtn" onclick="toggleDark()" title="Toggle dark / light mode">
       <svg id="themeIcon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
@@ -9447,7 +9443,7 @@ function renderExplore(){
    The chosen store id rides on every order as branchId, so the order lands
    in that store's CRM. */
 const LOC_RADIUS_KM=1;
-let LOC_ROWS=[],LOC_POS=null;
+let LOC_ROWS=[],LOC_POS=null,LOC_DEFAULT='';
 function locGet(k){try{return localStorage.getItem(k)}catch(e){return null}}
 function locSet(k,v){try{localStorage.setItem(k,v)}catch(e){}}
 function locLabel(b){return b?[b.name,b.area].filter(Boolean).join(' — '):''}
@@ -9458,14 +9454,15 @@ async function locFetch(){
   const u=new URLSearchParams({radius:String(LOC_RADIUS_KM)});
   if(LOC_POS){u.set('lat',LOC_POS.lat);u.set('lng',LOC_POS.lng)}
   const r=await fetch('/api/branches/nearby?'+u,{cache:'no-store'});
-  const d=await r.json();LOC_ROWS=Array.isArray(d.data)?d.data:[];return d;
+  const d=await r.json();LOC_ROWS=Array.isArray(d.data)?d.data:[];LOC_DEFAULT=d.defaultId||'';return d;
 }
-function locCurrent(){return LOC_ROWS.find(b=>b.id===BRANCH)||(BRANCH?null:LOC_ROWS.find(b=>b.distanceKm==null)||LOC_ROWS[0])||null}
+function locCurrent(){return LOC_ROWS.find(b=>b.id===(BRANCH||LOC_DEFAULT))||LOC_ROWS.find(b=>b.id===LOC_DEFAULT)||LOC_ROWS[0]||null}
 function locShowCurrent(){
   const b=locCurrent();
-  if(!b){locPill('Your store','Choose store');return}
+  if(!b){locPill('Shopping at','Choose store');return}
   locSet('devx-branch-label',locLabel(b));
-  locPill(b.distanceKm!=null?'Store · '+locKm(b.distanceKm):'Your store',b.area||b.name);
+  const place=String(b.area||b.name||'').split(/\s+[—–-]\s+/)[0]||b.name;
+  locPill(b.distanceKm!=null&&b.distanceKm<=25?locKm(b.distanceKm)+' away':'Shopping at',place);
 }
 function locChoose(id,mode){
   const b=LOC_ROWS.find(x=>x.id===id);
@@ -9517,7 +9514,7 @@ function locStoreOptions(){
   if(!b)return '<option value="">'+esc(locGet('devx-branch-label')||'Your selected store')+'</option>';
   return `<option value="${esc(b.id)}" selected>${esc(locLabel(b))}${b.distanceKm!=null?' · '+locKm(b.distanceKm):''}</option>`;
 }
-(function(){const lbl=locGet('devx-branch-label');if(lbl)locPill('Your store',lbl.split(' — ').pop());locFetch().then(()=>{locShowCurrent();locDetect(false)}).catch(()=>locDetect(false))})();
+(function(){const lbl=locGet('devx-branch-label');if(lbl)locPill('Shopping at',(lbl.split(' — ')[1]||lbl.split(' — ')[0]));locFetch().then(()=>{locShowCurrent();locDetect(false)}).catch(()=>locDetect(false))})();
 </script>
 </body>
 </html>
