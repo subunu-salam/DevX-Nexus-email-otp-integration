@@ -1350,12 +1350,12 @@ body.rtl .msg-row.user{flex-direction:row}
    are preserved. This only changes the mobile layout.
    ========================================================= */
 /* ── Store location pill + finder ── */
-.hdr-loc{flex:0 1 auto;min-width:0;max-width:210px;margin:0 2px 0 auto;height:38px;display:flex;align-items:center;gap:8px;padding:0 12px 0 5px;border-radius:999px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);color:#fff;cursor:pointer;text-align:left;font-family:'Montserrat',sans-serif;transition:background .18s ease,border-color .18s ease}
+.hdr-loc{flex:0 1 auto;min-width:0;max-width:210px;margin:0 2px 0 auto;height:30px;display:flex;align-items:center;gap:8px;padding:0 12px 0 5px;border-radius:999px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);color:#fff;cursor:pointer;text-align:left;font-family:'Montserrat',sans-serif;transition:background .18s ease,border-color .18s ease}
 .hdr-loc:hover{background:rgba(255,255,255,.10);border-color:rgba(61,187,106,.45)}
-.hdr-loc>svg:first-child{box-sizing:border-box;width:28px;height:28px;flex:0 0 28px;padding:6px;border-radius:50%;background:rgba(61,187,106,.18);stroke:#5EE08F;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
-.hdr-loc-txt{display:flex;flex-direction:column;min-width:0;line-height:1.15;gap:1px}
-.hdr-loc-k{font-size:8px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.55);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.hdr-loc-v{font-size:12px;font-weight:800;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hdr-loc>svg:first-child{box-sizing:border-box;width:22px;height:22px;flex:0 0 22px;padding:4px;border-radius:50%;background:rgba(61,187,106,.18);stroke:#5EE08F;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.hdr-loc-txt{display:flex;flex-direction:column;min-width:0;line-height:1.05;gap:1px}
+.hdr-loc-k{font-size:7px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.55);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hdr-loc-v{font-size:10.5px;font-weight:800;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .hdr-loc .chev{width:12px;height:12px;flex:0 0 12px;stroke:rgba(255,255,255,.6);fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
 .hdr-loc.busy>svg:first-child{animation:locPulse 1s ease-in-out infinite}
 @keyframes locPulse{50%{opacity:.35}}
@@ -1381,8 +1381,16 @@ body.rtl .msg-row.user{flex-direction:row}
 .nxl-row .cp span{display:block;font-size:11px;color:var(--tx2,#5b6b62);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .nxl-row .km{font-size:11px;font-weight:800;white-space:nowrap;text-align:right}
 .nxl-row .km em{display:block;font-style:normal;font-size:9px;font-weight:800;color:var(--G,#1f9d55);margin-top:3px}
-@media (max-width:430px){.hdr-loc{margin-top:5px;height:36px;max-width:150px;padding:0 9px 0 4px;gap:6px}.hdr-loc>svg:first-child{width:26px;height:26px;flex-basis:26px;padding:5px}.hdr-loc-v{font-size:11px}.hdr-loc-k{font-size:7.5px}}
-@media (max-width:360px){.hdr-loc{max-width:112px}.hdr-loc .chev{display:none}}
+@media (max-width:430px){.hdr-loc{margin-top:3px;height:28px;max-width:150px;padding:0 9px 0 3px;gap:5px}.hdr-loc>svg:first-child{width:21px;height:21px;flex-basis:21px;padding:4px}.hdr-loc-v{font-size:10px}.hdr-loc-k{font-size:6.5px}}
+@media (max-width:360px){.hdr-loc{margin-top:3px;height:26px;max-width:112px}.hdr-loc>svg:first-child{width:19px;height:19px;flex-basis:19px}.hdr-loc .chev{display:none}}
+/* Shop at Store — small chip above the search bar */
+.hero-store-btn{grid-area:search;align-self:start;justify-self:start;position:relative;z-index:2;transform:translateY(calc(-100% - 10px));display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 11px 0 8px;margin-top:2px;border-radius:999px;border:1px solid rgba(21,154,91,.28);background:#EAF6EF;color:var(--GD,#0f7a45);font:800 10px 'Montserrat',sans-serif;cursor:pointer;white-space:nowrap;box-shadow:0 4px 12px rgba(21,154,91,.08);transition:transform .15s ease,background .15s ease}
+.hero-store-btn svg{width:14px;height:14px;flex:0 0 14px;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.hero-store-btn:hover{background:#dcf1e5}.hero-store-btn:active{transform:translateY(calc(-100% - 10px)) scale(.97)}
+.hero-store-btn.on{background:var(--G,#1f9d55);border-color:var(--G,#1f9d55);color:#fff}
+[data-theme="dark"] .hero-store-btn{background:rgba(61,187,106,.14);border-color:rgba(61,187,106,.4);color:#9DF0BE}
+@media (max-width:430px){.hero-store-btn{height:28px;font-size:9px;padding:0 9px 0 7px}}
+@media (max-width:360px){.hero-store-btn{height:24px;font-size:8px}.hero-store-btn svg{width:12px;height:12px;flex-basis:12px}}
 @media (max-width:430px){
   :root{--hdr:52px}
 
@@ -5229,6 +5237,11 @@ body.ai-fab-hidden .ai-fab,body:has(#view-chat.active) .ai-fab{opacity:0;transfo
           </button>
         </div>
       </div>
+
+      <button class="hero-store-btn" id="headerStoreBtn" type="button" onclick="openStoreEntry()" title="Shop at Store" aria-label="Shop at Store">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3h-3zM18 18h3v3h-3zM18 14h3v3h-3zM14 18v3h3"/></svg>
+        <span>Shop at Store</span>
+      </button>
       <div class="hero-search-bar" role="button" tabindex="0" onclick="openSearch()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openSearch()}" aria-label="Search Products">
         <span class="hero-search-icon" aria-hidden="true">
           <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7.5"/><line x1="16.7" y1="16.7" x2="21" y2="21"/></svg>
